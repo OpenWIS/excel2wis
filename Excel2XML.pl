@@ -8,59 +8,15 @@ use Data::Dumper;
 # my $workbook  = ReadData ('Metadata-guide-record.v1.6_FF.ods',parser => "ods");
 my $workbook  = ReadData ('Metadata-guide-record.v1.6_FF.xls');
 my %infosOBLIGATOIRES;
-my $flagInfosOBLIGATOIRESvide="none";
+my  %colTOxpath;
 
 # print Dumper($workbook);
 # print $workbook->[0]{sheet} . "\n";
 InitialiseDonneesObligatoires();
 
-my %onglets;
-my  %colTOxpath;
-
-	#on boucle sur les onglets pour remplir le hash %onglets(clef=indice de l'onglet, valeur=nom de l'onglet)
-foreach (keys($workbook->[0]{sheet}))
-	{
-	$onglets{$workbook->[0]{sheet}{$_}}=$_;
-	}
-
-my $ongletEnCours;
-my $contenuCelluleEnCours;
-my $ColLgn;
-my ($Col,$Lgn);
-
-	#on boucle sur les onglets (indices croissants) pour remplir le hash %infosOBLIGATOIRES (clef=nom en dur,valeur=nom de l'onglet dans le fichier excel)
-foreach $ongletEnCours(sort(keys(%onglets)))
-	{
-		#nom des onglets dans le fichier excel
-	print "\t".$onglets{$ongletEnCours}."\n";
-	$infosOBLIGATOIRES{tab_MDFields}=$ongletEnCours if ($onglets{$ongletEnCours} eq "MD Fields");
-	$infosOBLIGATOIRES{tab_Help}=$ongletEnCours if ($onglets{$ongletEnCours} eq "Help");
-	$infosOBLIGATOIRES{tab_MDgeneric}=$ongletEnCours if ($onglets{$ongletEnCours} eq "MD generic");
-	$infosOBLIGATOIRES{tab_Thesaurus}=$ongletEnCours if ($onglets{$ongletEnCours} eq "MD Thesaurus");
-	
-		#identifiant des colones XPATH dans le fichier excel
-	foreach $ColLgn (keys($workbook->[$ongletEnCours]))
-		{
-		# print $ColLgn."\n";
-		if ($ColLgn=~/^([A-Z]+)([0-9]+)$/)
-			{
-			 ($Lgn,$Col)=($2,$1);
-			$contenuCelluleEnCours=$workbook->[$ongletEnCours]{$ColLgn};
-			# print $contenuCelluleEnCours."\n";
-			
-			if ($contenuCelluleEnCours=~/XPATH/i)
-				{
-				$infosOBLIGATOIRES{colone_xpath_MDgeneric}=$Col if ($ongletEnCours eq $infosOBLIGATOIRES{tab_MDgeneric});
-				$infosOBLIGATOIRES{colone_xpath_Help}=$Col if ($ongletEnCours eq $infosOBLIGATOIRES{tab_Help});
-				}
-			}
-		}
-	}
-
- # print Dumper(%infosOBLIGATOIRES);
 my $onContinue=1;
 my $MessageVerifieInfosObligatoires="";
-if (! VerifieInfosObligatoires($MessageVerifieInfosObligatoires))
+if (! VerifieInfosObligatoires(\$MessageVerifieInfosObligatoires))
 	{
 	print $MessageVerifieInfosObligatoires."\n";
 	$onContinue=0;
@@ -74,7 +30,10 @@ if ($onContinue)
 	{
 	coloneVersXpath();
 	}
-
+	
+################################################################################
+###################      FONCTIONS						################################
+################################################################################
 sub InitialiseDonneesObligatoires
 	#procedure qui initialise à vide le hash des infos obligatoires: les noms des 4 onglets, les colones contenant les xpath
 	{
@@ -88,27 +47,47 @@ sub InitialiseDonneesObligatoires
 		"colone_ids_sections"			=> 	"B",
 		"1ereColoneRenseignee_MDFields"	=> 	"B",
 		"1ereLigneRenseignee_Help"		=> 	4,
+		"1ereLigneRenseignee_MDgeneric"	=> 	3,
 		"ligne_lien_xpath"			=> 	4
 						);
 	}
 
+################################################################################
+# fonction qui vérifie que le fichier excel ressemble à ce qu'on attend
 sub VerifieInfosObligatoires
 	{
-	my ($MonMessage)=@_;
-	my $cle;
+	my ($RefMonMessage)=@_;
 	my $InfosObligatoiresCorrect=1;
 	
-	foreach $cle(keys(%infosOBLIGATOIRES))
+		#verif indices des onglets
+	$InfosObligatoiresCorrect=0 unless ($workbook->[0]{sheet}{"MD Fields"} eq "1");
+	$InfosObligatoiresCorrect=0 unless ($workbook->[0]{sheet}{"Help"} eq "2" );
+	$InfosObligatoiresCorrect=0 if ($workbook->[0]{sheet}{"MD generic"} ne "3");
+	$InfosObligatoiresCorrect=0 if ($workbook->[0]{sheet}{"MD Thesaurus"} ne "4");
+	$$RefMonMessage="Les onglets ne sont pas dans l ordre attendu.\n" unless $InfosObligatoiresCorrect ;
+
+		#verif cases xpath
+	my $ligneXpath=$infosOBLIGATOIRES{"1ereLigneRenseignee_Help"}-2;
+	my $caseXpath=$infosOBLIGATOIRES{"colone_xpath_Help"}.$ligneXpath;
+	if ($workbook->[$infosOBLIGATOIRES{tab_Help}]{$caseXpath}!~/XPATH/i)
 		{
-		if ($infosOBLIGATOIRES{$cle} eq $flagInfosOBLIGATOIRESvide)
-			{
-			$MonMessage="$cle non trouve ou non rempli.\n";
-			$InfosObligatoiresCorrect=0;
-			}
+		$InfosObligatoiresCorrect=0;
+		$$RefMonMessage=$$RefMonMessage."La case ".$workbook->[$infosOBLIGATOIRES{tab_Help}]{label}."\.$caseXpath devrait contenir XPATH\n";
 		}
+	$ligneXpath=$infosOBLIGATOIRES{"1ereLigneRenseignee_MDgeneric"}-1;
+	$caseXpath=$infosOBLIGATOIRES{"colone_xpath_MDgeneric"}.$ligneXpath;
+	if ($workbook->[$infosOBLIGATOIRES{tab_MDgeneric}]{$caseXpath}!~/XPATH/i)
+		{
+		$InfosObligatoiresCorrect=0;
+		$$RefMonMessage=$$RefMonMessage."La case ".$workbook->[$infosOBLIGATOIRES{tab_MDgeneric}]{label}."\.$caseXpath devrait contenir XPATH\n";
+		}
+	
 	return $InfosObligatoiresCorrect;
 	}
 	
+################################################################################
+# fonction qui remplit le hash %colTOxpath permettant de mapper la colone de MD Fields vers le xpath décrit dans Help
+# exemple : D	/gmd:MD_Metadata/gmd:fileIdentifier
 sub coloneVersXpath
 	{
 		#on commence par remplir le hash de la ligne 4 de l'onglet 'MD Fields' %ligne4 (clef: contenu de la colone que l'on retrouve dans l'onglet help, valeur=Colone)
@@ -116,6 +95,7 @@ sub coloneVersXpath
 	my $idCellule;
 	my $iCol=$infosOBLIGATOIRES{"1ereColoneRenseignee_MDFields"};
 	my %ligne4;
+	my $contenuCelluleEnCours;
 	
 	while ($cestNonVide)
 		{
