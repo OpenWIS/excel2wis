@@ -12,8 +12,11 @@ my  %colTOxpath;
 
 # print Dumper($workbook);
 # print $workbook->[0]{sheet} . "\n";
+
+#on commence par initialiser les données obligatoires
 InitialiseDonneesObligatoires();
 
+#on vérifie que le fichier excel est bien conforme à ce qui est attendu =les données obligatoires
 my $onContinue=1;
 my $MessageVerifieInfosObligatoires="";
 if (! VerifieInfosObligatoires(\$MessageVerifieInfosObligatoires))
@@ -25,7 +28,7 @@ else
 	{
 	print "On continue\n";
 	}
-
+#on remplit une table de correspdonce entre la colone de MDFields et les xpath
 if ($onContinue)
 	{
 	coloneVersXpath();
@@ -38,17 +41,22 @@ sub InitialiseDonneesObligatoires
 	#procedure qui initialise à vide le hash des infos obligatoires: les noms des 4 onglets, les colones contenant les xpath
 	{
 	%infosOBLIGATOIRES=	(
+			#noms/indices des onglets
 		"tab_MDFields"				=> 	1,
 		"tab_Help"					=> 	2,
 		"tab_MDgeneric"				=> 	3,
 		"tab_Thesaurus"				=> 	4,
+			#colones renfermant des xpath
 		"colone_xpath_MDgeneric"		=> 	"D",
 		"colone_xpath_Help"			=> 	"H",
+			#colone de Help.Section
 		"colone_ids_sections"			=> 	"B",
+			#1ère colone de MD_Fields contenant des données
 		"1ereColoneRenseignee_MDFields"	=> 	"B",
+			#1ère ligne de Help contenant des données
 		"1ereLigneRenseignee_Help"		=> 	4,
+			#1ère ligne de MD generic contenant des données
 		"1ereLigneRenseignee_MDgeneric"	=> 	3,
-		"ligne_lien_xpath"			=> 	4
 						);
 	}
 
@@ -99,7 +107,7 @@ sub coloneVersXpath
 	
 	while ($cestNonVide)
 		{
-		$idCellule=$iCol.$infosOBLIGATOIRES{ligne_lien_xpath};
+		$idCellule=$iCol.$infosOBLIGATOIRES{"1ereLigneRenseignee_Help"};
 		$contenuCelluleEnCours=$workbook->[$infosOBLIGATOIRES{tab_MDFields}]{$idCellule};
 		if ($contenuCelluleEnCours)
 			{
