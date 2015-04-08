@@ -79,12 +79,12 @@ sub InitialiseDonneesObligatoires
 	#procedure qui initialise à vide le hash des infos obligatoires: les noms des 4 onglets, les colones contenant les xpath
 	{
 	%infosOBLIGATOIRES=	(
-		"tab_MDFields"				=> 	$flagInfosOBLIGATOIRESvide,
-		"tab_Help"					=> 	$flagInfosOBLIGATOIRESvide,
-		"tab_MDgeneric"				=> 	$flagInfosOBLIGATOIRESvide,
-		"tab_Thesaurus"				=> 	$flagInfosOBLIGATOIRESvide,
-		"colone_xpath_MDgeneric"		=> 	$flagInfosOBLIGATOIRESvide,
-		"colone_xpath_Help"			=> 	$flagInfosOBLIGATOIRESvide,
+		"tab_MDFields"				=> 	1,
+		"tab_Help"					=> 	2,
+		"tab_MDgeneric"				=> 	3,
+		"tab_Thesaurus"				=> 	4,
+		"colone_xpath_MDgeneric"		=> 	"D",
+		"colone_xpath_Help"			=> 	"H",
 		"colone_ids_sections"			=> 	"B",
 		"1ereColoneRenseignee_MDFields"	=> 	"B",
 		"1ereLigneRenseignee_Help"		=> 	4,
