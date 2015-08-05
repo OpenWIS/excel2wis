@@ -17,6 +17,41 @@ namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
               'gts': 'http://www.isotc211.org/2005/gts',
               'gmx': 'http://www.isotc211.org/2005/gmx'}
 
+def addMultiValue(tree, xpath, multivalue):
+    xpath_list = xpath.split("/")[1:]
+    xpath = ""
+    # Rebuild of xpath to add missing tag
+    for i, tag in enumerate(xpath_list):
+        previous_xpath = xpath
+        xpath += "/" + tag
+        try:
+            element = tree.xpath(xpath, namespaces=namespaces)
+        except etree.XPathEvalError:
+            if tag.endswith('[]'):
+                break
+        print "addMutlivalue, après le try", element
+        if len(element) == 0:
+            # element under which the tag will be added
+            parent = tree.xpath(previous_xpath, namespaces=namespaces)[0]
+            prefix, tag_name = str(tag).split(':')
+            sub_element = etree.SubElement(parent, "{" + namespaces[prefix] + "}" + tag_name)
+    print i, tag
+    # MultiValue but no [] found in xpath
+    if not tag.endswith('[]'):
+        raise ValueError
+    multi_tag_list = xpath_list[i:]
+    multi_tag_list[0] = tag[:-2]
+    for val in reversed(multivalue.split(',')):
+        parent_xpath = previous_xpath
+        for tag in multi_tag_list:
+            parent = tree.xpath(parent_xpath, namespaces=namespaces)[0]
+            prefix, tag_name = str(tag).split(':')
+            new_element = parent.makeelement("{" + namespaces[prefix] + "}" + tag_name)
+            parent.insert(0, new_element)
+            parent_xpath += "/" + tag
+            if tag == multi_tag_list[-1]:
+                new_element.text = val.strip()
+
 def addMetadataElement(tree, xpath, value, attribute='No'):
     element = tree.xpath(xpath, namespaces=namespaces)
     # Xpath found in the template
@@ -33,9 +68,6 @@ def addMetadataElement(tree, xpath, value, attribute='No'):
             element = tree.xpath(xpath, namespaces=namespaces)
             # missing tag identified
             if len(element) == 0:
-                # multivalue TODO
-                if tag.endswith(']'):
-                    tag = tag[:-2]
                 # element under which the tag will be added
                 parent = tree.xpath(previous_xpath, namespaces=namespaces)[0]
                 prefix, tag_name = str(tag).split(':')
@@ -86,17 +118,6 @@ except IOError:
 # Get sheets
 md_fields = workbook.sheet_by_name('MD Fields')
 help = workbook.sheet_by_name('Help')
-
-# TODO : in help sheet Attribute and MultiValue and CodeList col contain merged cells
-# For attribute col, each empty cell is replaced by the value of previous one
-help_attribute = help.col(4)
-attribute_list_no_header = help_attribute[3:]
-prev_attr = 'No'
-for attr in attribute_list_no_header:
-    if attr.value == '':
-        attr.value = prev_attr
-    prev_attr = attr.value
-attribute_list = help_attribute[:3] + attribute_list_no_header
 
 ###
 # Track FATAL ERRORS
@@ -155,16 +176,16 @@ error_gene = []
 for row in range(2, md_gene.nrows):
     value = unicode(md_gene.cell_value(row, 2)).strip()
     xpath = unicode(md_gene.cell_value(row, 3)).strip()
-    codeList = unicode(md_gene.cell_value(row, 4)).strip()
+    code_list = unicode(md_gene.cell_value(row, 4)).strip()
     # empty Xpath
     if not xpath:
         empty_xpath_gene.append(row+1)
         continue
     try:
         addMetadataElement(common_tree, xpath, value)
-        if codeList:
+        if code_list:
             addMetadataElement(common_tree, xpath, value, 'codeListValue')
-            addMetadataElement(common_tree, xpath, codeList, 'codeList')
+            addMetadataElement(common_tree, xpath, code_list, 'codeList')
     except ValueError:
         error_gene.append(row)
         continue
@@ -189,38 +210,43 @@ for row in range(6, md_fields.nrows):
     error = []
     for col in range(1, md_fields.ncols):
         id = unicode(field_id_list[col].value).strip()  # element ID
+        # TODO : translation
+        if id.endswith('b'):
+            print "> translation %s ignored" % id
+            continue
         # An optional empty field is not added
         mandatory = unicode(field_mandatory_list[col].value).strip()
         if mandatory == 'Optional':
             if not md_fields.cell_value(row, col): 
                 print "> empty optional field %s ignored" % id 
                 continue    
-        # TODO : translation
-        if id.endswith('b'):
-            print "> translation %s ignored" % id
-            continue
         field_value = unicode(md_fields.cell_value(row, col)).strip()
         xpath = unicode(help.cell_value(col+2, 8)).strip()
-        attribute = unicode(attribute_list[col+2].value).strip()
+        attribute = unicode(help.cell_value(col+2, 4)).strip()
         multivalue = unicode(help.cell_value(col+2, 6)).strip()
+        code_list = unicode(help.cell_value(col+2, 7)).strip()
         # empty Xpath
         if xpath == '':
             empty_xpath.append(id)
-            continue
-        # TODO : multivalue
-        if multivalue == 'Yes':
-            print '> Multivalue %s ignored' % id
             continue
         try:
             #print "ID", id
             if id == '1.3':
                 # add tag values which are concatenation of MD generic and MD Fields elements
                 field_value = concateValue(tree, field_value)
-            addMetadataElement(tree, xpath, field_value, attribute)
+            if multivalue == 'Yes':
+                addMultiValue(tree, xpath, field_value)
+            else:
+                addMetadataElement(tree, xpath, field_value, attribute)
             if id in ['5.2', '5.3', '5.4']:
                 # add creation, publication or revision in dateType (paragraph 10.2.2)
                 name = unicode(md_fields.cell_value(5, col)).strip()
                 par1022(tree, xpath, name)
+            if code_list:
+                addMetadataElement(tree, xpath, field_value, 'codeListValue')
+                addMetadataElement(tree, xpath, code_list, 'codeList')
+        except Exception as e:
+            print id, type(e), e
         except ValueError:
             error.append(id)
             continue
