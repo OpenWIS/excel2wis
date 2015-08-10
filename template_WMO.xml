@@ -263,17 +263,17 @@
 			<gmd:resourceConstraints>
 				<gmd:MD_LegalConstraints >
 					<gmd:useLimitation xsi:type="gmd:PT_FreeText_PropertyType">
-						<gco:CharacterString>Open Licence 1.0 http://www.etalab.gouv.fr/licence-ouverte-open-licence</gco:CharacterString>
+						<gco:CharacterString/>
 					</gmd:useLimitation>
 <!--. fin paragraphe13.1 -->
-<!--. paragraphe13.2.1/6.5 --> 
-                <gmd:useConstraints/>
-<!--. fin paragraphe13.2.1/6.5 -->	
 <!--. paragraphe13.2.2 -->	
 					<gmd:accessConstraints>
 						<gmd:MD_RestrictionCode codeList="" codeListValue=""></gmd:MD_RestrictionCode>
 					</gmd:accessConstraints>
-<!--. fin paragraphe13.2.2 -->	
+<!--. fin paragraphe13.2.2 -->
+<!--. paragraphe13.2.1/6.5 --> 
+                <gmd:useConstraints/>
+<!--. fin paragraphe13.2.1/6.5 -->		
 <!--. MLparagraphe13.2.3/6.2 et 6.3-->	
 					<gmd:otherConstraints xsi:type="gmd:PT_FreeText_PropertyType">
 						<gco:CharacterString>license</gco:CharacterString>
