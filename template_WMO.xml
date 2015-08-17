@@ -16,12 +16,11 @@
 <!--.paragraph18 -->								
 	<gmd:language/>
 <!--. end paragraph18 -->								
+	<gmd:characterSet>
+		<gmd:MD_CharacterSetCode codeListValue="utf8" codeList="MD_CharacterSetCode">utf8</gmd:MD_CharacterSetCode>
+	</gmd:characterSet>
 <!--. paragraph3 -->								
 	<gmd:hierarchyLevel/>
-	<!-- TODO ISO rule : hierarchyLevelName: documented if hierarchyLevel not "dataset"-->
-	<gmd:hierarchyLevelName xsi:type="gmd:PT_FreeText_PropertyType">
-		<gco:CharacterString>Series</gco:CharacterString>	
-	</gmd:hierarchyLevelName>
 <!--. end paragraph3 -->								
 <!--. paragraph16.1.1 -->								
 	<gmd:contact>
@@ -74,7 +73,7 @@
 			</gmd:citation>
 			
 <!--. MLparagraph2 -->								
-			<gmd:abstract xsi:type="gmd:PT_FreeText_PropertyType"/>
+			<gmd:abstract/>
 <!--. end paragraph2 -->	
 <!--. paragraph14.1.1 -->	
 			<gmd:pointOfContact>
@@ -187,7 +186,7 @@
 <!--. MLparagraph13.1 -->	
 			<gmd:resourceConstraints>
 				<gmd:MD_LegalConstraints >
-					<gmd:useLimitation xsi:type="gmd:PT_FreeText_PropertyType"/>
+					<gmd:useLimitation/>
 <!--. end paragraph13.1 -->
 <!--. paragraph13.2.2 -->	
 					<gmd:accessConstraints/>
@@ -196,8 +195,8 @@
                     <gmd:useConstraints/>
 <!--. end paragraph13.2.1/6.5 -->		
 <!--. MLparagraph13.2.3/6.2 et 6.3-->	
-					<gmd:otherConstraints xsi:type="gmd:PT_FreeText_PropertyType"/>
-					<gmd:otherConstraints xsi:type="gmd:PT_FreeText_PropertyType"/>
+					<gmd:otherConstraints/>
+					<gmd:otherConstraints/>
 <!--. end paragraph13.2.3 -->
 				</gmd:MD_LegalConstraints>
 			</gmd:resourceConstraints>	
