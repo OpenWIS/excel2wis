@@ -187,7 +187,7 @@ for row in range(2, md_gene.nrows):
             addMetadataElement(common_tree, xpath, value, 'codeListValue')
             addMetadataElement(common_tree, xpath, code_list, 'codeList')
     except ValueError:
-        error_gene.append(row)
+        error_gene.append(row+1)
         continue
 
 # Write WARN messages for MD generic
