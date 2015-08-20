@@ -255,7 +255,7 @@ for row in range(6, md_fields.nrows):
 
     # Write an xml file for each metadata (row in MD Fields)
     metadata_row = row + 1
-    string_xml = etree.tostring(tree, pretty_print=True)
+    string_xml = etree.tostring(tree, pretty_print=True, encoding='utf-8')
     filename = "metadata_row" + str(metadata_row) + ".xml"
     with open(filename, "wb") as fo:
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
