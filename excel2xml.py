@@ -5,6 +5,8 @@ import copy
 import sys
 import xlrd
 from lxml import etree
+import xmltodict
+import json
 
 
 # Namespaces dict
@@ -253,13 +255,17 @@ for row in range(6, md_fields.nrows):
         except etree.XPathEvalError:  # [] in xpath
             error.append(id)
 
-    # Write an xml file for each metadata (row in MD Fields)
+    # Write an XML and a JSON file for each metadata (row in MD Fields)
     metadata_row = row + 1
     string_xml = etree.tostring(tree, pretty_print=True, encoding='utf-8')
     filename = "metadata_row" + str(metadata_row) + ".xml"
+    filename_json = "metadata_row" + str(metadata_row) + ".json"
     with open(filename, "wb") as fo:
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         fo.write(string_xml)
+
+    with open(filename_json, "wb") as fo:
+        json.dump(xmltodict.parse(string_xml), fo, indent=4)
 
     print "\n##### File %s has been generated\n" % filename
 
