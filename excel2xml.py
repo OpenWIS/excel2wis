@@ -9,6 +9,28 @@ import xmltodict
 import json
 
 
+############################
+# Excel file configuration #
+############################
+# Delta between MD Fields col and the linked
+# Help row
+# ID starts on the 2nd col of MD Fields
+# and on the 5th row of Help
+delta = 3
+# MD Fields
+fields_col_start = 1
+fields_row_start = 6
+# Help
+attribute_col = 5
+multivalue_col = 7
+codelist_col = 8
+xpath_col = 10
+# MD generic
+md_gene_row_start = 3
+md_gene_value_col = 2
+md_gene_xpath_col = 3
+md_gene_codelist_col = 4
+
 # Namespaces dict
 namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
               'gco': 'http://www.isotc211.org/2005/gco',
@@ -83,14 +105,14 @@ def addMetadataElement(tree, xpath, value, attribute='No'):
 
 def concateValue(tree, value):
     # Unique Identifier (value for 1.3)
-    urn = unicode(md_gene.cell_value(5, 2)).strip() + value
+    urn = unicode(md_gene.cell_value(6, 2)).strip() + value
     # Location for online access
-    nrow = 4
+    nrow = 5 
     value = unicode(md_gene.cell_value(nrow, 2)).strip() + urn
     xpath = unicode(md_gene.cell_value(nrow, 3)).strip()
     addMetadataElement(tree, xpath, value)
     # Permanent link
-    nrow = 3
+    nrow = 4
     value = unicode(md_gene.cell_value(nrow, 2)).strip() + urn
     xpath = unicode(md_gene.cell_value(nrow, 3)).strip()
     addMetadataElement(tree, xpath, value)
@@ -117,20 +139,26 @@ except IndexError:
 except IOError:
     sys.exit("Excel filename %s not found" % excel_filename)
 
+###
 # Get sheets
+###
 md_fields = workbook.sheet_by_name('MD Fields')
 help = workbook.sheet_by_name('Help')
+md_gene = workbook.sheet_by_name('MD generic')
+# ID on the 4th row of MD Fields
+# and on the 2nd col of Help
+field_id_list = md_fields.row(3)
+field_mandatory_list = md_fields.row(4)
+help_id_list = help.col(1)
+
 
 ###
 # Track FATAL ERRORS
 ###
-field_id_list = md_fields.row(3)
-field_mandatory_list = md_fields.row(4)
-help_id_list = help.col(1)
 try:
     for i, id in enumerate(field_id_list):
         field_id = unicode(id.value).strip()
-        help_id = unicode(help_id_list[i+2].value).strip()
+        help_id = unicode(help_id_list[i+delta].value).strip()
         # Check if MD Fields ID and Help ID match
         if field_id != help_id:
             raise Exception(
@@ -140,15 +168,18 @@ try:
         # Check (non INSPIRE) mandatory fields
         # TODO INSPIRE : check mandatory fields for INSPIRE ?
         mandatory = unicode(field_mandatory_list[i].value).strip()
-        if mandatory == 'Mandatory' and i < 29:
-            for row in range(6, md_fields.nrows):
+        if mandatory == 'Mandatory':
+            for row in range(fields_start_row, md_fields.nrows):
                 # mandatory field is not empty
                 if not md_fields.cell_value(row, i): 
-                    raise Exception('ERROR - MD Fields sheet - ' +
-                                    'Mandatory field %s' % field_id +
-                                    ' is empty on row %s' % str(row+1))
+                    # when a cell value is 0, it must not be seen as an
+                    # empty cell
+                    if md_fields.cell_value(row, i) != 0:
+                        raise Exception('ERROR - MD Fields sheet - ' +
+                                        'Mandatory field %s' % field_id +
+                                        ' is empty on row %s' % str(row+1))
                 # xpath linked to mandatory field is not empty
-                if not help.cell_value(i+2, 8):
+                if not help.cell_value(i+delta, xpath_col):
                     raise Exception('ERROR - Help sheet - ' +
                                     'No XPATH linked to ' +
                                     'mandatory field %s' % help_id)
@@ -160,6 +191,7 @@ except Exception as e:
         sys.exit("ERROR : There is a mismatch between MD Fields and Help sheets")
     else:
         sys.exit(e.args[0])
+sys.exit(e.args[0])
 
 ###
 # Read XML template
@@ -167,18 +199,18 @@ except Exception as e:
 parser = etree.XMLParser(remove_blank_text=True)
 common_tree = etree.parse("./template_WMO.xml", parser)
 
-###
-# Add generic metadata (MD generic sheet)
-###
-# Get MD generic sheet
-md_gene = workbook.sheet_by_name('MD generic')
+######################
+# Add generic metadata 
+# MD generic sheet
+#######################
+
 # Lists for WARN messages
 empty_xpath_gene = []
 error_gene = []
-for row in range(2, md_gene.nrows):
-    value = unicode(md_gene.cell_value(row, 2)).strip()
-    xpath = unicode(md_gene.cell_value(row, 3)).strip()
-    code_list = unicode(md_gene.cell_value(row, 4)).strip()
+for row in range(md_gene_row_start, md_gene.nrows):
+    value = unicode(md_gene.cell_value(row, md_gene_value_col)).strip()
+    xpath = unicode(md_gene.cell_value(row, md_gene_xpath_col)).strip()
+    code_list = unicode(md_gene.cell_value(row, md_gene_codelist_col)).strip()
     # empty Xpath
     if not xpath:
         empty_xpath_gene.append(row+1)
@@ -201,16 +233,16 @@ if empty_xpath_gene or error_gene:
         print "elements on row(s) %s cannot be created, please check their xpath expression" % ", ".join([str(x) for x in error_gene])
     print "--------------------------------\n"
 
-###
-# Add specific metadata (MD Fields and Help sheets)
-###
+#######################
+# Add specific metadata
+#######################
 # Iteration on MD Fields rows (one row = one metadata)
-for row in range(6, md_fields.nrows):
+for row in range(fields_row_start, md_fields.nrows):
     tree = copy.deepcopy(common_tree)
     # Lists for WARN messages
     empty_xpath = []
     error = []
-    for col in range(1, md_fields.ncols):
+    for col in range(fields_col_start, md_fields.ncols):
         id = unicode(field_id_list[col].value).strip()  # element ID
         # TODO : translation
         if id.endswith('b'):
@@ -223,10 +255,10 @@ for row in range(6, md_fields.nrows):
                 print "> empty optional field %s ignored" % id 
                 continue    
         field_value = unicode(md_fields.cell_value(row, col)).strip()
-        xpath = unicode(help.cell_value(col+2, 8)).strip()
-        attribute = unicode(help.cell_value(col+2, 4)).strip()
-        multivalue = unicode(help.cell_value(col+2, 6)).strip()
-        code_list = unicode(help.cell_value(col+2, 7)).strip()
+        xpath = unicode(help.cell_value(col+delta, xpath_col)).strip()
+        attribute = unicode(help.cell_value(col+delta, attribute_col)).strip()
+        multivalue = unicode(help.cell_value(col+delta, multivalue_col)).strip()
+        code_list = unicode(help.cell_value(col+delta, codelist_col)).strip()
         # empty Xpath
         if xpath == '':
             empty_xpath.append(id)
