@@ -54,17 +54,10 @@
 <!--. MLparagraph1 -->
 					<gmd:title/>
 <!--. end paragraph1 -->	
-<!--. paragraph10.2.1/5.2,5.3,5.4 -->	
-					<gmd:date>
-						<gmd:CI_Date>
-							<gmd:date/>
-<!--. end paragraph10.2.1 -->	
-<!--. paragraph10.2.2 -->	
-							<gmd:dateType>
-								<gmd:CI_DateTypeCode codeListValue="" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode"/>
-							</gmd:dateType>
-						</gmd:CI_Date>
-					</gmd:date>
+<!--. paragraph10.2.1 and 10.2.2/5.2,5.3,5.4 -->	
+                    <gmd:date/>
+                    <gmd:date/>
+                    <gmd:date/>
 <!--. end paragraph10.2.2 -->	
 <!--.paragraph5 -->
 					<gmd:identifier/>
@@ -133,7 +126,7 @@
 							<gmd:title>
 								<gco:CharacterString>WMO_DistributionScopeCode</gco:CharacterString>
 							</gmd:title>
-							<gmd:date>
+                            <gmd:date>
 								<gmd:CI_Date>
 									<gmd:date>
 										<gco:Date>2012-06-27</gco:Date>

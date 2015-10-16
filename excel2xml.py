@@ -6,7 +6,6 @@ import sys
 import xlrd
 from lxml import etree
 import xmltodict
-import json
 
 
 ############################
@@ -21,6 +20,7 @@ delta = 3
 fields_col_start = 1
 fields_row_start = 6
 # Help
+type_col = 4
 attribute_col = 5
 multivalue_col = 7
 codelist_col = 8
@@ -119,13 +119,14 @@ def concateValue(tree, value):
     # Two linked tags are mandatory, cf. template (paragraph4)
     return urn
 
-def par1022(tree, xpath, name):
-    # dateType change (cf. template paragraph10) according to which column is filled among (5.2, 5.3, 5.4)
-    value = name.split()[-1]
+def par1022(tree, xpath, type, code_list):
+    # add the date type : creation, publication or revision
+    value = type.split(':')[-1]
     xpath_list = xpath.split("/")[:-2] + ['gmd:dateType', 'gmd:CI_DateTypeCode']
     xpath = "/".join(xpath_list)
     addMetadataElement(tree, xpath, value)
     addMetadataElement(tree, xpath, value, 'codeListValue')
+    addMetadataElement(tree, xpath, code_list, 'codeList')
 
 ###
 # Excel file opening
@@ -168,8 +169,8 @@ try:
         # Check (non INSPIRE) mandatory fields
         # TODO INSPIRE : check mandatory fields for INSPIRE ?
         mandatory = unicode(field_mandatory_list[i].value).strip()
-        if mandatory == 'Mandatory':
-            for row in range(fields_start_row, md_fields.nrows):
+        if mandatory == 'Mandatory' and field_id not in ['8.1', '8.2']:
+            for row in range(fields_row_start, md_fields.nrows):
                 # mandatory field is not empty
                 if not md_fields.cell_value(row, i): 
                     # when a cell value is 0, it must not be seen as an
@@ -191,7 +192,6 @@ except Exception as e:
         sys.exit("ERROR : There is a mismatch between MD Fields and Help sheets")
     else:
         sys.exit(e.args[0])
-sys.exit(e.args[0])
 
 ###
 # Read XML template
@@ -246,37 +246,42 @@ for row in range(fields_row_start, md_fields.nrows):
         id = unicode(field_id_list[col].value).strip()  # element ID
         # TODO : translation
         if id.endswith('b'):
-            print "> translation %s ignored" % id
+            # print "> translation %s ignored" % id
             continue
         # An optional empty field is not added
         mandatory = unicode(field_mandatory_list[col].value).strip()
         if mandatory == 'Optional':
             if not md_fields.cell_value(row, col): 
-                print "> empty optional field %s ignored" % id 
+                # print "> empty optional field %s ignored" % id 
                 continue    
         field_value = unicode(md_fields.cell_value(row, col)).strip()
         xpath = unicode(help.cell_value(col+delta, xpath_col)).strip()
         attribute = unicode(help.cell_value(col+delta, attribute_col)).strip()
         multivalue = unicode(help.cell_value(col+delta, multivalue_col)).strip()
         code_list = unicode(help.cell_value(col+delta, codelist_col)).strip()
+        type = unicode(help.cell_value(col+delta, type_col)).strip()
         # empty Xpath
         if xpath == '':
             empty_xpath.append(id)
             continue
         try:
             #print "ID", id
+            # TODO : identify this section thanks to type col ?
             if id == '1.3':
                 # add tag values which are concatenation of MD generic and MD Fields elements
                 field_value = concateValue(tree, field_value)
+            elif id == '6.3':
+                # Value GTSPriority in Excel file does not validate
+                field_value = 'GTSPriority' + field_value[9]
             if multivalue == 'Yes':
                 addMultiValue(tree, xpath, field_value)
             else:
                 addMetadataElement(tree, xpath, field_value, attribute)
-            if id in ['5.2', '5.3', '5.4']:
+            if type.startswith('Date:'):
                 # add creation, publication or revision in dateType (paragraph 10.2.2)
-                name = unicode(md_fields.cell_value(5, col)).strip()
-                par1022(tree, xpath, name)
-            if code_list:
+                # the code_list is linked to de dateType
+                par1022(tree, xpath, type, code_list)
+            elif code_list:
                 addMetadataElement(tree, xpath, field_value, 'codeListValue')
                 addMetadataElement(tree, xpath, code_list, 'codeList')
         except Exception as e:
@@ -287,17 +292,13 @@ for row in range(fields_row_start, md_fields.nrows):
         except etree.XPathEvalError:  # [] in xpath
             error.append(id)
 
-    # Write an XML and a JSON file for each metadata (row in MD Fields)
+    # Write an XML file for each metadata (row in MD Fields)
     metadata_row = row + 1
     string_xml = etree.tostring(tree, pretty_print=True, encoding='utf-8')
     filename = "metadata_row" + str(metadata_row) + ".xml"
-    filename_json = "metadata_row" + str(metadata_row) + ".json"
     with open(filename, "wb") as fo:
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         fo.write(string_xml)
-
-    with open(filename_json, "wb") as fo:
-        json.dump(xmltodict.parse(string_xml), fo, indent=4)
 
     print "\n##### File %s has been generated\n" % filename
 
