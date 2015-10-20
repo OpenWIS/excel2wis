@@ -24,12 +24,19 @@ type_col = 4
 attribute_col = 5
 multivalue_col = 7
 codelist_col = 8
+att_id_col = 9
 xpath_col = 10
 # MD generic
 md_gene_row_start = 3
 md_gene_value_col = 2
 md_gene_xpath_col = 3
 md_gene_codelist_col = 4
+# MD Thesaurus
+thesaurus_col_start = 2
+thesaurus_name_row = 2
+thesaurus_link_row = 3
+thesaurus_version_row = 4
+thesaurus_date_row = 5
 
 # Namespaces dict
 namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
@@ -41,6 +48,7 @@ namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
               'gts': 'http://www.isotc211.org/2005/gts',
               'gmx': 'http://www.isotc211.org/2005/gmx'}
 
+# Add several times the same tag (values comma separated)
 def addMultiValue(tree, xpath, multivalue):
     xpath_list = xpath.split("/")[1:]
     xpath = ""
@@ -53,13 +61,11 @@ def addMultiValue(tree, xpath, multivalue):
         except etree.XPathEvalError:
             if tag.endswith('[]'):
                 break
-        print "addMutlivalue, après le try", element
         if len(element) == 0:
             # element under which the tag will be added
             parent = tree.xpath(previous_xpath, namespaces=namespaces)[0]
             prefix, tag_name = str(tag).split(':')
             sub_element = etree.SubElement(parent, "{" + namespaces[prefix] + "}" + tag_name)
-    print i, tag
     # MultiValue but no [] found in xpath
     if not tag.endswith('[]'):
         raise ValueError
@@ -76,6 +82,20 @@ def addMultiValue(tree, xpath, multivalue):
             if tag == multi_tag_list[-1]:
                 new_element.text = val.strip()
 
+# Special case of free Keywords
+# Add an ID attribute in MD_Keywords tag
+def addAttributeId(tree, xpath, att_id):
+    xpath_list = xpath.split("/")[:]
+    try:
+        keyword_i = xpath_list.index('gmd:MD_Keywords')
+        xpath_list = xpath_list[:keyword_i+1]
+        xpath = "/".join(xpath_list)
+        element = tree.xpath(xpath, namespaces=namespaces)[0] 
+        element.attrib['id'] = att_id
+    except ValueError:
+        print "WARNING : MD_Keywords not found in XPATH"
+
+# Add a single tag or attribute
 def addMetadataElement(tree, xpath, value, attribute='No'):
     element = tree.xpath(xpath, namespaces=namespaces)
     # Xpath found in the template
@@ -103,6 +123,7 @@ def addMetadataElement(tree, xpath, value, attribute='No'):
     else:
         el.attrib[attribute] = value
 
+# Add tags which values are a concatenation that contains the urn
 def concateValue(tree, value):
     # Unique Identifier (value for 1.3)
     urn = unicode(md_gene.cell_value(6, 2)).strip() + value
@@ -119,6 +140,7 @@ def concateValue(tree, value):
     # Two linked tags are mandatory, cf. template (paragraph4)
     return urn
 
+# Add dateType value and the codelist linked
 def par1022(tree, xpath, type, code_list):
     # add the date type : creation, publication or revision
     value = type.split(':')[-1]
@@ -146,12 +168,15 @@ except IOError:
 md_fields = workbook.sheet_by_name('MD Fields')
 help = workbook.sheet_by_name('Help')
 md_gene = workbook.sheet_by_name('MD generic')
+thesaurus = workbook.sheet_by_name('MD Thesaurus')
+thesaurus_name = thesaurus.row(thesaurus_name_row)
+thesaurus_link = thesaurus.row(thesaurus_link_row)
+thesaurus_date = thesaurus.row(thesaurus_date_row)
 # ID on the 4th row of MD Fields
 # and on the 2nd col of Help
 field_id_list = md_fields.row(3)
 field_mandatory_list = md_fields.row(4)
 help_id_list = help.col(1)
-
 
 ###
 # Track FATAL ERRORS
@@ -260,30 +285,47 @@ for row in range(fields_row_start, md_fields.nrows):
         multivalue = unicode(help.cell_value(col+delta, multivalue_col)).strip()
         code_list = unicode(help.cell_value(col+delta, codelist_col)).strip()
         type = unicode(help.cell_value(col+delta, type_col)).strip()
+        att_id = unicode(help.cell_value(col+delta, att_id_col)).strip()
         # empty Xpath
         if xpath == '':
             empty_xpath.append(id)
             continue
         try:
             #print "ID", id
-            # TODO : identify this section thanks to type col ?
+
+            # Change of field value
             if id == '1.3':
                 # add tag values which are concatenation of MD generic and MD Fields elements
                 field_value = concateValue(tree, field_value)
             elif id == '6.3':
                 # Value GTSPriority in Excel file does not validate
                 field_value = 'GTSPriority' + field_value[9]
+            
+            # Add tags or attribute
+            # Add several identical tags
             if multivalue == 'Yes':
                 addMultiValue(tree, xpath, field_value)
+            # or add only one tag or attribute
             else:
                 addMetadataElement(tree, xpath, field_value, attribute)
+            
+            # Add attribute ID in the MD_Keywords tag for free keywords
+            if att_id:
+                addAttributeId(tree, xpath, att_id)
+
+            # Add codelist
+            # special case of Date (two fields must be filled : date and dateType)
             if type.startswith('Date:'):
                 # add creation, publication or revision in dateType (paragraph 10.2.2)
                 # the code_list is linked to de dateType
                 par1022(tree, xpath, type, code_list)
+            # normal case : addition of two attributes
             elif code_list:
                 addMetadataElement(tree, xpath, field_value, 'codeListValue')
                 addMetadataElement(tree, xpath, code_list, 'codeList')
+
+            # Add thesaurus link, date and version
+
         except Exception as e:
             print id, type(e), e
         except ValueError:
