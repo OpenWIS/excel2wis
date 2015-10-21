@@ -48,31 +48,35 @@ namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
               'gts': 'http://www.isotc211.org/2005/gts',
               'gmx': 'http://www.isotc211.org/2005/gmx'}
 
+# Add an occurrence of an ordered tag missing from the template
+# return xpath with the appropriate order (in case where an
+# optional previous tag isn't filled)
+def addMultipleElement(parent, xpath, tag):
+    prefix, tag_name = str(tag).split(':')
+    el_list = parent.findall("{" + namespaces[prefix] + "}" + tag_name[:-3])
+    new_element = parent.makeelement("{" + namespaces[prefix] + "}" + tag_name[:-3])
+    el_list[-1].addnext(new_element)
+    new_element_index = len(el_list) + 1
+    xpath = xpath[:-2] + str(new_element_index) + "]"
+    return xpath
+
 # Add several times the same tag (values comma separated)
 def addMultiValue(tree, xpath, multivalue):
     xpath_list = xpath.split("/")[1:]
     xpath = ""
     # Rebuild of xpath to add missing tag
     for i, tag in enumerate(xpath_list):
-        previous_xpath = xpath
-        xpath += "/" + tag
         try:
-            element = tree.xpath(xpath, namespaces=namespaces)
+            null, xpath = addMissingTags(tree, xpath, tag)
         except etree.XPathEvalError:
-            if tag.endswith('[]'):
-                break
-        if len(element) == 0:
-            # element under which the tag will be added
-            parent = tree.xpath(previous_xpath, namespaces=namespaces)[0]
-            prefix, tag_name = str(tag).split(':')
-            sub_element = etree.SubElement(parent, "{" + namespaces[prefix] + "}" + tag_name)
+            break
     # MultiValue but no [] found in xpath
     if not tag.endswith('[]'):
         raise ValueError
     multi_tag_list = xpath_list[i:]
     multi_tag_list[0] = tag[:-2]
     for val in reversed(multivalue.split(',')):
-        parent_xpath = previous_xpath
+        parent_xpath = xpath
         for tag in multi_tag_list:
             parent = tree.xpath(parent_xpath, namespaces=namespaces)[0]
             prefix, tag_name = str(tag).split(':')
@@ -81,6 +85,7 @@ def addMultiValue(tree, xpath, multivalue):
             parent_xpath += "/" + tag
             if tag == multi_tag_list[-1]:
                 new_element.text = val.strip()
+    return parent_xpath
 
 # Special case of free Keywords
 # Add an ID attribute in MD_Keywords tag
@@ -95,6 +100,25 @@ def addAttributeId(tree, xpath, att_id):
     except ValueError:
         print "WARNING : MD_Keywords not found in XPATH"
 
+# Rebuild of XPATH to add missing tags
+def addMissingTags(tree, xpath, tag):
+    previous_xpath = xpath
+    xpath += "/" + tag
+    element = tree.xpath(xpath, namespaces=namespaces)
+    sub_element = None
+    # missing tag identified
+    if len(element) == 0:
+        # element under which the tag will be added
+        parent = tree.xpath(previous_xpath, namespaces=namespaces)[0]
+        # Add an occurrence of an ordered tag which is not in the template
+        if xpath.endswith(']'):
+            xpath = addMultipleElement(parent, xpath, tag)
+            sub_element = tree.xpath(xpath, namespaces=namespaces)
+        else:
+            prefix, tag_name = str(tag).split(':')
+            sub_element = etree.SubElement(parent, "{" + namespaces[prefix] + "}" + tag_name)
+    return sub_element, xpath
+
 # Add a single tag or attribute
 def addMetadataElement(tree, xpath, value, attribute='No'):
     element = tree.xpath(xpath, namespaces=namespaces)
@@ -107,21 +131,13 @@ def addMetadataElement(tree, xpath, value, attribute='No'):
         xpath = ""
         # Rebuild of xpath to add missing tag
         for i, tag in enumerate(xpath_list):
-            previous_xpath = xpath
-            xpath += "/" + tag
-            element = tree.xpath(xpath, namespaces=namespaces)
-            # missing tag identified
-            if len(element) == 0:
-                # element under which the tag will be added
-                parent = tree.xpath(previous_xpath, namespaces=namespaces)[0]
-                prefix, tag_name = str(tag).split(':')
-                sub_element = etree.SubElement(parent, "{" + namespaces[prefix] + "}" + tag_name)
-        el = sub_element
+            el, xpath = addMissingTags(tree, xpath, tag)
     # Insert tag or attribute value
     if attribute == 'No':
         el.text = value
     else:
         el.attrib[attribute] = value
+    return xpath
 
 # Add tags which values are a concatenation that contains the urn
 def concateValue(tree, value):
@@ -304,10 +320,10 @@ for row in range(fields_row_start, md_fields.nrows):
             # Add tags or attribute
             # Add several identical tags
             if multivalue == 'Yes':
-                addMultiValue(tree, xpath, field_value)
+                xpath = addMultiValue(tree, xpath, field_value)
             # or add only one tag or attribute
             else:
-                addMetadataElement(tree, xpath, field_value, attribute)
+                xpath = addMetadataElement(tree, xpath, field_value, attribute)
             
             # Add attribute ID in the MD_Keywords tag for free keywords
             if att_id:
@@ -327,7 +343,7 @@ for row in range(fields_row_start, md_fields.nrows):
             # Add thesaurus link, date and version
 
         except Exception as e:
-            print id, type(e), e
+            print id, e
         except ValueError:
             error.append(id)
             continue
