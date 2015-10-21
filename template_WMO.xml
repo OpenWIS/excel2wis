@@ -56,8 +56,6 @@
 <!--. end paragraph1 -->	
 <!--. paragraph10.2.1 and 10.2.2/5.2,5.3,5.4 -->	
                     <gmd:date/>
-                    <gmd:date/>
-                    <gmd:date/>
 <!--. end paragraph10.2.2 -->	
 <!--.paragraph5 -->
 					<gmd:identifier/>
@@ -85,7 +83,7 @@
 <!--. paragraphe8.2/2.1-->
 			<gmd:descriptiveKeywords>
                     <!--. paragraph8.2.3-->
-				<gmd:MD_Keywords id="WMOCodeListKeywords">
+				<gmd:MD_Keywords>
 					<!--. end paragraph8.2.3-->
 					<!--. paragraph8.2.2-->
 					<gmd:type>
@@ -115,7 +113,7 @@
 			</gmd:descriptiveKeywords>
 <!--. end paragraph8.2 -->
 <!--. paragraph8.3/6.1-->
-			<gmd:descriptiveKeywords uuidref="globalexchange">
+			<gmd:descriptiveKeywords>
 				<gmd:MD_Keywords>
 					<gmd:keyword/>
 					<gmd:type>
@@ -142,14 +140,13 @@
 			</gmd:descriptiveKeywords>
 <!--. end paragraph8.3 -->			
 			<gmd:descriptiveKeywords>
-				<gmd:MD_Keywords id="MF_ApplicationDomainCode">
+				<gmd:MD_Keywords>
 					<!--. paragraph8.2.3/2.5-->
 					<gmd:keyword/>
 					<!--. end paragraph8.2.3-->
 				</gmd:MD_Keywords>
 			</gmd:descriptiveKeywords>
 <!--. paragraph8.4/2.6-->
-			<gmd:descriptiveKeywords/>
 <!--. end paragraph8.4 -->	
 <!--. end paragraph8 -->	
 <!--. MLparagraph13.1 -->	
