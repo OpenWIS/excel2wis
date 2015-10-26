@@ -190,8 +190,6 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
     xpath_date = xpath_th + '/gmd:date/gmd:CI_Date/gmd:date/gco:Date'
     addMetadataElement(tree, xpath_date, thesaurus_date[i].value)
 
-
-
 ###
 # Excel file opening
 ###
@@ -336,7 +334,8 @@ for row in range(fields_row_start, md_fields.nrows):
             # Change of field value
             if id == '1.3':
                 # add tag values which are concatenation of MD generic and MD Fields elements
-                field_value = concateValue(tree, field_value)
+                urn = concateValue(tree, field_value)
+                field_value = urn
             elif id == '6.3':
                 # Value GTSPriority in Excel file does not validate
                 field_value = 'GTSPriority' + field_value[9]
@@ -379,12 +378,13 @@ for row in range(fields_row_start, md_fields.nrows):
     # Write an XML file for each metadata (row in MD Fields)
     metadata_row = row + 1
     string_xml = etree.tostring(tree, pretty_print=True, encoding='utf-8')
-    filename = "metadata_row" + str(metadata_row) + ".xml"
+    # filename = "metadata_row" + str(metadata_row) + ".xml"
+    filename = urn + ".xml"
     with open(filename, "wb") as fo:
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         fo.write(string_xml)
 
-    print "\n##### File %s has been generated\n" % filename
+    print "\n##### File %s has been generated" % filename
 
     # Write WARN messages for MD Fields - Help for each row
     if empty_xpath or error:
