@@ -169,7 +169,6 @@ def par1022(tree, xpath, type, code_list):
     addMetadataElement(tree, xpath, code_list, 'codeList')
 
 def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
-# TODO
     # Name
     xpath_list = xpath.split('/')[:-2]
     xpath_th = "/".join(xpath_list)
@@ -187,8 +186,10 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
             help_thesaurus + ' [' + thesaurus_link[i].value + ']')
     # Version
     # Date of revision
-    xpath_date = xpath_th + '/gmd:date/gmd:CI_Date/gmd:date/gco:Date'
-    addMetadataElement(tree, xpath_date, thesaurus_date[i].value)
+    date = thesaurus_date[i].value
+    if date:
+        xpath_date = xpath_th + '/gmd:date/gmd:CI_Date/gmd:date/gco:Date'
+        addMetadataElement(tree, xpath_date, date)
 
 ###
 # Excel file opening
