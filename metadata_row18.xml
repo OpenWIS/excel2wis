@@ -85,8 +85,6 @@
           <!--. end paragraph1 -->
           <!--. paragraph10.2.1 and 10.2.2/5.2,5.3,5.4 -->
           <gmd:date/>
-          <gmd:date/>
-          <gmd:date/>
           <!--. end paragraph10.2.2 -->
           <!--.paragraph5 -->
           <gmd:identifier>
@@ -172,7 +170,7 @@ MANDATED: Insert at least one thematic keyword from the WMO_CodeList dictionary<
       <!--. paragraphe8.2/2.1-->
       <gmd:descriptiveKeywords>
         <!--. paragraph8.2.3-->
-        <gmd:MD_Keywords id="WMOCodeListKeywords">
+        <gmd:MD_Keywords>
           <gmd:keyword>
             <gco:CharacterString>synopticMeteorology</gco:CharacterString>
           </gmd:keyword>
@@ -197,7 +195,7 @@ MANDATED: Insert at least one thematic keyword from the WMO_CodeList dictionary<
               <gmd:date>
                 <gmd:CI_Date>
                   <gmd:date>
-                    <gco:Date>2012-06-27</gco:Date>
+                    <gco:Date></gco:Date>
                   </gmd:date>
                   <gmd:dateType>
                     <gmd:CI_DateTypeCode codeList="http://wis.wmo.int/2012/codelists/WMOCodelists.xml#CI_DateTypeCode" codeListValue="revision">revision</gmd:CI_DateTypeCode>
@@ -211,7 +209,7 @@ MANDATED: Insert at least one thematic keyword from the WMO_CodeList dictionary<
       </gmd:descriptiveKeywords>
       <!--. end paragraph8.2 -->
       <!--. paragraph8.3/6.1-->
-      <gmd:descriptiveKeywords uuidref="globalexchange">
+      <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
           <gmd:keyword>
             <gco:CharacterString>GlobalExchange</gco:CharacterString>
@@ -240,25 +238,39 @@ MANDATED: Insert at least one thematic keyword from the WMO_CodeList dictionary<
       </gmd:descriptiveKeywords>
       <!--. end paragraph8.3 -->
       <gmd:descriptiveKeywords>
-        <gmd:MD_Keywords id="MF_ApplicationDomainCode">
+        <gmd:MD_Keywords>
           <!--. paragraph8.2.3/2.5-->
           <gmd:keyword>
             <gco:CharacterString>marine Use, renewableEnergy Use</gco:CharacterString>
           </gmd:keyword>
           <!--. end paragraph8.2.3-->
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>WMO_ApplicationDomainCode</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date></gco:Date>
+                  </gmd:date>
+                </gmd:CI_Date>
+              </gmd:date>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords id="time">
+          <gmd:keyword>
+            <gco:CharacterString>test3</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>test4</gco:CharacterString>
+          </gmd:keyword>
         </gmd:MD_Keywords>
       </gmd:descriptiveKeywords>
       <!--. paragraph8.4/2.6-->
-      <gmd:descriptiveKeywords>
-        <gmd:MD_Keywords id="place">
-          <gmd:keyword>
-            <gco:CharacterString>test1</gco:CharacterString>
-          </gmd:keyword>
-          <gmd:keyword>
-            <gco:CharacterString>test2</gco:CharacterString>
-          </gmd:keyword>
-        </gmd:MD_Keywords>
-      </gmd:descriptiveKeywords>
       <!--. end paragraph8.4 -->
       <!--. end paragraph8 -->
       <!--. MLparagraph13.1 -->
@@ -354,6 +366,20 @@ http://www.wmo.int/pages/prog/www/ois/Operational_Information/Publications/WMO_3
 
 https://www.wmo.int/pages/prog/www/ois/pub47/pub47-home.htm</gco:CharacterString>
           </gmd:specification>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>Code_Form</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date></gco:Date>
+                  </gmd:date>
+                </gmd:CI_Date>
+              </gmd:date>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
         </gmd:MD_Format>
       </gmd:distributionFormat>
       <!--.end  paragraph4.3 -->

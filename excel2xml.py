@@ -22,6 +22,7 @@ fields_row_start = 6
 # Help
 type_col = 4
 attribute_col = 5
+thesaurus_col = 6
 multivalue_col = 7
 codelist_col = 8
 att_id_col = 9
@@ -47,6 +48,7 @@ namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
               'gml': 'http://www.opengis.net/gml/3.2',
               'gts': 'http://www.isotc211.org/2005/gts',
               'gmx': 'http://www.isotc211.org/2005/gmx'}
+
 
 # Add an occurrence of an ordered tag missing from the template
 # return xpath with the appropriate order (in case where an
@@ -166,6 +168,30 @@ def par1022(tree, xpath, type, code_list):
     addMetadataElement(tree, xpath, value, 'codeListValue')
     addMetadataElement(tree, xpath, code_list, 'codeList')
 
+def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
+# TODO
+    # Name
+    xpath_list = xpath.split('/')[:-2]
+    xpath_th = "/".join(xpath_list)
+    xpath_th += '/gmd:thesaurusName/gmd:CI_Citation'
+    xpath_th_name = xpath_th + "/gmd:title/gco:CharacterString"
+    addMetadataElement(tree, xpath_th_name, help_thesaurus)
+    thesaurus_name = thesaurus.row(thesaurus_name_row)
+    thesaurus_link = thesaurus.row(thesaurus_link_row)
+    thesaurus_date = thesaurus.row(thesaurus_date_row)
+    # Looking in the thesaurus sheet to find the col
+    for i, name in enumerate(thesaurus_name):
+        if thesaurus_name == help_thesaurus:
+            thesaurus_index = i
+    # Link
+    
+    # Version
+    # Date of revision
+    xpath_date = xpath_th + '/gmd:date/gmd:CI_Date/gmd:date/gco:Date'
+    addMetadataElement(tree, xpath_date, thesaurus_date[i].value)
+
+
+
 ###
 # Excel file opening
 ###
@@ -185,9 +211,6 @@ md_fields = workbook.sheet_by_name('MD Fields')
 help = workbook.sheet_by_name('Help')
 md_gene = workbook.sheet_by_name('MD generic')
 thesaurus = workbook.sheet_by_name('MD Thesaurus')
-thesaurus_name = thesaurus.row(thesaurus_name_row)
-thesaurus_link = thesaurus.row(thesaurus_link_row)
-thesaurus_date = thesaurus.row(thesaurus_date_row)
 # ID on the 4th row of MD Fields
 # and on the 2nd col of Help
 field_id_list = md_fields.row(3)
@@ -298,6 +321,7 @@ for row in range(fields_row_start, md_fields.nrows):
         field_value = unicode(md_fields.cell_value(row, col)).strip()
         xpath = unicode(help.cell_value(col+delta, xpath_col)).strip()
         attribute = unicode(help.cell_value(col+delta, attribute_col)).strip()
+        help_thesaurus = unicode(help.cell_value(col+delta, thesaurus_col)).strip()
         multivalue = unicode(help.cell_value(col+delta, multivalue_col)).strip()
         code_list = unicode(help.cell_value(col+delta, codelist_col)).strip()
         type = unicode(help.cell_value(col+delta, type_col)).strip()
@@ -341,9 +365,11 @@ for row in range(fields_row_start, md_fields.nrows):
                 addMetadataElement(tree, xpath, code_list, 'codeList')
 
             # Add thesaurus link, date and version
+            if help_thesaurus:
+                addThesaurus(tree, xpath, help_thesaurus, thesaurus)
 
-        except Exception as e:
-            print id, e
+        #except Exception as e:
+        #    print id, e
         except ValueError:
             error.append(id)
             continue
