@@ -3,7 +3,7 @@
 <gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gfc="http://www.isotc211.org/2005/gfc" xmlns:gco="http://www.isotc211.org/2005/gco" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd">
   <!--. paragraph15.2 =15.1-->
   <gmd:fileIdentifier>
-    <gco:CharacterString>urn:x-wmo:md:int.wmo.wis::ISSL01LFPW</gco:CharacterString>
+    <gco:CharacterString>urn:x-wmo:md:int.wmo.wis::IOBA03LFPW</gco:CharacterString>
   </gmd:fileIdentifier>
   <!--. end paragraph15.2  =15.1-->
   <!--.paragraph18 -->
@@ -80,17 +80,46 @@
         <gmd:CI_Citation>
           <!--. MLparagraph1 -->
           <gmd:title>
-            <gco:CharacterString>ISSL01 (native) BUFR bulletin available from LFPW (Toulouse) for ship weather observations</gco:CharacterString>
+            <gco:CharacterString>IOBA03 (native) BUFR bulletin available from LFPW (Toulouse) for moored buoy observations</gco:CharacterString>
           </gmd:title>
           <!--. end paragraph1 -->
           <!--. paragraph10.2.1 and 10.2.2/5.2,5.3,5.4 -->
-          <gmd:date/>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>15/10/2015</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeListValue="Creation" codeList="http://wis.wmo.int/2010/metadata/version_1-2/WMOCodelists.xml#CI_DateTypeCode">Creation</gmd:CI_DateTypeCode>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>15/10/2015</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeListValue="Publication" codeList="http://wis.wmo.int/2010/metadata/version_1-2/WMOCodelists.xml#CI_DateTypeCode">Publication</gmd:CI_DateTypeCode>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>15/10/2015</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeListValue="Revision" codeList="http://wis.wmo.int/2010/metadata/version_1-2/WMOCodelists.xml#CI_DateTypeCode">Revision</gmd:CI_DateTypeCode>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
           <!--. end paragraph10.2.2 -->
           <!--.paragraph5 -->
           <gmd:identifier>
             <gmd:MD_Identifier>
               <gmd:code>
-                <gco:CharacterString>http://gisc.meteo.fr/openwis-user-portal/srv/en/iso19139.xml?uuid=urn:x-wmo:md:int.wmo.wis::ISSL01LFPW</gco:CharacterString>
+                <gco:CharacterString>http://gisc.meteo.fr/openwis-user-portal/srv/en/iso19139.xml?uuid=urn:x-wmo:md:int.wmo.wis::IOBA03LFPW</gco:CharacterString>
               </gmd:code>
             </gmd:MD_Identifier>
           </gmd:identifier>
@@ -115,17 +144,17 @@ FM 94 (BUFR, Binary Universal Form for the Representation of meteorological data
 
 (Refer to WMO-No.306 - Manual on Codes for the definition of WMO international codes)
 
----- The ISSL01 TTAAii Data Designators decode (2) as:
+---- The IOBA03 TTAAii Data Designators decode (2) as:
 
-T1T2 (IS): BUFR surface data.
+T1T2 (IO): BUFR oceanographic data.
 
-A1 (S): Marine stations.
+A1 (B): Buoy observations.
 
-A2 (L): Southern Hemisphere - 90E to 0
+A2 (A): Northern Hemisphere - 0 to 90W
 
 (2: Refer to WMO No.386 - Manual on the GTS - Attachment II.5)
 
----- Metadata may be found in WMO-No. 47 - International List of Selected, Supplementary and Auxiliary Ships.
+---- Metadata should be collected by JCOMMOPS - Available at Meteo-France on request meanwhile
 
 ---- Please review:
 
@@ -190,13 +219,11 @@ MANDATED: Insert at least one thematic keyword from the WMO_CodeList dictionary<
           <gmd:thesaurusName>
             <gmd:CI_Citation>
               <gmd:title>
-                <gco:CharacterString>WMO_CategoryCode</gco:CharacterString>
+                <gco:CharacterString>WMO_CategoryCode [http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_TopicCategoryCode]</gco:CharacterString>
               </gmd:title>
               <gmd:date>
                 <gmd:CI_Date>
-                  <gmd:date>
-                    <gco:Date></gco:Date>
-                  </gmd:date>
+                  <gmd:date/>
                   <gmd:dateType>
                     <gmd:CI_DateTypeCode codeList="http://wis.wmo.int/2012/codelists/WMOCodelists.xml#CI_DateTypeCode" codeListValue="revision">revision</gmd:CI_DateTypeCode>
                   </gmd:dateType>
@@ -243,31 +270,22 @@ MANDATED: Insert at least one thematic keyword from the WMO_CodeList dictionary<
           <gmd:keyword>
             <gco:CharacterString>marine Use, renewableEnergy Use</gco:CharacterString>
           </gmd:keyword>
-          <!--. end paragraph8.2.3-->
           <gmd:thesaurusName>
             <gmd:CI_Citation>
               <gmd:title>
-                <gco:CharacterString>WMO_ApplicationDomainCode</gco:CharacterString>
+                <gco:CharacterString>WMO_ApplicationDomainCode [http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_TopicCategoryCode]</gco:CharacterString>
               </gmd:title>
               <gmd:date>
                 <gmd:CI_Date>
-                  <gmd:date>
-                    <gco:Date></gco:Date>
-                  </gmd:date>
+                  <gmd:date/>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://wis.wmo.int/2012/codelists/WMOCodelists.xml#CI_DateTypeCode" codeListValue="revision">revision</gmd:CI_DateTypeCode>
+                  </gmd:dateType>
                 </gmd:CI_Date>
               </gmd:date>
             </gmd:CI_Citation>
           </gmd:thesaurusName>
-        </gmd:MD_Keywords>
-      </gmd:descriptiveKeywords>
-      <gmd:descriptiveKeywords>
-        <gmd:MD_Keywords id="time">
-          <gmd:keyword>
-            <gco:CharacterString>test3</gco:CharacterString>
-          </gmd:keyword>
-          <gmd:keyword>
-            <gco:CharacterString>test4</gco:CharacterString>
-          </gmd:keyword>
+          <!--. end paragraph8.2.3-->
         </gmd:MD_Keywords>
       </gmd:descriptiveKeywords>
       <!--. paragraph8.4/2.6-->
@@ -316,16 +334,16 @@ MANDATED: Insert at least one thematic keyword from the WMO_CodeList dictionary<
           <gmd:geographicElement>
             <gmd:EX_GeographicBoundingBox>
               <gmd:westBoundLongitude>
-                <gco:Decimal>0.0</gco:Decimal>
+                <gco:Decimal>-90.0</gco:Decimal>
               </gmd:westBoundLongitude>
               <gmd:eastBoundLongitude>
-                <gco:Decimal>90.0</gco:Decimal>
+                <gco:Decimal>0.0</gco:Decimal>
               </gmd:eastBoundLongitude>
               <gmd:southBoundLatitude>
-                <gco:Decimal>-90.0</gco:Decimal>
+                <gco:Decimal>23.0</gco:Decimal>
               </gmd:southBoundLatitude>
               <gmd:northBoundLatitude>
-                <gco:Decimal>-23.0</gco:Decimal>
+                <gco:Decimal>90.0</gco:Decimal>
               </gmd:northBoundLatitude>
             </gmd:EX_GeographicBoundingBox>
           </gmd:geographicElement>
@@ -335,8 +353,8 @@ MANDATED: Insert at least one thematic keyword from the WMO_CodeList dictionary<
             <gmd:EX_TemporalExtent>
               <gmd:extent>
                 <gml:TimePeriod gml:id="X123456">
-                  <gml:beginPosition/>
-                  <gml:endPosition/>
+                  <gml:beginPosition>15/10/2015</gml:beginPosition>
+                  <gml:endPosition>now</gml:endPosition>
                 </gml:TimePeriod>
               </gmd:extent>
             </gmd:EX_TemporalExtent>
@@ -369,15 +387,8 @@ https://www.wmo.int/pages/prog/www/ois/pub47/pub47-home.htm</gco:CharacterString
           <gmd:thesaurusName>
             <gmd:CI_Citation>
               <gmd:title>
-                <gco:CharacterString>Code_Form</gco:CharacterString>
+                <gco:CharacterString>Code_Form [http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_TopicCategoryCode]</gco:CharacterString>
               </gmd:title>
-              <gmd:date>
-                <gmd:CI_Date>
-                  <gmd:date>
-                    <gco:Date></gco:Date>
-                  </gmd:date>
-                </gmd:CI_Date>
-              </gmd:date>
             </gmd:CI_Citation>
           </gmd:thesaurusName>
         </gmd:MD_Format>
@@ -414,7 +425,7 @@ https://www.wmo.int/pages/prog/www/ois/pub47/pub47-home.htm</gco:CharacterString
           <gmd:onLine>
             <gmd:CI_OnlineResource>
               <gmd:linkage>
-                <gmd:URL>http://gisc.meteo.fr/openwis-user-portal/srv/en/main.home?urn=urn:x-wmo:md:int.wmo.wis::ISSL01LFPW</gmd:URL>
+                <gmd:URL>http://gisc.meteo.fr/openwis-user-portal/srv/en/main.home?urn=urn:x-wmo:md:int.wmo.wis::IOBA03LFPW</gmd:URL>
               </gmd:linkage>
               <gmd:protocol>
                 <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
