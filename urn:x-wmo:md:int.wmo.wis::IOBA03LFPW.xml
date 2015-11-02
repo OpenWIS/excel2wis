@@ -266,10 +266,13 @@ MANDATED: Insert at least one thematic keyword from the WMO_CodeList dictionary<
       <!--. end paragraph8.3 -->
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
-          <!--. paragraph8.2.3/2.5-->
           <gmd:keyword>
-            <gco:CharacterString>marine Use, renewableEnergy Use</gco:CharacterString>
+            <gco:CharacterString>marine Use</gco:CharacterString>
           </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>renewableEnergy Use</gco:CharacterString>
+          </gmd:keyword>
+          <!--. paragraph8.2.3/2.5-->
           <gmd:thesaurusName>
             <gmd:CI_Citation>
               <gmd:title>
