@@ -117,14 +117,10 @@
 					</gmd:type>
 					<gmd:thesaurusName>
 						<gmd:CI_Citation>
-							<gmd:title>
-								<gco:CharacterString>WMO_DistributionScopeCode</gco:CharacterString>
-							</gmd:title>
+                            <gmd:title/>
                             <gmd:date>
 								<gmd:CI_Date>
-									<gmd:date>
-										<gco:Date>2012-06-27</gco:Date>
-									</gmd:date>
+                                    <gmd:date/>
 									<gmd:dateType>
 										<gmd:CI_DateTypeCode codeList="http://wis.wmo.int/2012/codelists/WMOCodelists.xml#CI_DateTypeCode" codeListValue="revision">revision</gmd:CI_DateTypeCode>
 									</gmd:dateType>
@@ -285,5 +281,4 @@
       <gmd:lineage/>
     </gmd:DQ_DataQuality>
   </gmd:dataQualityInfo>
-
 </gmd:MD_Metadata>
