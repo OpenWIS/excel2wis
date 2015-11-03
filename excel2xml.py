@@ -90,9 +90,32 @@ def addMultiValue(tree, xpath, multivalue):
                 new_element.text = val.strip()
     return parent_xpath
 
+# Extension of addAttributeIdKeywords
+# Add an id attribute in the tag and with the prefix written in ID cell
+# (not only in MD_Keywords)
+def addAttributeId(tree, xpath, att_id):
+    id_param = att_id.split(";")
+    att_value = id_param[0].strip()
+    where = id_param[1].strip()
+    prefix = ""
+    if len(id_param) > 2:
+        prefix = id_param[2].strip()
+    xpath_list = xpath.split("/")[:]
+    try:
+        keyword_i = xpath_list.index(where)
+        xpath_list = xpath_list[:keyword_i+1]
+        xpath = "/".join(xpath_list)
+        element = tree.xpath(xpath, namespaces=namespaces)[0] 
+        if prefix:
+            element.attrib["{" + namespaces[prefix] + "}" + "id"] = att_value
+        else:
+            element.attrib["id"] = att_value
+    except ValueError:
+        print "WARNING : ", where, " not found in XPATH"
+
 # Special case of free Keywords
 # Add an ID attribute in MD_Keywords tag
-def addAttributeId(tree, xpath, att_id):
+def addAttributeIdKeywords(tree, xpath, att_id):
     xpath_list = xpath.split("/")[:]
     try:
         keyword_i = xpath_list.index('gmd:MD_Keywords')
@@ -353,7 +376,7 @@ for row in range(fields_row_start, md_fields.nrows):
             
             # Add attribute ID in the MD_Keywords tag for free keywords
             if att_id:
-                addAttributeId(tree, xpath, att_id)
+                addAttributeIdKeywords(tree, xpath, att_id)
 
             # Add codelist
             # special case of Date (two fields must be filled : date and dateType)
