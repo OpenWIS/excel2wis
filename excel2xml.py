@@ -6,6 +6,7 @@ import sys
 import xlrd
 from lxml import etree
 import xmltodict
+import time
 
 
 ############################
@@ -334,6 +335,7 @@ for row in range(fields_row_start, md_fields.nrows):
 
             # Change of field value
             if id == '1.3':
+                uid = field_value
                 # add tag values which are concatenation of MD generic and MD Fields elements
                 urn = concateValue(tree, field_value)
                 field_value = urn
@@ -380,7 +382,8 @@ for row in range(fields_row_start, md_fields.nrows):
     metadata_row = row + 1
     string_xml = etree.tostring(tree, pretty_print=True, encoding='utf-8')
     # filename = "metadata_row" + str(metadata_row) + ".xml"
-    filename = urn + ".xml"
+    date = time.strftime("%Y%m%d%H%M%S")
+    filename = "MD_" + uid + "_" + date + ".xml"
     with open(filename, "wb") as fo:
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         fo.write(string_xml)
