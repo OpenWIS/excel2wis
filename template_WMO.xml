@@ -194,7 +194,7 @@
 					<gmd:temporalElement>
 						<gmd:EX_TemporalExtent>
 							<gmd:extent>
-								<gml:TimePeriod gml:id="X123456">
+                                <gml:TimePeriod gml:id="timeperiod.2016-01-01Z">
 									<gml:beginPosition/>
 									<gml:endPosition/>
 								</gml:TimePeriod>
