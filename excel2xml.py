@@ -38,7 +38,8 @@ thesaurus_col_start = 2
 thesaurus_name_row = 2
 thesaurus_link_row = 3
 thesaurus_version_row = 4
-thesaurus_date_row = 5
+thesaurus_type_date_row_row = 5
+thesaurus_date_row = 6
 
 # Namespaces dict
 namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
@@ -93,25 +94,25 @@ def addMultiValue(tree, xpath, multivalue):
 # Extension of addAttributeIdKeywords
 # Add an id attribute in the tag and with the prefix written in ID cell
 # (not only in MD_Keywords)
-def addAttributeId(tree, xpath, att_id):
-    id_param = att_id.split(";")
-    att_value = id_param[0].strip()
-    where = id_param[1].strip()
-    prefix = ""
-    if len(id_param) > 2:
-        prefix = id_param[2].strip()
-    xpath_list = xpath.split("/")[:]
-    try:
-        keyword_i = xpath_list.index(where)
-        xpath_list = xpath_list[:keyword_i+1]
-        xpath = "/".join(xpath_list)
-        element = tree.xpath(xpath, namespaces=namespaces)[0] 
-        if prefix:
-            element.attrib["{" + namespaces[prefix] + "}" + "id"] = att_value
-        else:
-            element.attrib["id"] = att_value
-    except ValueError:
-        print "WARNING : ", where, " not found in XPATH"
+#def addAttributeId(tree, xpath, att_id):
+#    id_param = att_id.split(";")
+#    att_value = id_param[0].strip()
+#    where = id_param[1].strip()
+#    prefix = ""
+#    if len(id_param) > 2:
+#        prefix = id_param[2].strip()
+#    xpath_list = xpath.split("/")[:]
+#    try:
+#        keyword_i = xpath_list.index(where)
+#        xpath_list = xpath_list[:keyword_i+1]
+#        xpath = "/".join(xpath_list)
+#        element = tree.xpath(xpath, namespaces=namespaces)[0] 
+#        if prefix:
+#            element.attrib["{" + namespaces[prefix] + "}" + "id"] = att_value
+#        else:
+#            element.attrib["id"] = att_value
+#    except ValueError:
+#        print "WARNING : ", where, " not found in XPATH"
 
 # Special case of free Keywords
 # Add an ID attribute in MD_Keywords tag
@@ -194,26 +195,44 @@ def par1022(tree, xpath, type, code_list):
 
 def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
     # Name
-    xpath_list = xpath.split('/')[:-2]
-    xpath_th = "/".join(xpath_list)
-    xpath_th += '/gmd:thesaurusName/gmd:CI_Citation'
-    xpath_th_name = xpath_th + "/gmd:title/gco:CharacterString"
     thesaurus_name = thesaurus.row(thesaurus_name_row)
     thesaurus_link = thesaurus.row(thesaurus_link_row)
     thesaurus_date = thesaurus.row(thesaurus_date_row)
+    thesaurus_version = thesaurus.row(thesaurus_version_row)
     # Looking in the thesaurus sheet to find the col
     for i, name in enumerate(thesaurus_name):
-        if thesaurus_name == help_thesaurus:
-            thesaurus_index = i
-    # Link
-    addMetadataElement(tree, xpath_th_name,
-            help_thesaurus + ' [' + thesaurus_link[i].value + ']')
-    # Version
-    # Date of revision
-    date = thesaurus_date[i].value
-    if date:
-        xpath_date = xpath_th + '/gmd:date/gmd:CI_Date/gmd:date/gco:Date'
-        addMetadataElement(tree, xpath_date, date)
+        if name.value == help_thesaurus:
+            thes_i = i
+    xpath_list = xpath.split('/')[:-2]
+    xpath_th = "/".join(xpath_list)
+    # Thesaurus informations in metadata XML
+    # are different in a Format tag than in 
+    # a keyword tag
+    if 'gmd:MD_Format' in xpath:
+        print "Thesaurus format"
+        # Link
+        xpath_th_link = xpath_th + '/gmd:specification/gco:CharacterString'
+        addMetadataElement(tree, xpath_th_link,
+                thesaurus_link[thes_i].value)
+        # Version
+        xpath_th_version = xpath_th + '/gmd:version/gco:CharacterString'
+        addMetadataElement(tree, xpath_th_version,
+                thesaurus_version[thes_i].value)
+    elif 'gmd:MD_Keywords' in xpath:
+        print "Thesaurus keyword"
+        # Name
+        xpath_th += '/gmd:thesaurusName/gmd:CI_Citation'
+        xpath_th_name = xpath_th + "/gmd:title/gco:CharacterString"
+        # Link
+        addMetadataElement(tree, xpath_th_name,
+            help_thesaurus + ' [' + thesaurus_link[thes_i].value + ']')
+        # Date of revision
+        date = thesaurus_date[thes_i].value
+        if date:
+            xpath_date = xpath_th + '/gmd:date/gmd:CI_Date/gmd:date/gco:Date'
+            addMetadataElement(tree, xpath_date, date)
+    else:
+        raise ValueError
 
 ###
 # Excel file opening
