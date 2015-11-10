@@ -198,12 +198,8 @@ FM 12 (SYNOP, Report of surface observation from a fixed land station).
               </gmd:title>
               <gmd:date>
                 <gmd:CI_Date>
-                  <gmd:date>
-                    <gco:Date>2015-12-12</gco:Date>
-                  </gmd:date>
-                  <gmd:dateType>
-                    <gmd:CI_DateTypeCode codeList="http://wis.wmo.int/2012/codelists/WMOCodelists.xml#CI_DateTypeCode" codeListValue="Revision">Revision</gmd:CI_DateTypeCode>
-                  </gmd:dateType>
+                  <gmd:date/>
+                  <gmd:dateType/>
                 </gmd:CI_Date>
               </gmd:date>
             </gmd:CI_Citation>
@@ -229,9 +225,7 @@ FM 12 (SYNOP, Report of surface observation from a fixed land station).
               <gmd:date>
                 <gmd:CI_Date>
                   <gmd:date/>
-                  <gmd:dateType>
-                    <gmd:CI_DateTypeCode codeList="http://wis.wmo.int/2012/codelists/WMOCodelists.xml#CI_DateTypeCode" codeListValue=""/>
-                  </gmd:dateType>
+                  <gmd:dateType/>
                 </gmd:CI_Date>
               </gmd:date>
             </gmd:CI_Citation>
@@ -253,9 +247,7 @@ FM 12 (SYNOP, Report of surface observation from a fixed land station).
               <gmd:date>
                 <gmd:CI_Date>
                   <gmd:date/>
-                  <gmd:dateType>
-                    <gmd:CI_DateTypeCode codeList="http://wis.wmo.int/2012/codelists/WMOCodelists.xml#CI_DateTypeCode" codeListValue=""/>
-                  </gmd:dateType>
+                  <gmd:dateType/>
                 </gmd:CI_Date>
               </gmd:date>
             </gmd:CI_Citation>
