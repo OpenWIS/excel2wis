@@ -38,7 +38,7 @@ thesaurus_col_start = 2
 thesaurus_name_row = 2
 thesaurus_link_row = 3
 thesaurus_version_row = 4
-thesaurus_type_date_row_row = 5
+thesaurus_date_type_row = 5
 thesaurus_date_row = 6
 
 # Namespaces dict
@@ -198,6 +198,7 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
     thesaurus_name = thesaurus.row(thesaurus_name_row)
     thesaurus_link = thesaurus.row(thesaurus_link_row)
     thesaurus_date = thesaurus.row(thesaurus_date_row)
+    thesaurus_date_type = thesaurus.row(thesaurus_date_type_row)
     thesaurus_version = thesaurus.row(thesaurus_version_row)
     # Looking in the thesaurus sheet to find the col
     for i, name in enumerate(thesaurus_name):
@@ -231,6 +232,12 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
         if date:
             xpath_date = xpath_th + '/gmd:date/gmd:CI_Date/gmd:date/gco:Date'
             addMetadataElement(tree, xpath_date, date)
+            xpath_date_type = xpath_th + '/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode'
+            date_type = thesaurus_date_type[thes_i].value
+            addMetadataElement(tree, xpath_date_type, date_type)
+            addMetadataElement(tree, xpath_date_type, date_type, 'codeListValue')
+            #addMetadataElement(tree, xpath_date_type, code_list, 'codeList')
+
     else:
         raise ValueError
 
