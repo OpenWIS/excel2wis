@@ -97,9 +97,7 @@
 							<gmd:date>
 								<gmd:CI_Date>
                                     <gmd:date/>
-									<gmd:dateType>
-                                        <gmd:CI_DateTypeCode codeList="http://wis.wmo.int/2012/codelists/WMOCodelists.xml#CI_DateTypeCode" codeListValue=""/>
-									</gmd:dateType>
+                                    <gmd:dateType/>
 								</gmd:CI_Date>
 							</gmd:date>
 						</gmd:CI_Citation>
@@ -121,9 +119,7 @@
                             <gmd:date>
 								<gmd:CI_Date>
                                     <gmd:date/>
-									<gmd:dateType>
-                                        <gmd:CI_DateTypeCode codeList="http://wis.wmo.int/2012/codelists/WMOCodelists.xml#CI_DateTypeCode" codeListValue=""/>
-									</gmd:dateType>
+                                    <gmd:dateType/>
 								</gmd:CI_Date>
 							</gmd:date>
 						</gmd:CI_Citation>
@@ -140,9 +136,7 @@
                             <gmd:date>
 								<gmd:CI_Date>
                                     <gmd:date/>
-									<gmd:dateType>
-                                        <gmd:CI_DateTypeCode codeList="http://wis.wmo.int/2012/codelists/WMOCodelists.xml#CI_DateTypeCode" codeListValue=""/>
-									</gmd:dateType>
+                                    <gmd:dateType/>
 								</gmd:CI_Date>
 							</gmd:date>
 						</gmd:CI_Citation>

@@ -38,7 +38,8 @@ thesaurus_col_start = 2
 thesaurus_name_row = 2
 thesaurus_link_row = 3
 thesaurus_version_row = 4
-thesaurus_date_type_row = 5
+thesaurus_datype_row = 5
+thesaurus_datype_codelist_row = 7
 thesaurus_date_row = 6
 
 # Namespaces dict
@@ -198,7 +199,8 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
     thesaurus_name = thesaurus.row(thesaurus_name_row)
     thesaurus_link = thesaurus.row(thesaurus_link_row)
     thesaurus_date = thesaurus.row(thesaurus_date_row)
-    thesaurus_date_type = thesaurus.row(thesaurus_date_type_row)
+    thesaurus_datype = thesaurus.row(thesaurus_datype_row)
+    thesaurus_datype_codelist = thesaurus.row(thesaurus_datype_codelist_row)
     thesaurus_version = thesaurus.row(thesaurus_version_row)
     # Looking in the thesaurus sheet to find the col
     for i, name in enumerate(thesaurus_name):
@@ -210,7 +212,6 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
     # are different in a Format tag than in 
     # a keyword tag
     if 'gmd:MD_Format' in xpath:
-        print "Thesaurus format"
         # Link
         xpath_th_link = xpath_th + '/gmd:specification/gco:CharacterString'
         addMetadataElement(tree, xpath_th_link,
@@ -220,7 +221,6 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
         addMetadataElement(tree, xpath_th_version,
                 thesaurus_version[thes_i].value)
     elif 'gmd:MD_Keywords' in xpath:
-        print "Thesaurus keyword"
         # Name
         xpath_th += '/gmd:thesaurusName/gmd:CI_Citation'
         xpath_th_name = xpath_th + "/gmd:title/gco:CharacterString"
@@ -232,12 +232,12 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
         if date:
             xpath_date = xpath_th + '/gmd:date/gmd:CI_Date/gmd:date/gco:Date'
             addMetadataElement(tree, xpath_date, date)
-            xpath_date_type = xpath_th + '/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode'
-            date_type = thesaurus_date_type[thes_i].value
-            addMetadataElement(tree, xpath_date_type, date_type)
-            addMetadataElement(tree, xpath_date_type, date_type, 'codeListValue')
-            #addMetadataElement(tree, xpath_date_type, code_list, 'codeList')
-
+            xpath_datype = xpath_th + '/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode'
+            datype = thesaurus_datype[thes_i].value
+            addMetadataElement(tree, xpath_datype, datype)
+            addMetadataElement(tree, xpath_datype, datype, 'codeListValue')
+            datype_codelist = thesaurus_datype_codelist[thes_i].value
+            addMetadataElement(tree, xpath_datype, datype_codelist, 'codeList')
     else:
         raise ValueError
 
