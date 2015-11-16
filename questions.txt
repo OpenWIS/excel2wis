@@ -1,38 +1,21 @@
-Fred:
-- Thesaurus, où renseigner la version ?
-- MD_Format : renseignements thesaurus Code_Form ? balise thesaurusName non valide sous MD_Format
-descriptiveKeyword[3] (8.2.3) un seul ou plusieurs ?
-
-Benjamin:
-
-REMPLISSAGE
-- 2.5 : incohérence, si plusieurs éléments dans MD_Fields, il faut mettre
-mutlivalue à True dans Help
-- date au format JJ/MM/AAAA ne valide pas (/ non accepté)
-
-THESAURUS
-- Thesaurus WMO_DistributionScopeCode non présent dans le fichier excel
-  (récupéré du template de François)
-- Thesaurus Code_Form pas pour des Keywords... cas particulier à traiter différemment (pas générique) ?
-
 ELEMENTS EN DUR DANS LE CODE
+
 KEYWORDS
-- ID pour descriptionKeywords[1], [2] et [3]
-Suggestion : WMOCodeListKeywords et globalexchange (uuidref?) à mettre dans
-la colonne ID de Help ; dans ce cas il faudrait préciser la balise à laquelle
-se ratache l'attribut ID, par ex. MD_Keyword:time
 - gmd:MD_KeywordTypeCode (codeList + theme et dataCenter) dans descriptionKeywords[1], [2]
+theme (WMO_CategoryCode) et dataCenter (WMO_Distribution) associés à un thesaurus
 Suggestion : 
-Si theme ou dataCenter doivent changer : une colonne en plus dans MD_Fields avec la valeur, une ligne de plus dans Help
-avec la codeList
-- gmd:CI_DateTypeCode (codeList + revision -> tout le temps révision ou ça
-  peut changer?)
-Suggestion: ajouter une ligne dans Thesaurus (tout en haut) avec la codeList
---> pas de Thesaurus pour les mots-clés libres si éléments en dur dans le
-template
+Ajouter une ligne dans MD_Thesaurus avec une valeur non modifiable par l'utilisateur.
+Ajouter la codeList #MD_KeywordTypeCode dans MD Thesaurus (ligne - fusion de toutes les colonnes)
+
 AUTRES
+- TimePeriod ID
+Suggestion : 
+colonne ID de Help en précisant la balise à laquelle se rattache l'attribut ID
+PBM: ajouter le prefix gml qui ne convient pas pour les keywords
+Idée : préciser dans la colonne ID le préfix éventuel, séparé par ";" à la fin, si pas de préfix, rien
+(méthode faite mais pas utilisée)
+ex:X123456 ; gml:TimePeriod ; gml
+time ; gmd:MD_Keywords
+
 - CharacterSet
 - PermanentLink
-- TimePeriod ID
-
-Quel nom de fichier en sortie ?
