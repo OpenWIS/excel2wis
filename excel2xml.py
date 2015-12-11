@@ -225,8 +225,10 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
         xpath_th += '/gmd:thesaurusName/gmd:CI_Citation'
         xpath_th_name = xpath_th + "/gmd:title/gco:CharacterString"
         # Link
+        # addMetadataElement(tree, xpath_th_name,
+        #    help_thesaurus + ' [' + thesaurus_link[thes_i].value + ']')
         addMetadataElement(tree, xpath_th_name,
-            help_thesaurus + ' [' + thesaurus_link[thes_i].value + ']')
+            help_thesaurus)
         # Date of revision
         date = thesaurus_date[thes_i].value
         if date:
