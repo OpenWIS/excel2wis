@@ -456,4 +456,32 @@ FM 12 (SYNOP, Report of surface observation from a fixed land station).
       </gmd:lineage>
     </gmd:DQ_DataQuality>
   </gmd:dataQualityInfo>
+  <gmd:describes>
+    <gmx:MX_DataSet>
+      <gmd:has gco:nilReason="inapplicable"/>
+      <gmx:dataFile>
+        <gmx:MX_DataFile>
+          <gmx:fileName>
+            <gmx:FileName>^W_fr-meteofrance-Toulouse,AMSUA,rars\+noaa16\+pap.*</gmx:FileName>
+          </gmx:fileName>
+          <gmx:fileDescription>
+            <gco:CharacterString>Report of surface observation from a fixed land station _ SUPP _ DIRO : GONNEVILLE, ST GATIEN DES B, OUESSANT-STIFF, PTE DU RAZ, BRIGNOGAN, 07118, ST BRIEUC, DINARD, LAVAL-ETRONNIER, PTE DE PENMARCH, QUIMPER, ILE DE GROIX, LORIENT-LANN BIHOUE, ST NAZAIRE-</gco:CharacterString>
+          </gmx:fileDescription>
+          <gmx:fileType>
+            <gmx:MimeFileType type="application/octet-stream">application/octet-stream</gmx:MimeFileType>
+          </gmx:fileType>
+          <gmx:fileFormat>
+            <gmd:MD_Format>
+              <gmd:name>
+                <gco:CharacterString>BUFR</gco:CharacterString>
+              </gmd:name>
+              <gmd:version>
+                <gco:CharacterString>IV</gco:CharacterString>
+              </gmd:version>
+            </gmd:MD_Format>
+          </gmx:fileFormat>
+        </gmx:MX_DataFile>
+      </gmx:dataFile>
+    </gmx:MX_DataSet>
+  </gmd:describes>
 </gmd:MD_Metadata>

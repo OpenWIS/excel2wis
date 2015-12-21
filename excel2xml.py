@@ -184,6 +184,21 @@ def concateValue(tree, value):
     # Two linked tags are mandatory, cf. template (paragraph4)
     return urn
 
+def addGFNC(tree, title, xpath, value):
+    # TODO : factoriser XPATH
+    xpath_has = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmd:has'
+    xpath_fileDescription = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileDescription/gco:CharacterString'
+    xpath_fileType = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileType/gmx:MimeFileType'
+    xpath_fileFormat_name = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileFormat/gmd:MD_Format/gmd:name/gco:CharacterString'
+    xpath_fileFormat_version = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileFormat/gmd:MD_Format/gmd:version/gco:CharacterString'
+    addMetadataElement(tree, xpath_has, 'inapplicable', "{" + namespaces['gco'] + "}" + 'nilReason') 
+    addMetadataElement(tree, xpath, value) 
+    addMetadataElement(tree, xpath_fileDescription, title) 
+    addMetadataElement(tree, xpath_fileType, 'application/octet-stream') 
+    addMetadataElement(tree, xpath_fileType, 'application/octet-stream', 'type') 
+    addMetadataElement(tree, xpath_fileFormat_name, 'BUFR') 
+    addMetadataElement(tree, xpath_fileFormat_version, 'IV') 
+
 # Add dateType value and the codelist linked
 def par1022(tree, xpath, type, code_list):
     # add the date type : creation, publication or revision
@@ -385,7 +400,10 @@ for row in range(fields_row_start, md_fields.nrows):
             #print "ID", id
 
             # Change of field value
-            if xpath == '/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString':
+            # Keep title for GFNC
+            if xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString':
+                title = field_value
+            elif xpath == '/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString':
                 uid = field_value
                 # add tag values which are concatenation of MD generic and MD Fields elements
                 urn = concateValue(tree, field_value)
@@ -393,6 +411,9 @@ for row in range(fields_row_start, md_fields.nrows):
             elif xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints[2]/gco:CharacterString':
                 # Value GTSPriority in Excel file does not validate
                 field_value = 'GTSPriority' + field_value[9]
+            elif xpath == '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileName/gmx:FileName':
+                # GFNC
+                addGFNC(tree, title, xpath, field_value)
             
             # Add tags or attribute
             # Add several identical tags
