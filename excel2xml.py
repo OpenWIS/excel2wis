@@ -169,7 +169,7 @@ def addMetadataElement(tree, xpath, value, attribute='No'):
 
 # Add tags which values are a concatenation that contains the urn
 def concateValue(tree, value):
-    # Unique Identifier (value for 1.3)
+    # Unique Identifier
     urn = unicode(md_gene.cell_value(6, 2)).strip() + value
     # Location for online access
     nrow = 5 
@@ -385,12 +385,12 @@ for row in range(fields_row_start, md_fields.nrows):
             #print "ID", id
 
             # Change of field value
-            if id == '1.3':
+            if xpath == '/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString':
                 uid = field_value
                 # add tag values which are concatenation of MD generic and MD Fields elements
                 urn = concateValue(tree, field_value)
                 field_value = urn
-            elif id == '6.3':
+            elif xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints[2]/gco:CharacterString':
                 # Value GTSPriority in Excel file does not validate
                 field_value = 'GTSPriority' + field_value[9]
             
