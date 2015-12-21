@@ -185,12 +185,14 @@ def concateValue(tree, value):
     return urn
 
 def addGFNC(tree, title, xpath, value):
-    # TODO : factoriser XPATH
-    xpath_has = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmd:has'
-    xpath_fileDescription = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileDescription/gco:CharacterString'
-    xpath_fileType = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileType/gmx:MimeFileType'
-    xpath_fileFormat_name = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileFormat/gmd:MD_Format/gmd:name/gco:CharacterString'
-    xpath_fileFormat_version = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileFormat/gmd:MD_Format/gmd:version/gco:CharacterString'
+    base = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/'
+    xpath_has = base + 'gmd:has'
+    base = base + 'gmx:dataFile/gmx:MX_DataFile/'
+    xpath_fileDescription = base + 'gmx:fileDescription/gco:CharacterString'
+    xpath_fileType = base + 'gmx:fileType/gmx:MimeFileType'
+    base = base + 'gmx:fileFormat/gmd:MD_Format/'
+    xpath_fileFormat_name = base + 'gmd:name/gco:CharacterString'
+    xpath_fileFormat_version = base + 'gmd:version/gco:CharacterString'
     addMetadataElement(tree, xpath_has, 'inapplicable', "{" + namespaces['gco'] + "}" + 'nilReason') 
     addMetadataElement(tree, xpath, value) 
     addMetadataElement(tree, xpath_fileDescription, title) 
