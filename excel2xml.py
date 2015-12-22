@@ -30,6 +30,7 @@ att_id_col = 9
 xpath_col = 10
 # MD generic
 md_gene_row_start = 3
+md_gene_tag_col = 1
 md_gene_value_col = 2
 md_gene_xpath_col = 3
 md_gene_codelist_col = 4
@@ -53,6 +54,32 @@ namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
               'gmx': 'http://www.isotc211.org/2005/gmx'}
 
 
+#####################################################
+############# Adding DCPC tags ######################
+#####################################################
+# TODO : factoriser au maximum
+def addDCPClinkage(urn):
+    print "DCPC metadata - adding linkage"
+    nrow = 3
+    value_base = unicode(md_gene.cell_value(nrow, 2)).strip() + '/openwis-user-portal/retrieve/'
+    value = value_base + 'request/' + urn
+    # TODO : remove this row from excel file
+    xpath = '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL'
+    addMultiValueDCPC(tree, xpath, value, 'Request on DCPC')
+    value = value_base + 'subscribe/' + urn
+    addMultiValueDCPC(tree, xpath, value, 'Suscribe on DCPC')
+
+# Adding linkage section for DCPC MD
+def addMultiValueDCPC(tree, xpath, value, name):
+    addMultiValue(tree, xpath, value)
+    parent_xpath = '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[1]/gmd:CI_OnlineResource'
+    xpath_protocol = parent_xpath + '/gmd:protocol/gco:CharacterString'
+    xpath_name = parent_xpath + '/gmd:name/gco:CharacterString'
+    addMetadataElement(tree, xpath_protocol, 'WWW:LINK-1.0-http--link')
+    addMetadataElement(tree, xpath_name, name)
+
+##### end of adding DCPC tags ######################
+
 # Add an occurrence of an ordered tag missing from the template
 # return xpath with the appropriate order (in case where an
 # optional previous tag isn't filled)
@@ -64,6 +91,7 @@ def addMultipleElement(parent, xpath, tag):
     new_element_index = len(el_list) + 1
     xpath = xpath[:-2] + str(new_element_index) + "]"
     return xpath
+
 
 # Add several times the same tag (values comma separated)
 def addMultiValue(tree, xpath, multivalue):
@@ -176,13 +204,15 @@ def concateValue(tree, value):
     value = unicode(md_gene.cell_value(nrow, 2)).strip() + urn
     xpath = unicode(md_gene.cell_value(nrow, 3)).strip()
     addMetadataElement(tree, xpath, value)
-    # Permanent link
+    # TODO: use the function for DCPC for that element too
+    # URL permanent link
     nrow = 4
     value = unicode(md_gene.cell_value(nrow, 2)).strip() + urn
     xpath = unicode(md_gene.cell_value(nrow, 3)).strip()
     addMetadataElement(tree, xpath, value)
     # Two linked tags are mandatory, cf. template (paragraph4)
     return urn
+
 
 def addGFNC(tree, title, xpath, value):
     base = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/'
@@ -339,15 +369,23 @@ common_tree = etree.parse("./template_WMO.xml", parser)
 # Lists for WARN messages
 empty_xpath_gene = []
 error_gene = []
+DCPC = False
 for row in range(md_gene_row_start, md_gene.nrows):
+    tag = unicode(md_gene.cell_value(row, md_gene_tag_col)).strip()
     value = unicode(md_gene.cell_value(row, md_gene_value_col)).strip()
     xpath = unicode(md_gene.cell_value(row, md_gene_xpath_col)).strip()
     code_list = unicode(md_gene.cell_value(row, md_gene_codelist_col)).strip()
+    if not value: 
+        #print "> empty MD generic field row : %s ignored" % str(int(row)+1) 
+        continue    
     # empty Xpath
     if not xpath:
         empty_xpath_gene.append(row+1)
         continue
     try:
+        # DCPC use case
+        if tag.startswith('OpenWIS only') and value:
+            DCPC = True
         addMetadataElement(common_tree, xpath, value)
         if code_list:
             addMetadataElement(common_tree, xpath, value, 'codeListValue')
@@ -410,6 +448,9 @@ for row in range(fields_row_start, md_fields.nrows):
                 # add tag values which are concatenation of MD generic and MD Fields elements
                 urn = concateValue(tree, field_value)
                 field_value = urn
+                # DCPC
+                if DCPC:
+                    addDCPClinkage(urn)
             elif xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints[2]/gco:CharacterString':
                 # Value GTSPriority in Excel file does not validate
                 field_value = 'GTSPriority' + field_value[9]

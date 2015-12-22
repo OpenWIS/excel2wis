@@ -171,7 +171,8 @@
 <!--. end paragraphe6 -->					
 <!--.paragraph7 -->					
 			<gmd:topicCategory/>
-<!--. end paragraphe7 -->			
+<!--. end paragraphe7 -->
+            <gmd:environmentDescription/>			
 <!--. paragraph9.1 -->					
 			<gmd:extent>
 				<gmd:EX_Extent>
