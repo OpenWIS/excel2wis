@@ -58,10 +58,9 @@ namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
 ############# Adding DCPC tags ######################
 #####################################################
 # TODO : factoriser au maximum
-def addDCPClinkage(urn):
+def addDCPClinkage(urn, generic_dict):
     print "DCPC metadata - adding linkage"
-    nrow = 3
-    value_base = unicode(md_gene.cell_value(nrow, 2)).strip() + '/openwis-user-portal/retrieve/'
+    value_base = unicode(generic_dict['portal']['value']).strip() + '/openwis-user-portal/retrieve/'
     value = value_base + 'request/' + urn
     # TODO : remove this row from excel file ?
     xpath = '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL'
@@ -196,19 +195,17 @@ def addMetadataElement(tree, xpath, value, attribute='No'):
     return xpath
 
 # Add tags which values are a concatenation that contains the urn
-def concateValue(tree, value):
+def concateValue(tree, value, generic_dict):
     # Unique Identifier
-    urn = unicode(md_gene.cell_value(6, 2)).strip() + value
+    urn = unicode(generic_dict['Unique identifier']['value']).strip() + value
     # Location for online access
-    nrow = 5 
-    value = unicode(md_gene.cell_value(nrow, 2)).strip() + urn
-    xpath = unicode(md_gene.cell_value(nrow, 3)).strip()
+    value = unicode(generic_dict['location (address) for on-line access']['value']).strip() + urn
+    xpath = unicode(generic_dict['location (address) for on-line access']['xpath']).strip()
     addMetadataElement(tree, xpath, value)
     # TODO: use the function for DCPC for that element too?
     # URL permanent link
-    nrow = 4
-    value = unicode(md_gene.cell_value(nrow, 2)).strip() + urn
-    xpath = unicode(md_gene.cell_value(nrow, 3)).strip()
+    value = unicode(generic_dict['permanent link']['value']).strip() + urn
+    xpath = unicode(generic_dict['permanent link']['xpath']).strip()
     addMetadataElement(tree, xpath, value)
     # Two linked tags are mandatory, cf. template (paragraph4)
     return urn
@@ -384,11 +381,18 @@ common_tree = etree.parse("./template_WMO.xml", parser)
 empty_xpath_gene = []
 error_gene = []
 DCPC = False
+###
+# Create a dictionary for md_gene element
+# used in specific metadata
+###
+generic_dict = {} 
 for row in range(md_gene_row_start, md_gene.nrows):
     tag = unicode(md_gene.cell_value(row, md_gene_tag_col)).strip()
     value = unicode(md_gene.cell_value(row, md_gene_value_col)).strip()
     xpath = unicode(md_gene.cell_value(row, md_gene_xpath_col)).strip()
     code_list = unicode(md_gene.cell_value(row, md_gene_codelist_col)).strip()
+    tag_dict = {'value': value, 'xpath': xpath, 'codelist': code_list}
+    generic_dict[tag] = tag_dict
     if not value: 
         #print "> empty MD generic field row : %s ignored" % str(int(row)+1) 
         continue    
@@ -460,11 +464,11 @@ for row in range(fields_row_start, md_fields.nrows):
             elif xpath == '/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString':
                 uid = field_value
                 # add tag values which are concatenation of MD generic and MD Fields elements
-                urn = concateValue(tree, field_value)
+                urn = concateValue(tree, field_value, generic_dict)
                 field_value = urn
                 # DCPC
                 if DCPC:
-                    addDCPClinkage(urn)
+                    addDCPClinkage(urn, generic_dict)
             elif xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints[2]/gco:CharacterString':
                 # Value GTSPriority in Excel file does not validate
                 field_value = 'GTSPriority' + field_value[9]
