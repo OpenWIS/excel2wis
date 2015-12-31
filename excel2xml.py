@@ -63,7 +63,7 @@ def addDCPClinkage(urn):
     nrow = 3
     value_base = unicode(md_gene.cell_value(nrow, 2)).strip() + '/openwis-user-portal/retrieve/'
     value = value_base + 'request/' + urn
-    # TODO : remove this row from excel file
+    # TODO : remove this row from excel file ?
     xpath = '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL'
     addMultiValueDCPC(tree, xpath, value, 'Request on DCPC')
     value = value_base + 'subscribe/' + urn
@@ -204,7 +204,7 @@ def concateValue(tree, value):
     value = unicode(md_gene.cell_value(nrow, 2)).strip() + urn
     xpath = unicode(md_gene.cell_value(nrow, 3)).strip()
     addMetadataElement(tree, xpath, value)
-    # TODO: use the function for DCPC for that element too
+    # TODO: use the function for DCPC for that element too?
     # URL permanent link
     nrow = 4
     value = unicode(md_gene.cell_value(nrow, 2)).strip() + urn
@@ -301,6 +301,20 @@ except IndexError:
          + " file as the first argument")
 except IOError:
     sys.exit("Excel filename %s not found" % excel_filename)
+##
+# Option [-openwis]
+##
+try:
+    # Generate data-metadata csv file 
+    openwis = sys.argv[2]
+    if openwis == "-openwis":
+        print "Creation of a new data metadata file"
+        link_file = excel_filename.split('.')[0] + "_datalink.csv"
+        open(link_file,'w').close()
+    else:
+        openwis = ""
+except IndexError:
+    openwis = ""
 
 ###
 # Get sheets
@@ -457,6 +471,10 @@ for row in range(fields_row_start, md_fields.nrows):
             elif xpath == '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileName/gmx:FileName':
                 # GFNC
                 addGFNC(tree, title, xpath, field_value)
+                # File to link data and metadata names [option -openwis]
+                if openwis == "-openwis":
+                    with open(link_file, 'a') as f:
+                        f.write(urn + "," + field_value)
             
             # Add tags or attribute
             # Add several identical tags
