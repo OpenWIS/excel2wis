@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 3, 10.2.2, 2, 8.2, 8.3, 8.4, 13.1, 13.2.3, 10.1, 4 -->								
-<gmd:MD_Metadata xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd" 
+<gmd:MD_Metadata xsi:schemaLocation="http://www.isotc211.org/2005/gmd
+    http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd 
+    http://www.isotc211.org/2005/gmx
+    http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd" 
 				xmlns:gmd="http://www.isotc211.org/2005/gmd" 
 				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 				xmlns:xlink="http://www.w3.org/1999/xlink" 
