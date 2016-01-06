@@ -57,12 +57,10 @@ namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
 #####################################################
 ############# Adding DCPC tags ######################
 #####################################################
-# TODO : factoriser au maximum
 def addDCPClinkage(urn, generic_dict):
     print "DCPC metadata - adding linkage"
     value_base = unicode(generic_dict['portal']['value']).strip() + '/openwis-user-portal/retrieve/'
     value = value_base + 'request/' + urn
-    # TODO : remove this row from excel file ?
     xpath = '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL'
     addMultiValueDCPC(tree, xpath, value, 'Request on DCPC')
     value = value_base + 'subscribe/' + urn
@@ -202,7 +200,6 @@ def concateValue(tree, value, generic_dict):
     value = unicode(generic_dict['location (address) for on-line access']['value']).strip() + urn
     xpath = unicode(generic_dict['location (address) for on-line access']['xpath']).strip()
     addMetadataElement(tree, xpath, value)
-    # TODO: use the function for DCPC for that element too?
     # URL permanent link
     value = unicode(generic_dict['permanent link']['value']).strip() + urn
     xpath = unicode(generic_dict['permanent link']['xpath']).strip()
@@ -404,6 +401,7 @@ for row in range(md_gene_row_start, md_gene.nrows):
         # DCPC use case
         if tag.startswith('OpenWIS only') and value:
             DCPC = True
+            print "DCPC metadata"
         addMetadataElement(common_tree, xpath, value)
         if code_list:
             addMetadataElement(common_tree, xpath, value, 'codeListValue')
@@ -520,7 +518,10 @@ for row in range(fields_row_start, md_fields.nrows):
     string_xml = etree.tostring(tree, pretty_print=True, encoding='utf-8')
     # filename = "metadata_row" + str(metadata_row) + ".xml"
     date = time.strftime("%Y%m%d%H%M%S")
-    filename = "MD_" + uid + "_" + date + ".xml"
+    if DCPC == True:
+        filename = "MD_DCPC_" + uid + "_" + date + ".xml"
+    else:
+        filename = "MD_" + uid + "_" + date + ".xml"
     with open(filename, "wb") as fo:
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         fo.write(string_xml)
