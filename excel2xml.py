@@ -7,6 +7,7 @@ import xlrd
 from lxml import etree
 import xmltodict
 import time
+import datetime
 
 
 ############################
@@ -386,6 +387,9 @@ generic_dict = {}
 for row in range(md_gene_row_start, md_gene.nrows):
     tag = unicode(md_gene.cell_value(row, md_gene_tag_col)).strip()
     value = unicode(md_gene.cell_value(row, md_gene_value_col)).strip()
+    # Default datetime is utc timestamp
+    if tag == 'Metadata date' and value == '':
+        value = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     xpath = unicode(md_gene.cell_value(row, md_gene_xpath_col)).strip()
     code_list = unicode(md_gene.cell_value(row, md_gene_codelist_col)).strip()
     tag_dict = {'value': value, 'xpath': xpath, 'codelist': code_list}
