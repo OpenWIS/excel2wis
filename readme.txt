@@ -18,3 +18,8 @@ The script needs the file template_WMO.xml to run (in the same directory).
 # Options
 [-openwis]
 The script creates a file (suffixed _datalink.csv) containing urn - filename link
+
+# Note
+If you see the error “: No such file or directory” on script execution you need to remove the "Windows line ending"
+by running the following command on unix system : 
+dos2unix excel2xml.py
