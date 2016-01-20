@@ -257,12 +257,12 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
     if 'gmd:MD_Format' in xpath:
         # Link
         xpath_th_link = xpath_th + '/gmd:specification/gco:CharacterString'
-        addMetadataElement(tree, xpath_th_link,
-                thesaurus_link[thes_i].value)
+        link_u = unicode(thesaurus_link[thes_i].value).strip()
+        addMetadataElement(tree, xpath_th_link, link_u)
         # Version
         xpath_th_version = xpath_th + '/gmd:version/gco:CharacterString'
-        addMetadataElement(tree, xpath_th_version,
-                thesaurus_version[thes_i].value)
+        version_u = unicode(thesaurus_version[thes_i]).strip()
+        addMetadataElement(tree, xpath_th_version, version_u)
     elif 'gmd:MD_Keywords' in xpath:
         # Name
         xpath_th += '/gmd:thesaurusName/gmd:CI_Citation'
@@ -273,15 +273,15 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
         addMetadataElement(tree, xpath_th_name,
             help_thesaurus)
         # Date of revision
-        date = thesaurus_date[thes_i].value
+        date = unicode(thesaurus_date[thes_i].value).strip()
         if date:
             xpath_date = xpath_th + '/gmd:date/gmd:CI_Date/gmd:date/gco:Date'
             addMetadataElement(tree, xpath_date, date)
             xpath_datype = xpath_th + '/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode'
-            datype = thesaurus_datype[thes_i].value
+            datype = unicode(thesaurus_datype[thes_i].value).strip()
             addMetadataElement(tree, xpath_datype, datype)
             addMetadataElement(tree, xpath_datype, datype, 'codeListValue')
-            datype_codelist = thesaurus_datype_codelist[thes_i].value
+            datype_codelist = unicode(thesaurus_datype_codelist[thes_i].value).strip()
             addMetadataElement(tree, xpath_datype, datype_codelist, 'codeList')
     else:
         raise ValueError
