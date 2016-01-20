@@ -246,7 +246,8 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
     thesaurus_version = thesaurus.row(thesaurus_version_row)
     # Looking in the thesaurus sheet to find the col
     for i, name in enumerate(thesaurus_name):
-        if name.value == help_thesaurus:
+        name_u = unicode(name.value).strip()
+        if name_u == help_thesaurus:
             thes_i = i
     xpath_list = xpath.split('/')[:-2]
     xpath_th = "/".join(xpath_list)
