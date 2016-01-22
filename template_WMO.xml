@@ -213,8 +213,9 @@
 <!--. end paragraph6.4 -->			
 <!--. MLparagraph6.5 -->			
 			<gmd:resourceConstraints>
-				<gmd:MD_LegalConstraints >	
+				<gmd:MD_LegalConstraints >
 					<gmd:accessConstraints/>
+					<gmd:useConstraints/>
 					<gmd:otherConstraints/>
 					<gmd:otherConstraints/>
 				</gmd:MD_LegalConstraints>
@@ -296,7 +297,7 @@
 								<gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
 							</gmd:protocol>
                             <gmd:name>
-                                <gco:CharacterString>Permanent link</gco:CharacterString>
+                                <gco:CharacterString>GISC Toulouse</gco:CharacterString>
                             </gmd:name>
 						</gmd:CI_OnlineResource>
 					</gmd:onLine>
@@ -318,7 +319,7 @@
                   <gmd:date>
                     <gmd:CI_Date>
                         <gmd:date/>
-                        <gmd:dateType/>
+						<gmd:dateType><gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode></gmd:dateType>
                     </gmd:CI_Date>
                   </gmd:date>
                 </gmd:CI_Citation>
