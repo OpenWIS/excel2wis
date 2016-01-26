@@ -35,6 +35,9 @@ md_gene_tag_col = 1
 md_gene_value_col = 2
 md_gene_xpath_col = 3
 md_gene_codelist_col = 4
+md_gene_attPrefix_col = 5
+md_gene_attName_col = 6
+md_gene_attValue_col = 7
 # MD Thesaurus
 thesaurus_col_start = 2
 thesaurus_name_row = 2
@@ -90,6 +93,12 @@ def addMultipleElement(parent, xpath, tag):
     xpath = xpath[:-2] + str(new_element_index) + "]"
     return xpath
 
+def addAttribute(tree, xpath, prefix, name, value):
+    prefix = prefix.split(',')
+    name = name.split(',')
+    value = value.split(',')
+    for i, attName in enumerate(name):
+        addMetadataElement(tree, xpath, value[i], attName, prefix[i])
 
 # Add several times the same tag (values comma separated)
 def addMultiValue(tree, xpath, multivalue):
@@ -174,7 +183,7 @@ def addMissingTags(tree, xpath, tag):
     return sub_element, xpath
 
 # Add a single tag or attribute
-def addMetadataElement(tree, xpath, value, attribute='No'):
+def addMetadataElement(tree, xpath, value, attribute='No', prefix='No'):
     element = tree.xpath(xpath, namespaces=namespaces)
     # Xpath found in the template
     if len(element) != 0:
@@ -190,7 +199,10 @@ def addMetadataElement(tree, xpath, value, attribute='No'):
     if attribute == 'No':
         el.text = value
     else:
-        el.attrib[attribute] = value
+        if prefix == 'No':
+            el.attrib[attribute] = value
+        else:
+            el.attrib["{" + namespaces[prefix] + "}" + attribute] = value
     return xpath
 
 # Add tags which values are a concatenation that contains the urn
@@ -393,6 +405,9 @@ for row in range(md_gene_row_start, md_gene.nrows):
         value = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     xpath = unicode(md_gene.cell_value(row, md_gene_xpath_col)).strip()
     code_list = unicode(md_gene.cell_value(row, md_gene_codelist_col)).strip()
+    attPrefix = unicode(md_gene.cell_value(row, md_gene_attPrefix_col)).strip()
+    attName = unicode(md_gene.cell_value(row, md_gene_attName_col)).strip()
+    attValue = unicode(md_gene.cell_value(row, md_gene_attValue_col)).strip()
     tag_dict = {'value': value, 'xpath': xpath, 'codelist': code_list}
     generic_dict[tag] = tag_dict
     if not value: 
@@ -403,7 +418,7 @@ for row in range(md_gene_row_start, md_gene.nrows):
         empty_xpath_gene.append(row+1)
         continue
     try:
-        # DCPC use case
+    # DCPC use case
         if tag.startswith('OpenWIS only') and value:
             DCPC = True
             print "DCPC metadata"
@@ -411,6 +426,9 @@ for row in range(md_gene_row_start, md_gene.nrows):
         if code_list:
             addMetadataElement(common_tree, xpath, value, 'codeListValue')
             addMetadataElement(common_tree, xpath, code_list, 'codeList')
+        # Add attribute(s)
+        if attName:
+            addAttribute(common_tree, xpath, attPrefix, attName, attValue)
     except ValueError:
         error_gene.append(row+1)
         continue
