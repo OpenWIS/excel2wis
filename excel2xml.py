@@ -97,6 +97,8 @@ def addAttribute(tree, xpath, prefix, name, value):
     prefix = prefix.split(',')
     name = name.split(',')
     value = value.split(',')
+    if len(prefix) != len(name):
+        print "MD_generic : please put as many attributes prefix as attributes names"
     for i, attName in enumerate(name):
         addMetadataElement(tree, xpath, value[i], attName, prefix[i])
 
