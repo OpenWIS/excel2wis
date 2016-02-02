@@ -275,7 +275,7 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
         addMetadataElement(tree, xpath_th_link, link_u)
         # Version
         xpath_th_version = xpath_th + '/gmd:version/gco:CharacterString'
-        version_u = unicode(thesaurus_version[thes_i]).strip()
+        version_u = unicode(thesaurus_version[thes_i].value).strip()
         addMetadataElement(tree, xpath_th_version, version_u)
     elif 'gmd:MD_Keywords' in xpath:
         # Name
