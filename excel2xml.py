@@ -243,8 +243,19 @@ def addGFNC(tree, title, xpath, value):
 # Add dateType value and the codelist linked
 def par1022(tree, xpath, type, code_list):
     # add the date type : creation, publication or revision
+    # written after "Date:"
     value = type.split(':')[-1]
     xpath_list = xpath.split("/")[:-2] + ['gmd:dateType', 'gmd:CI_DateTypeCode']
+    xpath = "/".join(xpath_list)
+    addMetadataElement(tree, xpath, value)
+    addMetadataElement(tree, xpath, value, 'codeListValue')
+    addMetadataElement(tree, xpath, code_list, 'codeList')
+
+# Add dateType value and the codelist linked
+def addKeywordType(tree, xpath, type, code_list):
+    # add the Keyword type written after Keyword
+    value = type.split(':')[-1]
+    xpath_list = xpath.split("/")[:-2] + ['gmd:type', 'gmd:MD_KeywordTypeCode']
     xpath = "/".join(xpath_list)
     addMetadataElement(tree, xpath, value)
     addMetadataElement(tree, xpath, value, 'codeListValue')
@@ -522,6 +533,9 @@ for row in range(fields_row_start, md_fields.nrows):
                 # the code_list is linked to de dateType
                 par1022(tree, xpath, type, code_list)
             # normal case : addition of two attributes
+            elif type.startswith('Keyword:'):
+                # add KeywordType
+                addKeywordType(tree, xpath, type, code_list)
             elif code_list:
                 addMetadataElement(tree, xpath, field_value, 'codeListValue')
                 addMetadataElement(tree, xpath, code_list, 'codeList')
