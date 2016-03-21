@@ -74,9 +74,8 @@ def addDCPClinkage(urn, generic_dict):
 def addMultiValueDCPC(tree, xpath, value, name):
     addMultiValue(tree, xpath, value)
     parent_xpath = '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[1]/gmd:CI_OnlineResource'
-    xpath_protocol = parent_xpath + '/gmd:protocol/gco:CharacterString'
+    addOnlineResourceProtocol(tree, parent_xpath)
     xpath_name = parent_xpath + '/gmd:name/gco:CharacterString'
-    addMetadataElement(tree, xpath_protocol, 'WWW:LINK-1.0-http--link')
     addMetadataElement(tree, xpath_name, name)
 
 ##### end of adding DCPC tags ######################
@@ -222,6 +221,9 @@ def concateValue(tree, value, generic_dict):
     # Two linked tags are mandatory, cf. template (paragraph4)
     return urn
 
+def addOnlineResourceProtocol(tree, xpath_base):
+    xpath_protocol = xpath_base + '/gmd:protocol/gco:CharacterString'
+    addMetadataElement(tree, xpath_protocol, 'WWW:LINK-1.0-http--link')
 
 def addGFNC(tree, title, xpath, value):
     base = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/'
@@ -436,6 +438,9 @@ for row in range(md_gene_row_start, md_gene.nrows):
             DCPC = True
             print "DCPC metadata"
         addMetadataElement(common_tree, xpath, value)
+        if tag.startswith('Resource locator') and tag.endswith('url'):
+            xpath_base = "/".join(xpath.split('/')[:-2])
+            addOnlineResourceProtocol(common_tree, xpath_base)
         if code_list:
             addMetadataElement(common_tree, xpath, value, 'codeListValue')
             addMetadataElement(common_tree, xpath, code_list, 'codeList')
