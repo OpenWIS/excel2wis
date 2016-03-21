@@ -291,7 +291,7 @@
 								<gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
 							</gmd:protocol>
                             <gmd:name>
-                                <gco:CharacterString>GISC Toulouse</gco:CharacterString>
+                                <gco:CharacterString>Permanent link</gco:CharacterString>
                             </gmd:name>
 						</gmd:CI_OnlineResource>
 					</gmd:onLine>
