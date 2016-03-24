@@ -93,6 +93,7 @@ def addMultipleElement(parent, xpath, tag):
     xpath = xpath[:-2] + str(new_element_index) + "]"
     return xpath
 
+# Add attribute for generic metadata
 def addAttribute(tree, xpath, prefix, name, value):
     prefix = prefix.split(',')
     name = name.split(',')
@@ -102,32 +103,6 @@ def addAttribute(tree, xpath, prefix, name, value):
     for i, attName in enumerate(name):
         addMetadataElement(tree, xpath, value[i], attName, prefix[i])
 
-# Add several times the same tag (values comma separated)
-def addMultiValue(tree, xpath, multivalue):
-    xpath_list = xpath.split("/")[1:]
-    xpath = ""
-    # Rebuild of xpath to add missing tag
-    for i, tag in enumerate(xpath_list):
-        try:
-            null, xpath = addMissingTags(tree, xpath, tag)
-        except etree.XPathEvalError:
-            break
-    # MultiValue but no [] found in xpath
-    if not tag.endswith('[]'):
-        raise ValueError
-    multi_tag_list = xpath_list[i:]
-    multi_tag_list[0] = tag[:-2]
-    for val in reversed(multivalue.split(',')):
-        parent_xpath = xpath
-        for tag in multi_tag_list:
-            parent = tree.xpath(parent_xpath, namespaces=namespaces)[0]
-            prefix, tag_name = str(tag).split(':')
-            new_element = parent.makeelement("{" + namespaces[prefix] + "}" + tag_name)
-            parent.insert(0, new_element)
-            parent_xpath += "/" + tag
-            if tag == multi_tag_list[-1]:
-                new_element.text = val.strip()
-    return parent_xpath
 
 # Extension of addAttributeIdKeywords
 # Add an id attribute in the tag and with the prefix written in ID cell
@@ -185,6 +160,7 @@ def addMissingTags(tree, xpath, tag):
     return sub_element, xpath
 
 # Add a single tag or attribute
+# if the element already exists, its value is replaced
 def addMetadataElement(tree, xpath, value, attribute='No', prefix='No'):
     element = tree.xpath(xpath, namespaces=namespaces)
     # Xpath found in the template
@@ -226,9 +202,9 @@ def addOnlineResourceProtocol(tree, xpath_base):
     xpath_protocol = xpath_base + '/gmd:protocol/gco:CharacterString'
     addMetadataElement(tree, xpath_protocol, 'WWW:LINK-1.0-http--link')
 
-def addLink(tree, xpath, value):
+# Find the multievaluated element in xpath
+def findMultiTagInXpath(tree, xpath):
     xpath_list = xpath.split("/")[1:]
-    print "XPATH liste", xpath_list
     xpath = ""
     # Add missing tags before [] and identify tag where [] is
     for i, tag in enumerate(xpath_list):
@@ -236,32 +212,18 @@ def addLink(tree, xpath, value):
             null, xpath = addMissingTags(tree, xpath, tag)
         except etree.XPathEvalError:
             break
+    # MultiValue set to Yes but no [] found in xpath
     if not tag.endswith('[]'):
         raise ValueError
-    url_tag_list = xpath_list[i:]
-    url_tag_list[0] = tag[:-2]
-    # Add a new element (generic online resources are added and must not be erazed)
-    name_tag_list = ['gmd:name', 'gco:CharacterString']
-    protocol_tag_list = ['gmd:protocol', 'gco:CharacterString']
+    # List of tags to add several times
+    # starting on the tag in which [] is found
+    multi_tag_list = xpath_list[i:]
+    # suppress [] in the mutlievaluated tag
+    multi_tag_list[0] = tag[:-2]
+    return multi_tag_list, xpath
 
-    # parse name and URL
-    # number of spaces around the colon can vary
-    # "NAME URL" , "NAME URL" , "NAME URL"
-    online_list = re.split("\xbb[\xa0 ]*,[\xa0 ]*\xab", value)
-    for onliner in online_list:
-        couple = re.search("\xab?(.*)[\xa0 ]*(http://[^\xbb]*)", onliner.strip())
-        or_name = couple.group(1).strip()
-        or_URL = couple.group(2).strip()
-        parent_xpath = xpath
-        url_xpath = addMultiValueLink(tree, url_tag_list, or_URL, parent_xpath)
-        base_xpath = "/".join(url_xpath.split("/")[:-2])
-        # no balise name if name is empty
-        if or_name:
-            print "name"
-            addMultiValueLink(tree, name_tag_list, or_name, base_xpath)
-        addMultiValueLink(tree, protocol_tag_list, 'WWW:LINK-1.0-http--link', base_xpath)
-        
-def addMultiValueLink(tree, tag_list, value, parent_xpath):
+# Create a new element and set its value (even if an element with the same xpath already exists)
+def addNewElementAndValue(tree, tag_list, value, parent_xpath):
     for tag in tag_list:
         parent = tree.xpath(parent_xpath, namespaces=namespaces)[0]
         prefix, tag_name = str(tag).split(':')
@@ -271,6 +233,38 @@ def addMultiValueLink(tree, tag_list, value, parent_xpath):
         if tag == tag_list[-1]:
             new_element.text = value.strip()
     return parent_xpath
+
+# Add several times the same tag (values comma separated)
+# new element are created
+def addMultiValue(tree, xpath, multivalue):
+    multi_tag_list, xpath = findMultiTagInXpath(tree, xpath)
+    for val in reversed(multivalue.split(',')):
+        parent_xpath = xpath
+        parent_xpath = addNewElementAndValue(tree, multi_tag_list, val, parent_xpath)
+    return parent_xpath
+
+# Add link for resource locator (MD Fields)
+# and associated protocol and name (3 elements for each link)
+def addLink(tree, xpath, value):
+    url_tag_list, xpath = findMultiTagInXpath(tree, xpath)
+    # Add a new element (generic online resources are added and must not be erazed)
+    name_tag_list = ['gmd:name', 'gco:CharacterString']
+    protocol_tag_list = ['gmd:protocol', 'gco:CharacterString']
+    # parse name and URL
+    # number of spaces around the colon can vary
+    # "NAME URL" , "NAME URL" , "NAME URL"
+    online_list = re.split("\xbb[\xa0 ]*,[\xa0 ]*\xab", value)
+    for onliner in online_list:
+        couple = re.search("\xab?(.*)[\xa0 ]*(http://[^\xbb]*)", onliner.strip())
+        or_name = couple.group(1).strip()
+        or_URL = couple.group(2).strip()
+        parent_xpath = xpath
+        url_xpath = addNewElementAndValue(tree, url_tag_list, or_URL, parent_xpath)
+        base_xpath = "/".join(url_xpath.split("/")[:-2])
+        # no balise name if name is empty
+        if or_name:
+            addNewElementAndValue(tree, name_tag_list, or_name, base_xpath)
+        addNewElementAndValue(tree, protocol_tag_list, 'WWW:LINK-1.0-http--link', base_xpath)
 
 def addGFNC(tree, title, xpath, value):
     base = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/'
@@ -540,8 +534,7 @@ for row in range(fields_row_start, md_fields.nrows):
         if xpath == '':
             empty_xpath.append(id)
             continue
-        if xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL':
-            addLink(tree, xpath, field_value)
+
         try:
             #print "ID", id
 
@@ -570,9 +563,7 @@ for row in range(fields_row_start, md_fields.nrows):
 
             # Online locator
             if xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL':
-                 print "Online locator"
-            #    addLink(tree, xpath, field_value)
-
+                 addLink(tree, xpath, field_value)
             # Add tags or attribute
             # Add several identical tags
             elif multivalue == 'Yes':
