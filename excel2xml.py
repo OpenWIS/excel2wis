@@ -8,6 +8,7 @@ from lxml import etree
 import xmltodict
 import time
 import datetime
+import re
 
 
 ############################
@@ -224,6 +225,52 @@ def concateValue(tree, value, generic_dict):
 def addOnlineResourceProtocol(tree, xpath_base):
     xpath_protocol = xpath_base + '/gmd:protocol/gco:CharacterString'
     addMetadataElement(tree, xpath_protocol, 'WWW:LINK-1.0-http--link')
+
+def addLink(tree, xpath, value):
+    xpath_list = xpath.split("/")[1:]
+    print "XPATH liste", xpath_list
+    xpath = ""
+    # Add missing tags before [] and identify tag where [] is
+    for i, tag in enumerate(xpath_list):
+        try:
+            null, xpath = addMissingTags(tree, xpath, tag)
+        except etree.XPathEvalError:
+            break
+    if not tag.endswith('[]'):
+        raise ValueError
+    url_tag_list = xpath_list[i:]
+    url_tag_list[0] = tag[:-2]
+    # Add a new element (generic online resources are added and must not be erazed)
+    name_tag_list = ['gmd:name', 'gco:CharacterString']
+    protocol_tag_list = ['gmd:protocol', 'gco:CharacterString']
+
+    # parse name and URL
+    # number of spaces around the colon can vary
+    # "NAME URL" , "NAME URL" , "NAME URL"
+    online_list = re.split("\xbb[\xa0 ]*,[\xa0 ]*\xab", value)
+    for onliner in online_list:
+        couple = re.search("\xab?(.*)[\xa0 ]*(http://[^\xbb]*)", onliner.strip())
+        or_name = couple.group(1).strip()
+        or_URL = couple.group(2).strip()
+        parent_xpath = xpath
+        url_xpath = addMultiValueLink(tree, url_tag_list, or_URL, parent_xpath)
+        base_xpath = "/".join(url_xpath.split("/")[:-2])
+        # no balise name if name is empty
+        if or_name:
+            print "name"
+            addMultiValueLink(tree, name_tag_list, or_name, base_xpath)
+        addMultiValueLink(tree, protocol_tag_list, 'WWW:LINK-1.0-http--link', base_xpath)
+        
+def addMultiValueLink(tree, tag_list, value, parent_xpath):
+    for tag in tag_list:
+        parent = tree.xpath(parent_xpath, namespaces=namespaces)[0]
+        prefix, tag_name = str(tag).split(':')
+        new_element = parent.makeelement("{" + namespaces[prefix] + "}" + tag_name)
+        parent.insert(0, new_element)
+        parent_xpath += "/" + tag
+        if tag == tag_list[-1]:
+            new_element.text = value.strip()
+    return parent_xpath
 
 def addGFNC(tree, title, xpath, value):
     base = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/'
@@ -493,6 +540,8 @@ for row in range(fields_row_start, md_fields.nrows):
         if xpath == '':
             empty_xpath.append(id)
             continue
+        if xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL':
+            addLink(tree, xpath, field_value)
         try:
             #print "ID", id
 
@@ -518,10 +567,15 @@ for row in range(fields_row_start, md_fields.nrows):
                 if openwis == "-openwis":
                     with open(link_file, 'a') as f:
                         f.write(urn + "," + field_value)
-            
+
+            # Online locator
+            if xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL':
+                 print "Online locator"
+            #    addLink(tree, xpath, field_value)
+
             # Add tags or attribute
             # Add several identical tags
-            if multivalue == 'Yes':
+            elif multivalue == 'Yes':
                 xpath = addMultiValue(tree, xpath, field_value)
             # or add only one tag or attribute
             else:
