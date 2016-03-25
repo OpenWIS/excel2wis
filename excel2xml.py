@@ -247,24 +247,27 @@ def addMultiValue(tree, xpath, multivalue):
 # and associated protocol and name (3 elements for each link)
 def addLink(tree, xpath, value):
     url_tag_list, xpath = findMultiTagInXpath(tree, xpath)
+    base_tag_list = url_tag_list[:-2]
+    url_tag_list_r = url_tag_list[-2:]
     # Add a new element (generic online resources are added and must not be erazed)
-    name_tag_list = ['gmd:name', 'gco:CharacterString']
+    name_tag_list = base_tag_list + ['gmd:name', 'gco:CharacterString']
     protocol_tag_list = ['gmd:protocol', 'gco:CharacterString']
     # parse name and URL
     # number of spaces around the colon can vary
     # "NAME URL" , "NAME URL" , "NAME URL"
     online_list = re.split("\xbb[\xa0 ]*,[\xa0 ]*\xab", value)
     for onliner in online_list:
-        couple = re.search("\xab?(.*)[\xa0 ]*(http://[^\xbb]*)", onliner.strip())
+        couple = re.search("\xab?(.*)[\xa0 ]*(https?://[^\xbb]*)", onliner.strip())
         or_name = couple.group(1).strip()
         or_URL = couple.group(2).strip()
         parent_xpath = xpath
-        url_xpath = addNewElementAndValue(tree, url_tag_list, or_URL, parent_xpath)
-        base_xpath = "/".join(url_xpath.split("/")[:-2])
-        # no balise name if name is empty
         if or_name:
-            addNewElementAndValue(tree, name_tag_list, or_name, base_xpath)
+            addNewElementAndValue(tree, name_tag_list, or_name, parent_xpath)
+        else:
+            addNewElementAndValue(tree, name_tag_list, or_URL, parent_xpath)
+        base_xpath = xpath + "/" + "/".join(base_tag_list)
         addNewElementAndValue(tree, protocol_tag_list, 'WWW:LINK-1.0-http--link', base_xpath)
+        addNewElementAndValue(tree, url_tag_list_r, or_URL, base_xpath)
 
 def addGFNC(tree, title, xpath, value):
     base = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/'
