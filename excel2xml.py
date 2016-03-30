@@ -610,10 +610,7 @@ for row in range(fields_row_start, md_fields.nrows):
     string_xml = etree.tostring(tree, pretty_print=True, encoding='utf-8')
     # filename = "metadata_row" + str(metadata_row) + ".xml"
     date = time.strftime("%Y%m%d%H%M%S")
-    if DCPC == True:
-        filename = "MD_DCPC_" + uid + "_" + date + ".xml"
-    else:
-        filename = "MD_" + uid + "_" + date + ".xml"
+    filename = "MD_" + uid + "_" + date + ".xml"
     with open(filename, "wb") as fo:
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         fo.write(string_xml)
