@@ -183,7 +183,7 @@
 				<gmd:MD_Keywords>
                     <gmd:keyword/>
                     <gmd:type>
-                        <gmd:MD_KeywordTypeCode codeListValue="theme"/>
+                        <gmd:MD_KeywordTypeCode codeListValue="theme" codeList=""/>
                     </gmd:type>
 					<gmd:thesaurusName>
 						<gmd:CI_Citation>
