@@ -513,6 +513,7 @@ for row in range(fields_row_start, md_fields.nrows):
     # Lists for WARN messages
     empty_xpath = []
     error = []
+    gfnc = ""
     for col in range(fields_col_start, md_fields.ncols):
         id = unicode(field_id_list[col].value).strip()  # element ID
         # TODO : translation
@@ -559,10 +560,9 @@ for row in range(fields_row_start, md_fields.nrows):
             elif xpath == '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileName/gmx:FileName':
                 # GFNC
                 addGFNC(tree, title, xpath, field_value)
-                # File to link data and metadata names [option -openwis]
+                # File to link metadata file name to data file name [option -openwis]
                 if openwis == "-openwis":
-                    with open(link_file, 'a') as f:
-                        f.write(urn + "," + field_value)
+                    gfnc = field_value
 
             # Online locator
             if xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL':
@@ -614,6 +614,10 @@ for row in range(fields_row_start, md_fields.nrows):
     with open(filename, "wb") as fo:
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         fo.write(string_xml)
+
+    if gfnc:
+        with open(link_file, 'a') as f:
+            f.write(filename + "," + gfnc + "\n")
 
     print "\n##### File %s has been generated" % filename
 
