@@ -255,9 +255,9 @@ def addLink(tree, xpath, value):
     # parse name and URL
     # number of spaces around the colon can vary
     # "NAME URL" , "NAME URL" , "NAME URL"
-    online_list = re.split("\xbb[\xa0 ]*,[\xa0 ]*\xab", value)
+    online_list = re.split("[\"\xbb][\xa0 ]*,[\xa0 ]*[\"\xab]", value)
     for onliner in online_list:
-        couple = re.search("\xab?(.*)[\xa0 ]*(https?://[^\xbb]*)", onliner.strip())
+        couple = re.search("[\"\xab]?(.*)[\xa0 ]*(https?://[^\"\xbb]*)", onliner.strip())
         or_name = couple.group(1).strip()
         or_URL = couple.group(2).strip()
         parent_xpath = xpath
