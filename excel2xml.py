@@ -249,14 +249,15 @@ def addMultiValue(tree, xpath, multivalue):
 # Multiple link can be specified (separated by ",")
 # "name1 http://link1","name2 http://link2"
 def addLink(tree, xpath, value):
+    # Find multivalued tag xpath and list of afterwards tag to add for each occurrence
     url_tag_list, xpath = findMultiTagInXpath(tree, xpath)
-    # parent element for associated elements (link and protocol)
+    # Common tags to add once for each resource locator
     base_tag_list = url_tag_list[:-2]
-    # end of URL for name element which must be added at last
-    url_tag_list_r = url_tag_list[-2:]
-    # Add a new element (generic online resources added before and must not be erazed)
-    name_tag_list = base_tag_list + ['gmd:name', 'gco:CharacterString']
+    # tag to add for name and protocol
+    name_tag_list = ['gmd:name', 'gco:CharacterString']
     protocol_tag_list = ['gmd:protocol', 'gco:CharacterString']
+    # tag to add for URL
+    url_tag_list = url_tag_list[-2:]
     # parse name and URL
     # number of spaces around the colon can vary
     # "NAME URL" , "NAME URL" , "NAME URL"
@@ -266,14 +267,19 @@ def addLink(tree, xpath, value):
         or_name = couple.group(1).strip()
         or_URL = couple.group(2).strip()
         parent_xpath = xpath
-        # if name is not defined it takes by default the URL value
-        if or_name:
-            addNewElementAndValue(tree, name_tag_list, or_name, parent_xpath)
-        else:
-            addNewElementAndValue(tree, name_tag_list, or_URL, parent_xpath)
+        # Add new elements (generic online resources added before and must not be erazed)
+        # Add common tags (and no value)
+        addNewElementAndValue(tree, base_tag_list, '', parent_xpath)
+        # Add name (optionnal), protocol and url
+        # order is important (the last one added is the first one in XML)
         base_xpath = xpath + "/" + "/".join(base_tag_list)
+        # if name is not defined, default value is the URL
+        if or_name:
+            addNewElementAndValue(tree, name_tag_list, or_name, base_xpath)
+        else:
+            addNewElementAndValue(tree, name_tag_list, or_URL, base_xpath)
         addNewElementAndValue(tree, protocol_tag_list, 'WWW:LINK-1.0-http--link', base_xpath)
-        addNewElementAndValue(tree, url_tag_list_r, or_URL, base_xpath)
+        addNewElementAndValue(tree, url_tag_list, or_URL, base_xpath)
 
 # Add distribution Format name
 # and associated link, version, dateType, Date and DateTypeCode
@@ -289,6 +295,7 @@ def addDistributionFormat(tree, xpath, value):
     version_tag_list = ['gmd:version', 'gco:CharacterString']
     # tag to add for name
     name_tag_list = name_tag_list[-2:]
+    # Parse name, version and specification
     format_list = value.split(";")
     for format in format_list:
         val = format.split(",")
@@ -296,9 +303,13 @@ def addDistributionFormat(tree, xpath, value):
         version = val[1].strip()
         specification = val[2].strip()
         parent_xpath = xpath
+        # Add common tags (and no value)
         addNewElementAndValue(tree, base_tag_list, '', parent_xpath)
+        # Add specification (optionnal), version and name
+        # order is important (the last one added is the first one in XML)
         base_xpath = xpath + "/" + "/".join(base_tag_list)
-        addNewElementAndValue(tree, specification_tag_list, specification, base_xpath)
+        if specification:
+            addNewElementAndValue(tree, specification_tag_list, specification, base_xpath)
         addNewElementAndValue(tree, version_tag_list, version, base_xpath)
         addNewElementAndValue(tree, name_tag_list, name, base_xpath)
 
