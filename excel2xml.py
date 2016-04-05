@@ -617,7 +617,7 @@ for row in range(fields_row_start, md_fields.nrows):
 
     if gfnc:
         with open(link_file, 'a') as f:
-            f.write(filename + "," + gfnc + "\n")
+            f.write(urn + ";" + gfnc + "\n")
 
     print "\n##### File %s has been generated" % filename
 
