@@ -263,17 +263,6 @@
 <!--. paragraph4 -->								
 	<gmd:distributionInfo>
 		<gmd:MD_Distribution>
-			<gmd:distributionFormat>
-				<gmd:MD_Format>
-					<gmd:name/>
-<!--.end  paragraph4.1 -->	
-<!--. paragraph4.2 -->								
-					<gmd:version/>
-<!--.end  paragraph4.2 -->	
-<!--. paragraph4.3 -->								
-					<gmd:specification/>
-				</gmd:MD_Format>
-			</gmd:distributionFormat>
 <!--.end  paragraph4.3 -->
             <gmd:distributor>
                 <gmd:MD_Distributor>

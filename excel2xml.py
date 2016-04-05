@@ -230,7 +230,7 @@ def addNewElementAndValue(tree, tag_list, value, parent_xpath):
         new_element = parent.makeelement("{" + namespaces[prefix] + "}" + tag_name)
         parent.insert(0, new_element)
         parent_xpath += "/" + tag
-        if tag == tag_list[-1]:
+        if tag == tag_list[-1] and value:
             new_element.text = value.strip()
     return parent_xpath
 
@@ -243,13 +243,18 @@ def addMultiValue(tree, xpath, multivalue):
         parent_xpath = addNewElementAndValue(tree, multi_tag_list, val, parent_xpath)
     return parent_xpath
 
-# Add link for resource locator (MD Fields)
+# Add link for resource locator
 # and associated protocol and name (3 elements for each link)
+# protocol is static, name and link are dynamic
+# Multiple link can be specified (separated by ",")
+# "name1 http://link1","name2 http://link2"
 def addLink(tree, xpath, value):
     url_tag_list, xpath = findMultiTagInXpath(tree, xpath)
+    # parent element for associated elements (link and protocol)
     base_tag_list = url_tag_list[:-2]
+    # end of URL for name element which must be added at last
     url_tag_list_r = url_tag_list[-2:]
-    # Add a new element (generic online resources are added and must not be erazed)
+    # Add a new element (generic online resources added before and must not be erazed)
     name_tag_list = base_tag_list + ['gmd:name', 'gco:CharacterString']
     protocol_tag_list = ['gmd:protocol', 'gco:CharacterString']
     # parse name and URL
@@ -261,6 +266,7 @@ def addLink(tree, xpath, value):
         or_name = couple.group(1).strip()
         or_URL = couple.group(2).strip()
         parent_xpath = xpath
+        # if name is not defined it takes by default the URL value
         if or_name:
             addNewElementAndValue(tree, name_tag_list, or_name, parent_xpath)
         else:
@@ -268,6 +274,33 @@ def addLink(tree, xpath, value):
         base_xpath = xpath + "/" + "/".join(base_tag_list)
         addNewElementAndValue(tree, protocol_tag_list, 'WWW:LINK-1.0-http--link', base_xpath)
         addNewElementAndValue(tree, url_tag_list_r, or_URL, base_xpath)
+
+# Add distribution Format name
+# and associated link, version, dateType, Date and DateTypeCode
+# Multiple format can be specified separated by ;
+# name, version, specification are comma separated
+def addDistributionFormat(tree, xpath, value):
+    # Find multivalued tag xpath and list of afterwards tag to add for each occurrence
+    name_tag_list, xpath = findMultiTagInXpath(tree, xpath)
+    # Common tags to add once for each format
+    base_tag_list = name_tag_list[:-2]
+    # tag to add for specification and version
+    specification_tag_list = ['gmd:specification', 'gco:CharacterString']
+    version_tag_list = ['gmd:version', 'gco:CharacterString']
+    # tag to add for name
+    name_tag_list = name_tag_list[-2:]
+    format_list = value.split(";")
+    for format in format_list:
+        val = format.split(",")
+        name = val[0]
+        version = val[1]
+        specification = val[2]
+        parent_xpath = xpath
+        addNewElementAndValue(tree, base_tag_list, '', parent_xpath)
+        base_xpath = xpath + "/" + "/".join(base_tag_list)
+        addNewElementAndValue(tree, specification_tag_list, specification, base_xpath)
+        addNewElementAndValue(tree, version_tag_list, version, base_xpath)
+        addNewElementAndValue(tree, name_tag_list, name, base_xpath)
 
 def addGFNC(tree, title, xpath, value):
     base = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/'
@@ -322,19 +355,7 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
             thes_i = i
     xpath_list = xpath.split('/')[:-2]
     xpath_th = "/".join(xpath_list)
-    # Thesaurus informations in metadata XML
-    # are different in a Format tag than in 
-    # a keyword tag
-    if 'gmd:MD_Format' in xpath:
-        # Link
-        xpath_th_link = xpath_th + '/gmd:specification/gco:CharacterString'
-        link_u = unicode(thesaurus_link[thes_i].value).strip()
-        addMetadataElement(tree, xpath_th_link, link_u)
-        # Version
-        xpath_th_version = xpath_th + '/gmd:version/gco:CharacterString'
-        version_u = unicode(thesaurus_version[thes_i].value).strip()
-        addMetadataElement(tree, xpath_th_version, version_u)
-    elif 'gmd:MD_Keywords' in xpath:
+    if 'gmd:MD_Keywords' in xpath:
         # Name
         xpath_th += '/gmd:thesaurusName/gmd:CI_Citation'
         xpath_th_name = xpath_th + "/gmd:title/gco:CharacterString"
@@ -564,9 +585,14 @@ for row in range(fields_row_start, md_fields.nrows):
                 if openwis == "-openwis":
                     gfnc = field_value
 
+            # Cells with specific processing (cell value does not exactly match to XPATH tag value)
             # Online locator
             if xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL':
                  addLink(tree, xpath, field_value)
+            # Distribution Format
+            elif xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat[]/gmd:MD_Format/gmd:name/gco:CharacterString':
+                addDistributionFormat(tree, xpath, field_value)
+
             # Add tags or attribute
             # Add several identical tags
             elif multivalue == 'Yes':
