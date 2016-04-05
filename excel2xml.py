@@ -248,7 +248,7 @@ def addMultiValue(tree, xpath, multivalue):
 # protocol is static, name and link are dynamic
 # Multiple link can be specified (separated by ",")
 # "name1 http://link1","name2 http://link2"
-def addLink(tree, xpath, value):
+def addLink(tree, xpath, value, urn):
     # Find multivalued tag xpath and list of afterwards tag to add for each occurrence
     url_tag_list, xpath = findMultiTagInXpath(tree, xpath)
     # Common tags to add once for each resource locator
@@ -263,9 +263,12 @@ def addLink(tree, xpath, value):
     # "NAME URL" , "NAME URL" , "NAME URL"
     online_list = re.split("[\"\xbb][\xa0 ]*,[\xa0 ]*[\"\xab]", value)
     for onliner in online_list:
-        couple = re.search("[\"\xab]?(.*)[\xa0 ]*(https?://[^\"\xbb]*)", onliner.strip())
-        or_name = couple.group(1).strip()
-        or_URL = couple.group(2).strip()
+        try:
+            couple = re.search("[\"\xab]?(.*)[\xa0 ]*(https?://[^\"\xbb]*)", onliner.strip())
+            or_name = couple.group(1).strip()
+            or_URL = couple.group(2).strip()
+        except AttributeError:
+            sys.exit("%s Free link cell value is inconsistent with expected template" % urn)
         parent_xpath = xpath
         # Add new elements (generic online resources added before and must not be erazed)
         # Add common tags (and no value)
@@ -285,7 +288,7 @@ def addLink(tree, xpath, value):
 # and associated link, version, dateType, Date and DateTypeCode
 # Multiple format can be specified separated by ;
 # name, version, specification are comma separated
-def addDistributionFormat(tree, xpath, value):
+def addDistributionFormat(tree, xpath, value, urn):
     # Find multivalued tag xpath and list of afterwards tag to add for each occurrence
     name_tag_list, xpath = findMultiTagInXpath(tree, xpath)
     # Common tags to add once for each format
@@ -299,9 +302,12 @@ def addDistributionFormat(tree, xpath, value):
     format_list = value.split(";")
     for format in format_list:
         val = format.split(",")
-        name = val[0].strip()
-        version = val[1].strip()
-        specification = val[2].strip()
+        try:
+            name = val[0].strip()
+            version = val[1].strip()
+            specification = val[2].strip()
+        except IndexError:
+            sys.exit("%s Resource Format cell value is inconsistent with expected template" % urn)
         parent_xpath = xpath
         # Add common tags (and no value)
         addNewElementAndValue(tree, base_tag_list, '', parent_xpath)
@@ -599,10 +605,10 @@ for row in range(fields_row_start, md_fields.nrows):
             # Cells with specific processing (cell value does not exactly match to XPATH tag value)
             # Online locator
             if xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL':
-                 addLink(tree, xpath, field_value)
+                 addLink(tree, xpath, field_value, urn)
             # Distribution Format
             elif xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat[]/gmd:MD_Format/gmd:name/gco:CharacterString':
-                addDistributionFormat(tree, xpath, field_value)
+                addDistributionFormat(tree, xpath, field_value, urn)
 
             # Add tags or attribute
             # Add several identical tags
