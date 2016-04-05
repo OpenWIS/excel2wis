@@ -292,9 +292,9 @@ def addDistributionFormat(tree, xpath, value):
     format_list = value.split(";")
     for format in format_list:
         val = format.split(",")
-        name = val[0]
-        version = val[1]
-        specification = val[2]
+        name = val[0].strip()
+        version = val[1].strip()
+        specification = val[2].strip()
         parent_xpath = xpath
         addNewElementAndValue(tree, base_tag_list, '', parent_xpath)
         base_xpath = xpath + "/" + "/".join(base_tag_list)
