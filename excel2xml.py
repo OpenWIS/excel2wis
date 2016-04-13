@@ -9,6 +9,7 @@ import xmltodict
 import time
 import datetime
 import re
+import argparse
 
 
 ############################
@@ -395,31 +396,25 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
     else:
         raise ValueError
 
+# Help configuration
+parser = argparse.ArgumentParser(description='Create a WMO Core Profile 1.3 XML file from an excel file.')
+parser.add_argument('filename', metavar='filename', type=str, nargs=1, help='Excel file name containing metadata information')
+parser.add_argument('--openwis', action='store_true', help='Generate a file to link each metadata file to the data')
+args = parser.parse_args()
+excel_filename = args.filename[0]
+openwis = args.openwis
 ###
 # Excel file opening
 ###
 try:
-    excel_filename = sys.argv[1]
     workbook = xlrd.open_workbook(excel_filename)
-except IndexError:
-    sys.exit("Please put the name of the excel"
-         + " file as the first argument")
 except IOError:
     sys.exit("Excel filename %s not found" % excel_filename)
-##
-# Option [-openwis]
-##
-try:
-    # Generate data-metadata csv file 
-    openwis = sys.argv[2]
-    if openwis == "-openwis":
+
+if openwis:
         print "Creation of a new data metadata file"
         link_file = excel_filename.split('.')[0] + "_datalink.csv"
         open(link_file,'w').close()
-    else:
-        openwis = ""
-except IndexError:
-    openwis = ""
 
 ###
 # Get sheets
@@ -598,8 +593,8 @@ for row in range(fields_row_start, md_fields.nrows):
             elif xpath == '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileName/gmx:FileName':
                 # GFNC
                 addGFNC(tree, title, xpath, field_value)
-                # File to link metadata file name to data file name [option -openwis]
-                if openwis == "-openwis":
+                # File to link metadata file name to data file name [option --openwis]
+                if openwis:
                     gfnc = field_value
 
             # Cells with specific processing (cell value does not exactly match to XPATH tag value)
@@ -658,9 +653,12 @@ for row in range(fields_row_start, md_fields.nrows):
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         fo.write(string_xml)
 
-    if gfnc:
-        with open(link_file, 'a') as f:
-            f.write(urn + ";" + gfnc + "\n")
+    if openwis:
+        if gfnc:
+            with open(link_file, 'a') as f:
+                f.write(urn + ";" + gfnc + "\n")
+        else:
+            print "Section file name of excel file must be filled to generate link between data and metadata"
 
     print "\n##### File %s has been generated" % filename
 
