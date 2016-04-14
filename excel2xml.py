@@ -401,7 +401,7 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
 ###
 parser = argparse.ArgumentParser(description='Create a WMO Core Profile 1.3 XML file from an excel file.')
 parser.add_argument('filename', metavar='filename', type=str, nargs=1, help='Excel file name containing metadata information')
-parser.add_argument('--openwis', help='Template to generate XML file to insert metadata in OpenWIS')
+parser.add_argument('--openwis', metavar='OpenWIStemplate', help='template to generate ProductConfig.xml (needed to insert metadata in OpenWIS)')
 args = parser.parse_args()
 excel_filename = args.filename[0]
 openwis = args.openwis
