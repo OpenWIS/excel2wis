@@ -475,7 +475,7 @@ except Exception as e:
 # Read XML template
 ###
 parser = etree.XMLParser(remove_blank_text=True)
-common_tree = etree.parse("./template_WMO.xml", parser)
+common_tree = etree.parse("./excel2wisxml_template.xml", parser)
 
 try:
     if openwis:
