@@ -675,8 +675,8 @@ for row in range(fields_row_start, md_fields.nrows):
             # file name regex
             regex_xpath = productCache_xpath + "/regexp"
             # Insert a new productCache in the tree
-            productCaches.insert(0, productCache_tree)
             productCache_tree = copy.deepcopy(productCache) 
+            productCaches.insert(0, productCache_tree)
             # Replace values in the new productCache node
             addMetadataElement(openwis_tree, directory_xpath, directory)     
             addMetadataElement(openwis_tree, productCache_xpath, urn, "urn")     
