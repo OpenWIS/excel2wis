@@ -18,8 +18,8 @@ where Metadata-guide-record.xls is the excel file containing metadata informatio
 The script needs the file template_WMO.xml to run (in the same directory).
 
 # Options
-[--openwis]
-The script creates a file (suffixed _datalink.csv) containing urn - filename link
+[--openwis tempate_OpenWIS.xml]
+The script creates an XML file necessary to insert metadata in OpenWIS
 
 # Note
 If you see the error “: No such file or directory” on script execution you need to remove the "Windows line ending"

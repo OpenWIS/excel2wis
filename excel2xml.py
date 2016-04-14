@@ -14,7 +14,7 @@ import argparse
 
 ############################
 # Excel file configuration #
-############################
+###########################s
 # Delta between MD Fields col and the linked
 # Help row
 # ID starts on the 2nd col of MD Fields
@@ -396,13 +396,16 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
     else:
         raise ValueError
 
+###
 # Help configuration
+###
 parser = argparse.ArgumentParser(description='Create a WMO Core Profile 1.3 XML file from an excel file.')
 parser.add_argument('filename', metavar='filename', type=str, nargs=1, help='Excel file name containing metadata information')
-parser.add_argument('--openwis', action='store_true', help='Generate a file to link each metadata file to the data')
+parser.add_argument('--openwis', help='Template to generate XML file to insert metadata in OpenWIS')
 args = parser.parse_args()
 excel_filename = args.filename[0]
 openwis = args.openwis
+
 ###
 # Excel file opening
 ###
@@ -412,9 +415,8 @@ except IOError:
     sys.exit("Excel filename %s not found" % excel_filename)
 
 if openwis:
-        print "Creation of a new data metadata file"
-        link_file = excel_filename.split('.')[0] + "_datalink.csv"
-        open(link_file,'w').close()
+    link_file = "ProductConfig.xml"
+    open(link_file,'w').close()
 
 ###
 # Get sheets
@@ -474,6 +476,15 @@ except Exception as e:
 ###
 parser = etree.XMLParser(remove_blank_text=True)
 common_tree = etree.parse("./template_WMO.xml", parser)
+
+try:
+    if openwis:
+        openwis_tree = etree.parse(openwis, parser)
+        openwis_root = openwis_tree.getroot()
+        productCaches = openwis_root[0]
+        productCache = openwis_root[0][0]
+except IOError:
+    sys.exit("OpenWIS template %s not found" % openwis)
 
 ######################
 # Add generic metadata 
@@ -655,10 +666,23 @@ for row in range(fields_row_start, md_fields.nrows):
 
     if openwis:
         if gfnc:
-            with open(link_file, 'a') as f:
-                f.write(urn + ";" + gfnc + "\n")
+            # xpath of element to replace
+            # URN
+            productCache_xpath = "/ProductConfiguration/ProductCaches/ProductCache"
+            # directory
+            directory_xpath = productCache_xpath + "/directory"
+            directory = urn.split(":")[-1]
+            # file name regex
+            regex_xpath = productCache_xpath + "/regexp"
+            # Insert a new productCache in the tree
+            productCaches.insert(0, productCache_tree)
+            productCache_tree = copy.deepcopy(productCache) 
+            # Replace values in the new productCache node
+            addMetadataElement(openwis_tree, directory_xpath, directory)     
+            addMetadataElement(openwis_tree, productCache_xpath, urn, "urn")     
+            addMetadataElement(openwis_tree, regex_xpath, gfnc)     
         else:
-            print "Section file name of excel file must be filled to generate link between data and metadata"
+            sys.exit("Section file name in excel file (MD Field) must be filled to generate ProductConfig.xml")
 
     print "\n##### File %s has been generated" % filename
 
@@ -671,3 +695,13 @@ for row in range(fields_row_start, md_fields.nrows):
         if error:
             print "elements %s cannot be created, please check their xpath expression" % ", ".join(error)
     print "-----------------------------------------\n"
+    
+if openwis:
+    # Remove template node
+    template = openwis_tree.xpath("//ProductCache[@urn=\"TEMPLATE\"]")[0]
+    template.getparent().remove(template)
+    # Write ProductConfig.xml file for OpenWIS
+    openwis_xml = etree.tostring(openwis_tree, pretty_print=True, encoding='utf-8')
+    with open(link_file, 'a') as f:
+        f.write(openwis_xml)
+    print "File ProductConfig.xml has been generated\n"
