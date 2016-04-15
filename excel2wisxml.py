@@ -584,8 +584,6 @@ for row in range(fields_row_start, md_fields.nrows):
             continue
 
         try:
-            #print "ID", id
-
             # Change of field value
             # Keep title for GFNC
             if xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString':
@@ -604,14 +602,13 @@ for row in range(fields_row_start, md_fields.nrows):
             elif xpath == '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileName/gmx:FileName':
                 # GFNC
                 addGFNC(tree, title, xpath, field_value)
-                # File to link metadata file name to data file name [option --openwis]
                 if openwis:
                     gfnc = field_value
 
             # Cells with specific processing (cell value does not exactly match to XPATH tag value)
             # Online locator
             if xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL':
-                 addLink(tree, xpath, field_value, urn)
+                addLink(tree, xpath, field_value, urn)
             # Distribution Format
             elif xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat[]/gmd:MD_Format/gmd:name/gco:CharacterString':
                 addDistributionFormat(tree, xpath, field_value, urn)
@@ -632,7 +629,7 @@ for row in range(fields_row_start, md_fields.nrows):
             # special case of Date (two fields must be filled : date and dateType)
             if type.startswith('Date:'):
                 # add creation, publication or revision in dateType (paragraph 10.2.2)
-                # the code_list is linked to de dateType
+                # the code_list is linked to the dateType
                 par1022(tree, xpath, type, code_list)
             # normal case : addition of two attributes
             elif type.startswith('Keyword:'):
