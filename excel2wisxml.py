@@ -60,9 +60,9 @@ namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
               'gmx': 'http://www.isotc211.org/2005/gmx'}
 
 
-#####################################################
-############# Adding DCPC tags ######################
-#####################################################
+#########################
+# Add OpenWIS DCPC tags #
+#########################
 def addDCPClinkage(urn, generic_dict):
     print "DCPC metadata - adding linkage"
     value_base = unicode(generic_dict['portal']['value']).strip() + '/openwis-user-portal/retrieve/'
@@ -80,7 +80,7 @@ def addMultiValueDCPC(tree, xpath, value, name):
     xpath_name = parent_xpath + '/gmd:name/gco:CharacterString'
     addMetadataElement(tree, xpath_name, name)
 
-##### end of adding DCPC tags ######################
+##### end of add OpenWIS DCPC tags
 
 # Add an occurrence of an ordered tag missing from the template
 # return xpath with the appropriate order (in case where an
@@ -184,7 +184,7 @@ def addMetadataElement(tree, xpath, value, attribute='No', prefix='No'):
             el.attrib["{" + namespaces[prefix] + "}" + attribute] = value
     return xpath
 
-# Add tags which values are a concatenation that contains the urn
+# Add tags for which values are a concatenation that contains the urn
 def concateValue(tree, value, generic_dict):
     # Unique Identifier
     urn = unicode(generic_dict['Unique identifier']['value']).strip() + value
@@ -285,11 +285,11 @@ def addLink(tree, xpath, value, urn):
         addNewElementAndValue(tree, protocol_tag_list, 'WWW:LINK-1.0-http--link', base_xpath)
         addNewElementAndValue(tree, url_tag_list, or_URL, base_xpath)
 
-# Add distribution Format name
-# and associated link, version, dateType, Date and DateTypeCode
+# Add resource format name
+# and associated link, version
 # Multiple format can be specified separated by ;
 # name, version, specification are comma separated
-def addDistributionFormat(tree, xpath, value, urn):
+def addResourceFormat(tree, xpath, value, urn):
     # Find multivalued tag xpath and list of afterwards tag to add for each occurrence
     name_tag_list, xpath = findMultiTagInXpath(tree, xpath)
     # Common tags to add once for each format
@@ -401,10 +401,10 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
 ###
 parser = argparse.ArgumentParser(description='Create a WMO Core Profile 1.3 XML file from an excel file.')
 parser.add_argument('filename', metavar='filename', type=str, nargs=1, help='Excel file name containing metadata information')
-parser.add_argument('--openwis', metavar='OpenWIStemplate', help='template to generate ProductConfig.xml (needed to insert metadata in OpenWIS)')
+parser.add_argument('--MFopenwis', metavar='MFOpenWIStemplate', help='template to generate ProductConfig.xml file (needed to insert metadata at OpenWIS at Météo-France)')
 args = parser.parse_args()
 excel_filename = args.filename[0]
-openwis = args.openwis
+MFopenwis = args.MFopenwis
 
 ###
 # Excel file opening
@@ -414,7 +414,7 @@ try:
 except IOError:
     sys.exit("Excel filename %s not found" % excel_filename)
 
-if openwis:
+if MFopenwis:
     link_file = "ProductConfig.xml"
     open(link_file,'w').close()
 
@@ -478,13 +478,13 @@ parser = etree.XMLParser(remove_blank_text=True)
 common_tree = etree.parse("./excel2wisxml_template.xml", parser)
 
 try:
-    if openwis:
-        openwis_tree = etree.parse(openwis, parser)
-        openwis_root = openwis_tree.getroot()
-        productCaches = openwis_root[0]
-        productCache = openwis_root[0][0]
+    if MFopenwis:
+        MFopenwis_tree = etree.parse(MFopenwis, parser)
+        MFopenwis_root = MFopenwis_tree.getroot()
+        productCaches = MFopenwis_root[0]
+        productCache = MFopenwis_root[0][0]
 except IOError:
-    sys.exit("OpenWIS template %s not found" % openwis)
+    sys.exit("MFOpenWIS template %s not found" % MFopenwis)
 
 ######################
 # Add generic metadata 
@@ -521,10 +521,10 @@ for row in range(md_gene_row_start, md_gene.nrows):
         empty_xpath_gene.append(row+1)
         continue
     try:
-    # DCPC use case
+    # identify DCPC use case
         if tag.startswith('OpenWIS only') and value:
             DCPC = True
-            print "DCPC metadata"
+            print "OpenWIS DCPC metadata"
         addMetadataElement(common_tree, xpath, value)
         if tag.startswith('Resource locator') and tag.endswith('url'):
             xpath_base = "/".join(xpath.split('/')[:-2])
@@ -584,13 +584,13 @@ for row in range(fields_row_start, md_fields.nrows):
             continue
 
         try:
-            # Change of field value
-            # Keep title for GFNC
             if xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString':
+                # Keep title for GFNC
                 title = field_value
             elif xpath == '/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString':
                 uid = field_value
                 # add tag values which are concatenation of MD generic and MD Fields elements
+                # Keep URN value
                 urn = concateValue(tree, field_value, generic_dict)
                 field_value = urn
                 # DCPC
@@ -602,16 +602,16 @@ for row in range(fields_row_start, md_fields.nrows):
             elif xpath == '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileName/gmx:FileName':
                 # GFNC
                 addGFNC(tree, title, xpath, field_value)
-                if openwis:
+                if MFopenwis:
                     gfnc = field_value
 
             # Cells with specific processing (cell value does not exactly match to XPATH tag value)
-            # Online locator
+            # Link
             if xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL':
                 addLink(tree, xpath, field_value, urn)
-            # Distribution Format
+            # Resource Format
             elif xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat[]/gmd:MD_Format/gmd:name/gco:CharacterString':
-                addDistributionFormat(tree, xpath, field_value, urn)
+                addResourceFormat(tree, xpath, field_value, urn)
 
             # Add tags or attribute
             # Add several identical tags
@@ -661,7 +661,7 @@ for row in range(fields_row_start, md_fields.nrows):
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         fo.write(string_xml)
 
-    if openwis:
+    if MFopenwis:
         if gfnc:
             # xpath of element to replace
             # URN
@@ -675,9 +675,9 @@ for row in range(fields_row_start, md_fields.nrows):
             productCache_tree = copy.deepcopy(productCache) 
             productCaches.insert(0, productCache_tree)
             # Replace values in the new productCache node
-            addMetadataElement(openwis_tree, directory_xpath, directory)     
-            addMetadataElement(openwis_tree, productCache_xpath, urn, "urn")     
-            addMetadataElement(openwis_tree, regex_xpath, gfnc)     
+            addMetadataElement(MFopenwis_tree, directory_xpath, directory)     
+            addMetadataElement(MFopenwis_tree, productCache_xpath, urn, "urn")     
+            addMetadataElement(MFopenwis_tree, regex_xpath, gfnc)     
         else:
             sys.exit("Section file name in excel file (MD Field) must be filled to generate ProductConfig.xml")
 
@@ -693,12 +693,12 @@ for row in range(fields_row_start, md_fields.nrows):
             print "elements %s cannot be created, please check their xpath expression" % ", ".join(error)
     print "-----------------------------------------\n"
     
-if openwis:
+if MFopenwis:
     # Remove template node
-    template = openwis_tree.xpath("//ProductCache[@urn=\"TEMPLATE\"]")[0]
+    template = MFopenwis_tree.xpath("//ProductCache[@urn=\"TEMPLATE\"]")[0]
     template.getparent().remove(template)
-    # Write ProductConfig.xml file for OpenWIS
-    openwis_xml = etree.tostring(openwis_tree, pretty_print=True, encoding='utf-8')
+    # Write ProductConfig.xml file
+    MFopenwis_xml = etree.tostring(MFopenwis_tree, pretty_print=True, encoding='utf-8')
     with open(link_file, 'a') as f:
-        f.write(openwis_xml)
+        f.write(MFopenwis_xml)
     print "File ProductConfig.xml has been generated\n"
