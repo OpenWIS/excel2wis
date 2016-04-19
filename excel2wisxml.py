@@ -1,6 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# ---------------------------------------------------------------------
+# Convert an excel template document to set of XML metadata 
+# compliant with WMO Core 1.3 profile
+# Copyright (C) 2016  METEO FRANCE <gisc_support@meteo.fr>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# ---------------------------------------------------------------------
+
 import copy
 import sys
 import xlrd
@@ -397,7 +416,7 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
         raise ValueError
 
 ###
-# Help configuration
+# Script help configuration
 ###
 parser = argparse.ArgumentParser(description='Create a WMO Core Profile 1.3 XML file from an excel file.')
 parser.add_argument('filename', metavar='filename', type=str, nargs=1, help='Excel file name containing metadata information')
