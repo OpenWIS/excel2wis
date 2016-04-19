@@ -426,6 +426,17 @@ excel_filename = args.filename[0]
 MFopenwis = args.MFopenwis
 
 ###
+# Print license information
+###
+
+print "--------------------------------------------------------------"
+print "excel2wisxml  Copyright (C) 2016  METEO FRANCE"
+print "This program comes with ABSOLUTELY NO WARRANTY."
+print "This is free software, and you are welcome to redistribute it" 
+print "under certain conditions."
+print "--------------------------------------------------------------"
+
+###
 # Excel file opening
 ###
 try:
