@@ -34,8 +34,8 @@ import argparse
 ############################
 # Excel file configuration #
 ###########################s
-# Delta between MD Fields col and the linked
-# Help row
+# Delta between MD Fields col 
+# and the linked Help row
 # ID starts on the 2nd col of MD Fields
 # and on the 5th row of Help
 delta = 3
@@ -123,30 +123,6 @@ def addAttribute(tree, xpath, prefix, name, value):
     for i, attName in enumerate(name):
         addMetadataElement(tree, xpath, value[i], attName, prefix[i])
 
-
-# Extension of addAttributeIdKeywords
-# Add an id attribute in the tag and with the prefix written in ID cell
-# (not only in MD_Keywords)
-#def addAttributeId(tree, xpath, att_id):
-#    id_param = att_id.split(";")
-#    att_value = id_param[0].strip()
-#    where = id_param[1].strip()
-#    prefix = ""
-#    if len(id_param) > 2:
-#        prefix = id_param[2].strip()
-#    xpath_list = xpath.split("/")[:]
-#    try:
-#        keyword_i = xpath_list.index(where)
-#        xpath_list = xpath_list[:keyword_i+1]
-#        xpath = "/".join(xpath_list)
-#        element = tree.xpath(xpath, namespaces=namespaces)[0] 
-#        if prefix:
-#            element.attrib["{" + namespaces[prefix] + "}" + "id"] = att_value
-#        else:
-#            element.attrib["id"] = att_value
-#    except ValueError:
-#        print "WARNING : ", where, " not found in XPATH"
-
 # Special case of free Keywords
 # Add an ID attribute in MD_Keywords tag
 def addAttributeIdKeywords(tree, xpath, att_id):
@@ -222,7 +198,7 @@ def addOnlineResourceProtocol(tree, xpath_base):
     xpath_protocol = xpath_base + '/gmd:protocol/gco:CharacterString'
     addMetadataElement(tree, xpath_protocol, 'WWW:LINK-1.0-http--link')
 
-# Find the multievaluated element in xpath
+# Find the multivalued element in xpath
 def findMultiTagInXpath(tree, xpath):
     xpath_list = xpath.split("/")[1:]
     xpath = ""
@@ -339,6 +315,7 @@ def addResourceFormat(tree, xpath, value, urn):
         addNewElementAndValue(tree, version_tag_list, version, base_xpath)
         addNewElementAndValue(tree, name_tag_list, name, base_xpath)
 
+# Add GFNC file information
 def addGFNC(tree, title, xpath, value):
     base = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/'
     xpath_has = base + 'gmd:has'
@@ -356,7 +333,7 @@ def addGFNC(tree, title, xpath, value):
     addMetadataElement(tree, xpath_fileFormat_name, 'BUFR') 
     addMetadataElement(tree, xpath_fileFormat_version, 'IV') 
 
-# Add dateType value and the codelist linked
+# Add dateType value and the associated codelist
 def par1022(tree, xpath, type, code_list):
     # add the date type : creation, publication or revision
     # written after "Date:"
@@ -367,7 +344,7 @@ def par1022(tree, xpath, type, code_list):
     addMetadataElement(tree, xpath, value, 'codeListValue')
     addMetadataElement(tree, xpath, code_list, 'codeList')
 
-# Add dateType value and the codelist linked
+# Add dateType value and the associated codelist 
 def addKeywordType(tree, xpath, type, code_list):
     # add the Keyword type written after Keyword
     value = type.split(':')[-1]
@@ -377,8 +354,8 @@ def addKeywordType(tree, xpath, type, code_list):
     addMetadataElement(tree, xpath, value, 'codeListValue')
     addMetadataElement(tree, xpath, code_list, 'codeList')
 
+# Add thesaurus information
 def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
-    # Name
     thesaurus_name = thesaurus.row(thesaurus_name_row)
     thesaurus_link = thesaurus.row(thesaurus_link_row)
     thesaurus_date = thesaurus.row(thesaurus_date_row)
@@ -428,7 +405,6 @@ MFopenwis = args.MFopenwis
 ###
 # Print license information
 ###
-
 print "--------------------------------------------------------------"
 print "excel2wisxml  Copyright (C) 2016  METEO FRANCE"
 print "This program comes with ABSOLUTELY NO WARRANTY."
@@ -475,7 +451,7 @@ try:
                     + "%s doesn't match paragraphs" % field_id
                     + "number in Help sheet : %s" % help_id)
         # Check (non INSPIRE) mandatory fields
-        # TODO INSPIRE : check mandatory fields for INSPIRE ?
+        # TODO INSPIRE : check mandatory fields for INSPIRE
         mandatory = unicode(field_mandatory_list[i].value).strip()
         if mandatory == 'Mandatory' and field_id not in ['8.1', '8.2']:
             for row in range(fields_row_start, md_fields.nrows):
