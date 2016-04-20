@@ -1,14 +1,22 @@
 # Excel file shape configuration
 
-Shape of the excel file is set at the beginning of the script for the 4 sheets of the excel file :
-- _MD Fields_ (column and row start)
-- _Help_ (associate columns with their names)
-- _MD generic_ (row start and associate columns with their names)
-- _MD Thesaurus_ (col start and associate columns with their names)
+Shape of the excel file is set for the 4 sheets of the excel file :
+- delta linking _MD Fields_ columns to associated _Help_ rows
+- _MD Fields_ :
+    - column and row start
+    - mandatory row
+    - section row
+- _Help_ : associate columns with their header names
+- _MD generic_ :
+    - row start
+    - associate columns with their names
+- _MD Thesaurus_ :
+    - column start
+    - associate columns with their names
 
-Be careful always to keep this values consistent with excel file shape, particularly for the delta between _MD Fields_ columns and associated _Help_ rows.
+Be careful always to keep row numbers, column numbers, header name values and delta linking Help rows to MD Fields columns consistent with excel file.
 
-The addition of a column in _MD Field_ or a row in _Help_ does not impact this shape configuration.
+The addition of a column in _MD Field_ or a row in _Help_ does not impact shape configuration.
 
 # Read and parse excel file with xlrd
 Get sheets and check excel file shape :
