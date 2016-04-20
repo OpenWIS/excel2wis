@@ -32,42 +32,6 @@ import argparse
 
 VERSION=1.2
 
-############################
-# Excel file configuration #
-###########################s
-# Delta between MD Fields col 
-# and the linked Help row
-# ID starts on the 2nd col of MD Fields
-# and on the 5th row of Help
-delta = 3
-# MD Fields
-fields_col_start = 1
-fields_row_start = 6
-# Help
-type_col = 4
-attribute_col = 5
-thesaurus_col = 6
-multivalue_col = 7
-codelist_col = 8
-att_id_col = 9
-xpath_col = 10
-# MD generic
-md_gene_row_start = 3
-md_gene_tag_col = 1
-md_gene_value_col = 2
-md_gene_xpath_col = 3
-md_gene_codelist_col = 4
-md_gene_attPrefix_col = 5
-md_gene_attName_col = 6
-md_gene_attValue_col = 7
-# MD Thesaurus
-thesaurus_col_start = 2
-thesaurus_name_row = 2
-thesaurus_link_row = 3
-thesaurus_version_row = 4
-thesaurus_datype_row = 5
-thesaurus_datype_codelist_row = 7
-thesaurus_date_row = 6
 
 # Namespaces dict
 namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
@@ -432,11 +396,101 @@ md_fields = workbook.sheet_by_name('MD Fields')
 help = workbook.sheet_by_name('Help')
 md_gene = workbook.sheet_by_name('MD generic')
 thesaurus = workbook.sheet_by_name('MD Thesaurus')
-# ID on the 4th row of MD Fields
-# and on the 2nd col of Help
-field_id_list = md_fields.row(3)
-field_mandatory_list = md_fields.row(4)
-help_id_list = help.col(1)
+
+
+############################
+# Excel file configuration #
+############################
+
+# Delta between MD Fields col 
+# and the linked Help row
+# ID starts on the 2nd col of MD Fields
+# and on the 5th row of Help
+delta = 3
+
+# MD Fields column and row start
+fields_col_start = 1
+fields_row_start = 6
+fields_row_mandatory = 4
+# Section number row
+fields_row_section = 3
+
+# Help
+# Associate columns and headers
+# Ensure compatibility with former excel version where
+# thesaurus name and multivalue are not on the header row
+thesaurus_col = 6
+multivalue_col = 7
+
+help_header = help.row(2) 
+for i, head in enumerate(help_header):
+    head = head.value.strip().lower()
+    if head == 'type':
+        type_col = i
+    elif head == 'attribute':
+        attribute_col = i
+    elif head == 'thesaurus name':
+        thesaurus_col = i
+    elif head == 'multi value':
+        multivalue_col = i
+    elif head == 'codelist':
+        codelist_col = i
+    elif head == 'id':
+        att_id_col = i
+    elif head == 'xpath':
+        xpath_col = i
+    elif head == 'section':
+        section_col = i
+
+# MD generic row start
+md_gene_row_start = 3
+# Associate columns and headers
+md_gene_header = md_gene.row(2) 
+for i, head in enumerate(md_gene_header):
+    head = head.value.strip().lower()
+    if head == 'tag':
+        md_gene_tag_col = i
+    elif head == 'value':
+        md_gene_value_col = i
+    elif head == 'xpath':
+        md_gene_xpath_col = i
+    elif head == 'codelist':
+        md_gene_codelist_col = i
+    elif head == 'attribut: prefix':
+        md_gene_attPrefix_col = i
+    elif head == 'attribut: name':
+        md_gene_attName_col = i
+    elif head == 'attribut: value':
+        md_gene_attValue_col = i
+
+# MD Thesaurus column start
+thesaurus_col_start = 2
+# Associate columns and headers
+thesaurus_header = thesaurus.col(1) 
+print thesaurus_header
+for i, head in enumerate(thesaurus_header):
+    head = head.value.strip().lower()
+    if head == 'name':
+        thesaurus_name_row = i 
+    elif head == 'link':
+        thesaurus_link_row = i 
+    elif head == 'version':
+        thesaurus_version_row = i 
+    elif head == 'date type':
+        thesaurus_datype_row = i 
+    elif head == 'date':
+        thesaurus_date_row = i 
+    elif head == 'date type codelist':
+        thesaurus_datype_codelist_row = i 
+
+# Get sections numbers lists for Help and MD Fields
+field_id_list = md_fields.row(fields_row_section)
+help_id_list = help.col(section_col)
+
+# Get mandatory list for MD Fields
+field_mandatory_list = md_fields.row(fields_row_mandatory)
+
+### End of excel file shape configuration
 
 ###
 # Track FATAL ERRORS
