@@ -30,6 +30,7 @@ import datetime
 import re
 import argparse
 
+VERSION=1.2
 
 ############################
 # Excel file configuration #
