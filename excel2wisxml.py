@@ -30,7 +30,7 @@ import datetime
 import re
 import argparse
 
-VERSION=1.2
+VERSION=1.3
 
 
 # Namespaces dict
