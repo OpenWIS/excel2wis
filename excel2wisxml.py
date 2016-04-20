@@ -398,9 +398,9 @@ md_gene = workbook.sheet_by_name('MD generic')
 thesaurus = workbook.sheet_by_name('MD Thesaurus')
 
 
-############################
-# Excel file configuration #
-############################
+##################################
+# Excel file shape configuration #
+##################################
 
 # Delta between MD Fields col 
 # and the linked Help row
@@ -467,7 +467,6 @@ for i, head in enumerate(md_gene_header):
 thesaurus_col_start = 2
 # Associate columns and headers
 thesaurus_header = thesaurus.col(1) 
-print thesaurus_header
 for i, head in enumerate(thesaurus_header):
     head = head.value.strip().lower()
     if head == 'name':
