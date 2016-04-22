@@ -417,11 +417,6 @@ fields_row_section = 3
 
 # Help
 # Associate columns and headers
-# Ensure compatibility with former excel version where
-# thesaurus name and multivalue are not on the header row
-thesaurus_col = 6
-multivalue_col = 7
-
 help_header = help.row(2) 
 for i, head in enumerate(help_header):
     head = head.value.strip().lower()
