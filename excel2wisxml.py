@@ -30,8 +30,8 @@ import datetime
 import re
 import argparse
 
-VERSION=1.3
-
+VERSION="1.4"
+EXCEL_FIRST_COMPATIBLE_VERSION="2.1"
 
 # Namespaces dict
 namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
@@ -90,14 +90,14 @@ def addAttribute(tree, xpath, prefix, name, value):
 
 # Special case of free Keywords
 # Add an ID attribute in MD_Keywords tag
-def addAttributeIdKeywords(tree, xpath, att_id):
+def addAttributeIdKeywords(tree, xpath, attribute, att_id):
     xpath_list = xpath.split("/")[:]
     try:
         keyword_i = xpath_list.index('gmd:MD_Keywords')
         xpath_list = xpath_list[:keyword_i+1]
         xpath = "/".join(xpath_list)
         element = tree.xpath(xpath, namespaces=namespaces)[0] 
-        element.attrib['id'] = att_id
+        element.attrib[attribute] = att_id
     except ValueError:
         print "WARNING : MD_Keywords not found in XPATH"
 
@@ -435,7 +435,7 @@ for i, head in enumerate(help_header):
         multivalue_col = i
     elif head == 'codelist':
         codelist_col = i
-    elif head == 'id':
+    elif head == 'attribute value':
         att_id_col = i
     elif head == 'xpath':
         xpath_col = i
@@ -578,7 +578,16 @@ for row in range(md_gene_row_start, md_gene.nrows):
         continue    
     # empty Xpath
     if not xpath:
-        empty_xpath_gene.append(row+1)
+        # Get excel version
+        if tag.startswith('ExcelVersion'):
+            excel_version = value
+            # Check if excel version is compatible with script version
+            int_excel_version = int(excel_version.replace(".",""))
+            int_excel_compatible_version = int(EXCEL_FIRST_COMPATIBLE_VERSION.replace(".",""))
+            if int_excel_version < int_excel_compatible_version:
+                sys.exit("Metadata excel file version %s is not compatible with this script. Please use version %s. " % (excel_version,EXCEL_FIRST_COMPATIBLE_VERSION))
+        else:
+            empty_xpath_gene.append(row+1)
         continue
     try:
     # identify DCPC use case
@@ -683,7 +692,7 @@ for row in range(fields_row_start, md_fields.nrows):
             
             # Add attribute ID in the MD_Keywords tag for free keywords
             if att_id:
-                addAttributeIdKeywords(tree, xpath, att_id)
+                addAttributeIdKeywords(tree, xpath, attribute, att_id)
 
             # Add codelist
             # special case of Date (two fields must be filled : date and dateType)
