@@ -30,7 +30,7 @@ import datetime
 import re
 import argparse
 
-VERSION="1.4"
+VERSION="1.5"
 EXCEL_FIRST_COMPATIBLE_VERSION="2.1"
 
 # Namespaces dict
@@ -362,7 +362,7 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
 ###
 parser = argparse.ArgumentParser(description='Create a WMO Core Profile 1.3 XML file from an excel file.')
 parser.add_argument('filename', metavar='filename', type=str, nargs=1, help='Excel file name containing metadata information')
-parser.add_argument('--MFopenwis', metavar='MFOpenWIStemplate', help='template to generate ProductConfig.xml file (needed to insert metadata at OpenWIS at Météo-France)')
+parser.add_argument('--MFopenwis', action='store_true', help='option to generate a CSV file containing metadata URNs and associated data file name')
 args = parser.parse_args()
 excel_filename = args.filename[0]
 MFopenwis = args.MFopenwis
@@ -386,7 +386,8 @@ except IOError:
     sys.exit("Excel filename %s not found" % excel_filename)
 
 if MFopenwis:
-    link_file = "ProductConfig.xml"
+    date = time.strftime("%Y%m%d%H%M%S")
+    link_file = excel_filename[:-4] + "_" + date + ".csv"
     open(link_file,'w').close()
 
 ###
@@ -532,20 +533,13 @@ except Exception as e:
 parser = etree.XMLParser(remove_blank_text=True)
 common_tree = etree.parse("./excel2wisxml_template.xml", parser)
 
-try:
-    if MFopenwis:
-        MFopenwis_tree = etree.parse(MFopenwis, parser)
-        MFopenwis_root = MFopenwis_tree.getroot()
-        productCaches = MFopenwis_root[0]
-        productCache = MFopenwis_root[0][0]
-except IOError:
-    sys.exit("MFOpenWIS template %s not found" % MFopenwis)
-
-######################
+#######################
 # Add generic metadata 
 # MD generic sheet
 #######################
 
+# Option --MFopenwis ERROR message
+option_error = False
 # Lists for WARN messages
 empty_xpath_gene = []
 error_gene = []
@@ -611,6 +605,11 @@ if empty_xpath_gene or error_gene:
     if error_gene:
         print "elements on row(s) %s cannot be created, please check their xpath expression" % ", ".join([str(x) for x in error_gene])
     print "--------------------------------\n"
+    
+# Print version number in CSV file
+if MFopenwis:
+    with open(link_file, 'a') as f:
+        f.write("# EXCEL VERSION %s" % excel_version)
 
 #######################
 # Add specific metadata
@@ -667,7 +666,7 @@ for row in range(fields_row_start, md_fields.nrows):
                 # GFNC
                 addGFNC(tree, title, xpath, field_value)
                 if MFopenwis:
-                    gfnc = field_value
+                        gfnc = field_value
 
             # Cells with specific processing (cell value does not exactly match to XPATH tag value)
             # Link
@@ -727,23 +726,11 @@ for row in range(fields_row_start, md_fields.nrows):
 
     if MFopenwis:
         if gfnc:
-            # xpath of element to replace
-            # URN
-            productCache_xpath = "/ProductConfiguration/ProductCaches/ProductCache"
-            # directory
-            directory_xpath = productCache_xpath + "/directory"
-            directory = urn.split(":")[-1]
-            # file name regex
-            regex_xpath = productCache_xpath + "/regexp"
-            # Insert a new productCache in the tree
-            productCache_tree = copy.deepcopy(productCache) 
-            productCaches.insert(0, productCache_tree)
-            # Replace values in the new productCache node
-            addMetadataElement(MFopenwis_tree, directory_xpath, directory)     
-            addMetadataElement(MFopenwis_tree, productCache_xpath, urn, "urn")     
-            addMetadataElement(MFopenwis_tree, regex_xpath, gfnc)     
+            with open(link_file, 'a') as f:
+                f.write("\n\"" + urn + "\" ; \"" + gfnc + "\"")
         else:
-            sys.exit("Section file name in excel file (MD Field) must be filled to generate ProductConfig.xml")
+            option_error = True
+            
 
     print "\n##### File %s has been generated" % filename
 
@@ -758,11 +745,7 @@ for row in range(fields_row_start, md_fields.nrows):
     print "-----------------------------------------\n"
     
 if MFopenwis:
-    # Remove template node
-    template = MFopenwis_tree.xpath("//ProductCache[@urn=\"TEMPLATE\"]")[0]
-    template.getparent().remove(template)
-    # Write ProductConfig.xml file
-    MFopenwis_xml = etree.tostring(MFopenwis_tree, pretty_print=True, encoding='utf-8')
-    with open(link_file, 'a') as f:
-        f.write(MFopenwis_xml)
-    print "File ProductConfig.xml has been generated\n"
+    if option_error:
+        print "ERROR option --MFopenwis : MD Fields file name must be filled for each metadata in excel file"
+    else:    
+        print "CSV file %s has been generated\n" % link_file
