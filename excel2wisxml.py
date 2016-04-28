@@ -29,6 +29,7 @@ import time
 import datetime
 import re
 import argparse
+import codecs
 
 VERSION="1.5"
 EXCEL_FIRST_COMPATIBLE_VERSION="2.1"
@@ -388,7 +389,7 @@ except IOError:
 if MFopenwis:
     date = time.strftime("%Y%m%d%H%M%S")
     link_file = excel_filename[:-4] + "_" + date + ".csv"
-    open(link_file,'w').close()
+    codecs.open(link_file,'w', 'utf-8').close()
 
 ###
 # Get sheets
@@ -608,7 +609,7 @@ if empty_xpath_gene or error_gene:
     
 # Print version number in CSV file
 if MFopenwis:
-    with open(link_file, 'a') as f:
+    with codecs.open(link_file, 'a', 'utf-8') as f:
         f.write("# EXCEL VERSION %s" % excel_version)
 
 #######################
@@ -726,7 +727,7 @@ for row in range(fields_row_start, md_fields.nrows):
 
     if MFopenwis:
         if gfnc:
-            with open(link_file, 'a') as f:
+            with codecs.open(link_file, 'a', 'utf-8') as f:
                 f.write("\n\"" + urn + "\" ; \"" + gfnc + "\"")
         else:
             option_error = True
