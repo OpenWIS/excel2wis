@@ -8,14 +8,12 @@ The script has been tested with python 2.6.6
 # Librairies
 4 python libraries must be installed to run the script:
 - xlrd 0.9.4
-- xmltodict 0.9.2
-- xlwt 1.0.0 
 - argparse 7.1.2
 
 # Run the script
 ./excel2wisxml.py Metadata-guide-record.xls
 where Metadata-guide-record.xls is the excel file containing metadata information
-The script needs the file excel2wisxml_template.xml to run (in the same directory).
+The script needs the file excel2wisxml_template.xml and excel2wisxmlutils.py to run (in the same directory).
 
 # Options
 [--MFopenwis]
