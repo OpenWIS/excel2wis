@@ -71,9 +71,23 @@ def addMultiValueDCPC(tree, xpath, value, name):
 # return xpath with the appropriate order (in case where an
 # optional previous tag isn't filled)
 def addMultipleElement(parent, xpath, tag):
-    prefix, tag_name = str(tag).split(':')
-    el_list = parent.findall("{" + namespaces[prefix] + "}" + tag_name[:-3])
-    new_element = parent.makeelement("{" + namespaces[prefix] + "}" + tag_name[:-3])
+    tagsplit = str(tag).split(':')
+    # tag name and prefix
+    if len(tagsplit) == 2:
+        prefix, tag_name = tagsplit
+        el_list = parent.findall("{" + namespaces[prefix] + "}" + tag_name[:-3])
+        new_element = parent.makeelement("{" + namespaces[prefix] + "}" + tag_name[:-3])
+    # no prefix
+    else:
+        tag_name = str(tag)
+        el_list = parent.findall(tag_name[:-3])
+        new_element = parent.makeelement(tag_name[:-3])
+    # A similar tag already exists in tree
+    if el_list:
+        el_list[-1].addnext(new_element)
+    # New tag
+    else:
+        parent.append(new_element)
     el_list[-1].addnext(new_element)
     new_element_index = len(el_list) + 1
     xpath = xpath[:-2] + str(new_element_index) + "]"
@@ -115,10 +129,15 @@ def addMissingTags(tree, xpath, tag):
         # Add an occurrence of an ordered tag which is not in the template
         if xpath.endswith(']'):
             xpath = addMultipleElement(parent, xpath, tag)
-            sub_element = tree.xpath(xpath, namespaces=namespaces)
+            sub_element = tree.xpath(xpath, namespaces=namespaces)[0]
         else:
-            prefix, tag_name = str(tag).split(':')
-            sub_element = etree.SubElement(parent, "{" + namespaces[prefix] + "}" + tag_name)
+            tagsplit = str(tag).split(':')
+            if len(tagsplit) == 2:
+                prefix, tag_name = tagsplit
+                sub_element = etree.SubElement(parent, "{" + namespaces[prefix] + "}" + tag_name)
+            else:
+                tag_name = str(tag)
+                sub_element = etree.SubElement(parent, tag_name)
     return sub_element, xpath
 
 # Add a single tag or attribute
