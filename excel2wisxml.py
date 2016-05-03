@@ -415,7 +415,7 @@ if empty_xpath_gene or error_gene:
 # Print version number in CSV file
 if MFopenwis:
     with codecs.open(link_file, 'a', 'utf-8') as f:
-        f.write("# EXCEL VERSION %s" % excel_version)
+        f.write("# EXCEL_VERSION=%s" % excel_version)
 
 #######################
 # Add specific metadata
