@@ -28,6 +28,7 @@ import time
 import datetime
 import argparse
 import codecs
+import re
 from excel2wisxmlutils import *
 
 VERSION="1.6"
@@ -56,6 +57,46 @@ def addMultiValueDCPC(tree, xpath, value, name):
 
 ##### end of add OpenWIS DCPC tags
 
+# Add link for resource locator
+# and associated protocol and name (3 elements for each link)
+# protocol is static, name and link are dynamic
+# Multiple link can be specified (separated by ",")
+# "name1 http://link1","name2 http://link2"
+def addLink(tree, xpath, value, urn):
+    # Find multivalued tag xpath and list of afterwards tag to add for each occurrence
+    url_tag_list, xpath = findMultiTagInXpath(tree, xpath)
+    # Common tags to add once for each resource locator
+    base_tag_list = url_tag_list[:-2]
+    # tag to add for name and protocol
+    name_tag_list = ['gmd:name', 'gco:CharacterString']
+    protocol_tag_list = ['gmd:protocol', 'gco:CharacterString']
+    # tag to add for URL
+    url_tag_list = url_tag_list[-2:]
+    # parse name and URL
+    # number of spaces around the colon can vary
+    # "NAME URL" , "NAME URL" , "NAME URL"
+    online_list = re.split("[\"\xbb][\xa0 ]*,[\xa0 ]*[\"\xab]", value)
+    for onliner in online_list:
+        try:
+            couple = re.search("[\"\xab]?(.*)[\xa0 ]*(https?://[^\"\xbb]*)", onliner.strip())
+            or_name = couple.group(1).strip()
+            or_URL = couple.group(2).strip()
+        except AttributeError:
+            sys.exit("%s Free link cell value is inconsistent with expected template" % urn)
+        parent_xpath = xpath
+        # Add new elements (generic online resources added before and must not be erazed)
+        # Add common tags (and no value)
+        addNewElementAndValue(tree, base_tag_list, '', parent_xpath)
+        # Add name (optionnal), protocol and url
+        # order is important (the last one added is the first one in XML)
+        base_xpath = xpath + "/" + "/".join(base_tag_list)
+        # if name is not defined, default value is the URL
+        if or_name:
+            addNewElementAndValue(tree, name_tag_list, or_name, base_xpath)
+        else:
+            addNewElementAndValue(tree, name_tag_list, or_URL, base_xpath)
+        addNewElementAndValue(tree, protocol_tag_list, 'WWW:LINK-1.0-http--link', base_xpath)
+        addNewElementAndValue(tree, url_tag_list, or_URL, base_xpath)
 
 # Add thesaurus information
 def addThesaurus(tree, xpath, help_thesaurus, thesaurus):
