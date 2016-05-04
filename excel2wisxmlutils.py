@@ -61,27 +61,57 @@ def addMultipleElement(parent, xpath, tag):
     return xpath
 
 # Add attribute for generic metadata
-def addAttribute(tree, xpath, prefix, name, value):
-    prefix = prefix.split(',')
-    name = name.split(',')
-    value = value.split(',')
-    if len(prefix) != len(name):
-        print "MD_generic : please put as many attributes prefix as attributes names"
-    for i, attName in enumerate(name):
-        addMetadataElement(tree, xpath, value[i], attName, prefix[i])
+#def addAttribute(tree, xpath, name, value):
+#    name = name.split(',')
+#    value = value.split(',')
+#    for i, attName in enumerate(name):
+#        # is there a prefix
+#        tagsplit = str(attName).split(':')
+#        if len(tagsplit) == 2:
+#            prefix, att_name = tagsplit
+#            addMetadataElement(tree, xpath, value[i], att_name, prefix)
+#        else:
+#            att_name = str(attName)
+#            addMetadataElement(tree, xpath, value[i], att_name)
 
 # Special case of free Keywords
 # Add an ID attribute in MD_Keywords tag
-def addAttributeIdKeywords(tree, xpath, attribute, att_id):
-    xpath_list = xpath.split("/")[:]
-    try:
-        keyword_i = xpath_list.index('gmd:MD_Keywords')
-        xpath_list = xpath_list[:keyword_i+1]
-        xpath = "/".join(xpath_list)
+def addAttribute(tree, xpath, att_name, att_val, att_loc):
+    att_name = att_name.split(',')
+    att_val = att_val.split(',')
+    if att_loc:
+        att_loc = att_loc.split(',')
+    # If Attribute Location col is not filled at all
+    # it is replaced by an empty list
+    else:
+        att_loc = [''] * len(att_name)
+    for i, attName in enumerate(att_name):
+        try:
+            attLoc = att_loc[i]
+            attVal = att_val[i]
+        except:
+            sys.exit("\nERROR There must be as many Attribute Location" \
+                   + "and Values as Attribute Names (comma separated even if null)")
+        # Attribute is added at xpath location unless Attribute Location col
+        # is filled
+        if attLoc:
+            try:
+                xpath_list = xpath.split("/")[:]
+                loc = xpath_list.index(attLoc)
+                xpath_list = xpath_list[:loc+1]
+                xpath = "/".join(xpath_list)
+            except ValueError:
+                print "WARNING : %s not found in XPATH" % attLoc
+                print "Attribute %s added at xpath location %s" % (attName, xpath)
         element = tree.xpath(xpath, namespaces=namespaces)[0] 
-        element.attrib[attribute] = att_id
-    except ValueError:
-        print "WARNING : MD_Keywords not found in XPATH"
+        # is there a prefix
+        tagsplit = str(attName).split(':')
+        if len(tagsplit) == 2:
+            prefix, att_name = tagsplit
+            element.attrib["{" + namespaces[prefix] + "}" + att_name] = attVal
+        else:
+            att_name = str(attName)
+            element.attrib[att_name] = attVal
 
 # Rebuild of XPATH to add missing tags
 def addMissingTags(tree, xpath, tag):

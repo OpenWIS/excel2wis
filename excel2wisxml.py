@@ -32,7 +32,7 @@ import re
 from excel2wisxmlutils import *
 
 VERSION="1.6"
-EXCEL_FIRST_COMPATIBLE_VERSION="2.1"
+EXCEL_FIRST_COMPATIBLE_VERSION="2.2"
 
 
 #########################
@@ -229,8 +229,10 @@ for i, head in enumerate(help_header):
     head = head.value.strip().lower()
     if head == 'type':
         type_col = i
-    elif head == 'attribute':
-        attribute_col = i
+    elif head == 'attribute name':
+        att_name_col = i
+    elif head == 'attribute location':
+        att_loc_col = i
     elif head == 'thesaurus name':
         thesaurus_col = i
     elif head == 'multi value':
@@ -238,7 +240,7 @@ for i, head in enumerate(help_header):
     elif head == 'codelist':
         codelist_col = i
     elif head == 'attribute value':
-        att_id_col = i
+        att_val_col = i
     elif head == 'xpath':
         xpath_col = i
     elif head == 'section':
@@ -258,8 +260,8 @@ for i, head in enumerate(md_gene_header):
         md_gene_xpath_col = i
     elif head == 'codelist':
         md_gene_codelist_col = i
-    elif head == 'attribut: prefix':
-        md_gene_attPrefix_col = i
+    elif head == 'attribut: location':
+        md_gene_attLocation_col = i
     elif head == 'attribut: name':
         md_gene_attName_col = i
     elif head == 'attribut: value':
@@ -363,7 +365,7 @@ for row in range(md_gene_row_start, md_gene.nrows):
         value = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     xpath = unicode(md_gene.cell_value(row, md_gene_xpath_col)).strip()
     code_list = unicode(md_gene.cell_value(row, md_gene_codelist_col)).strip()
-    attPrefix = unicode(md_gene.cell_value(row, md_gene_attPrefix_col)).strip()
+    attLocation = unicode(md_gene.cell_value(row, md_gene_attLocation_col)).strip()
     attName = unicode(md_gene.cell_value(row, md_gene_attName_col)).strip()
     attValue = unicode(md_gene.cell_value(row, md_gene_attValue_col)).strip()
     tag_dict = {'value': value, 'xpath': xpath, 'codelist': code_list}
@@ -398,7 +400,7 @@ for row in range(md_gene_row_start, md_gene.nrows):
             addMetadataElement(common_tree, xpath, code_list, 'codeList')
         # Add attribute(s)
         if attName:
-            addAttribute(common_tree, xpath, attPrefix, attName, attValue)
+            addAttribute(common_tree, xpath, attName, attValue, attLocation)
     except ValueError:
         error_gene.append(row+1)
         continue
@@ -441,12 +443,14 @@ for row in range(fields_row_start, md_fields.nrows):
                 continue    
         field_value = unicode(md_fields.cell_value(row, col)).strip()
         xpath = unicode(help.cell_value(col+delta, xpath_col)).strip()
-        attribute = unicode(help.cell_value(col+delta, attribute_col)).strip()
+        att_name = unicode(help.cell_value(col+delta, att_name_col)).strip()
+        att_location = unicode(help.cell_value(col+delta, att_loc_col)).strip()
         help_thesaurus = unicode(help.cell_value(col+delta, thesaurus_col)).strip()
         multivalue = unicode(help.cell_value(col+delta, multivalue_col)).strip()
         code_list = unicode(help.cell_value(col+delta, codelist_col)).strip()
         type = unicode(help.cell_value(col+delta, type_col)).strip()
-        att_id = unicode(help.cell_value(col+delta, att_id_col)).strip()
+        att_val = unicode(help.cell_value(col+delta, att_val_col)).strip()
+        att_val_exception = att_val.startswith('MD_Fields')
         # empty Xpath
         if xpath == '':
             empty_xpath.append(id)
@@ -489,11 +493,16 @@ for row in range(fields_row_start, md_fields.nrows):
                 xpath = addMultiValue(tree, xpath, field_value)
             # or add only one tag or attribute
             else:
-                xpath = addMetadataElement(tree, xpath, field_value, attribute)
+                # Attribute read in MD_Fields sheet
+                if att_val_exception:
+                    xpath = addMetadataElement(tree, xpath, field_value, att_name)
+                # Element read in MD_Fields sheet
+                else:
+                    xpath = addMetadataElement(tree, xpath, field_value)
             
-            # Add attribute ID in the MD_Keywords tag for free keywords
-            if att_id:
-                addAttributeIdKeywords(tree, xpath, attribute, att_id)
+            # Add attribute in addition to element
+            if att_name != 'No' and not att_val_exception:
+                addAttribute(tree, xpath, att_name, att_val, att_location)
 
             # Add codelist
             # special case of Date (two fields must be filled : date and dateType)
