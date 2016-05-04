@@ -151,18 +151,6 @@ def concateValue(tree, value, generic_dict):
     # Two linked tags are mandatory, cf. template (paragraph4)
     return urn
 
-# Add dateType value and the associated codelist
-def par1022(tree, xpath, type, code_list):
-    # add the date type : creation, publication or revision
-    # written after "Date:"
-    value = type.split(':')[-1]
-    xpath_list = xpath.split("/")[:-2] + ['gmd:dateType', 'gmd:CI_DateTypeCode']
-    xpath = "/".join(xpath_list)
-    addMetadataElement(tree, xpath, value)
-    addMetadataElement(tree, xpath, value, 'codeListValue')
-    addMetadataElement(tree, xpath, code_list, 'codeList')
-
-
 ###
 # Script help configuration
 ###
@@ -390,7 +378,6 @@ for row in range(md_gene_row_start, md_gene.nrows):
     # identify DCPC use case
         if tag.startswith('OpenWIS only') and value:
             DCPC = True
-            print "OpenWIS DCPC metadata"
         addMetadataElement(common_tree, xpath, value)
         if tag.startswith('Resource locator') and tag.endswith('url'):
             xpath_base = "/".join(xpath.split('/')[:-2])
@@ -469,6 +456,7 @@ for row in range(fields_row_start, md_fields.nrows):
                 field_value = urn
                 # DCPC
                 if DCPC:
+                    print "OpenWIS DCPC metadata"
                     addDCPClinkage(urn, generic_dict)
             elif xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints[2]/gco:CharacterString':
                 # Value GTSPriority in Excel file does not validate
@@ -477,7 +465,7 @@ for row in range(fields_row_start, md_fields.nrows):
                 # GFNC
                 addGFNC(tree, title, xpath, field_value)
                 if MFopenwis:
-                        gfnc = field_value
+                    gfnc = field_value
 
             # Cells with specific processing (cell value does not exactly match to XPATH tag value)
             # Link
@@ -492,28 +480,27 @@ for row in range(fields_row_start, md_fields.nrows):
             elif multivalue == 'Yes':
                 xpath = addMultiValue(tree, xpath, field_value)
             # or add only one tag or attribute
-            else:
+            elif att_val_exception:
                 # Attribute read in MD_Fields sheet
-                if att_val_exception:
-                    xpath = addMetadataElement(tree, xpath, field_value, att_name)
-                # Element read in MD_Fields sheet
-                else:
-                    xpath = addMetadataElement(tree, xpath, field_value)
+                xpath = addMetadataElement(tree, xpath, field_value, att_name)
+            # Element read in MD_Fields sheet
+            else:
+                xpath = addMetadataElement(tree, xpath, field_value)
             
             # Add attribute in addition to element
             if att_name != 'No' and not att_val_exception:
                 addAttribute(tree, xpath, att_name, att_val, att_location)
 
-            # Add codelist
             # special case of Date (two fields must be filled : date and dateType)
             if type.startswith('Date:'):
                 # add creation, publication or revision in dateType (paragraph 10.2.2)
                 # the code_list is linked to the dateType
-                par1022(tree, xpath, type, code_list)
+                addDateType(tree, xpath, type, code_list)
             # normal case : addition of two attributes
             elif type.startswith('Keyword:'):
                 # add KeywordType
                 addKeywordType(tree, xpath, type, code_list)
+            # Add codelist
             elif code_list:
                 addMetadataElement(tree, xpath, field_value, 'codeListValue')
                 addMetadataElement(tree, xpath, code_list, 'codeList')

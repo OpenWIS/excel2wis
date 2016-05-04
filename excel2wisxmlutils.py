@@ -34,7 +34,6 @@ namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
               'gmx': 'http://www.isotc211.org/2005/gmx'}
 
 
-
 # Add an occurrence of an ordered tag missing from the template
 # return xpath with the appropriate order (in case where an
 # optional previous tag isn't filled)
@@ -206,7 +205,18 @@ def addMultiValue(tree, xpath, multivalue):
         parent_xpath = addNewElementAndValue(tree, multi_tag_list, val, parent_xpath)
     return parent_xpath
 
-# Add dateType value and the associated codelist 
+# Add dateType value and the associated codelist
+def addDateType(tree, xpath, type, code_list):
+    # add the date type : creation, publication or revision
+    # written after "Date:"
+    value = type.split(':')[-1]
+    xpath_list = xpath.split("/")[:-2] + ['gmd:dateType', 'gmd:CI_DateTypeCode']
+    xpath = "/".join(xpath_list)
+    addMetadataElement(tree, xpath, value)
+    addMetadataElement(tree, xpath, value, 'codeListValue')
+    addMetadataElement(tree, xpath, code_list, 'codeList')
+
+# Add KeywordType value and the associated codelist 
 def addKeywordType(tree, xpath, type, code_list):
     # add the Keyword type written after Keyword
     value = type.split(':')[-1]
@@ -215,8 +225,6 @@ def addKeywordType(tree, xpath, type, code_list):
     addMetadataElement(tree, xpath, value)
     addMetadataElement(tree, xpath, value, 'codeListValue')
     addMetadataElement(tree, xpath, code_list, 'codeList')
-
-
 
 # Add resource format name
 # and associated link, version
