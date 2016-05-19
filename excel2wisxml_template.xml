@@ -201,15 +201,11 @@
 <!--. end paragraph8.3 -->			
 <!--. end paragraph8 -->	
 <!--. MLparagraph6.4 -->
-			<gmd:resourceConstraints>
-				<gmd:MD_Constraints>
-					<gmd:useLimitation/>
-				</gmd:MD_Constraints>
-			</gmd:resourceConstraints>	
 <!--. end paragraph6.4 -->			
 <!--. MLparagraph6.5 -->			
 			<gmd:resourceConstraints>
 				<gmd:MD_LegalConstraints >
+					<gmd:useLimitation/>
 					<gmd:accessConstraints/>
 					<gmd:useConstraints/>
 					<gmd:otherConstraints/>
