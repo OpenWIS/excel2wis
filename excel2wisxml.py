@@ -404,7 +404,7 @@ if empty_xpath_gene or error_gene:
 # Print version number in CSV file
 if MFopenwis:
     with codecs.open(link_file, 'a', 'utf-8') as f:
-        f.write("EXCEL_VERSION=%s" % excel_version)
+        f.write("EXCEL_VERSION=%s SCRIPT_VERSION=%s" % (excel_version,VERSION))
 
 #######################
 # Add specific metadata
@@ -525,7 +525,7 @@ for row in range(fields_row_start, md_fields.nrows):
     filename = "MD_" + uid + "_" + date + ".xml"
     with open(filename, "wb") as fo:
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-        fo.write('<!-- Metadata generated with Metadata-guide-record.xls version %s and excel2wisxml.py version %s -->\n' % (VERSION,excel_version))
+        fo.write('<!-- Metadata generated with Metadata-guide-record.xls version %s and excel2wisxml.py version %s -->\n' % (excel_version,VERSION))
         fo.write(string_xml)
 
     if MFopenwis:
