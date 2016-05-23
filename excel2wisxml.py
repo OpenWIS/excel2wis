@@ -525,6 +525,7 @@ for row in range(fields_row_start, md_fields.nrows):
     filename = "MD_" + uid + "_" + date + ".xml"
     with open(filename, "wb") as fo:
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+        fo.write('<!-- Metadata generated with Metadata-guide-record.xls version %s and excel2wisxml.py version %s -->\n' % (VERSION,excel_version))
         fo.write(string_xml)
 
     if MFopenwis:
