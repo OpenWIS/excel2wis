@@ -45,7 +45,7 @@ def addDCPClinkage(urn, generic_dict):
     xpath = '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL'
     addMultiValueDCPC(tree, xpath, value, 'Request on DCPC')
     value = value_base + 'subscribe/' + urn
-    addMultiValueDCPC(tree, xpath, value, 'Suscribe on DCPC')
+    addMultiValueDCPC(tree, xpath, value, 'Subscribe on DCPC')
 
 # Adding linkage section for DCPC MD
 def addMultiValueDCPC(tree, xpath, value, name):
