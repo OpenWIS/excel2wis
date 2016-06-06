@@ -45,7 +45,7 @@ def addDCPClinkage(urn, generic_dict):
     xpath = '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL'
     addMultiValueDCPC(tree, xpath, value, 'Request on DCPC')
     value = value_base + 'subscribe/' + urn
-    addMultiValueDCPC(tree, xpath, value, 'Suscribe on DCPC')
+    addMultiValueDCPC(tree, xpath, value, 'Subscribe on DCPC')
 
 # Adding linkage section for DCPC MD
 def addMultiValueDCPC(tree, xpath, value, name):
@@ -550,6 +550,8 @@ for row in range(fields_row_start, md_fields.nrows):
     
 if MFopenwis:
     if option_error:
-        print "ERROR option --MFopenwis : MD Fields file name must be filled for each metadata in excel file"
+        print "WARNING --MFopenwis"
+        print "CSV file has not been generated"
+        print "MD Fields file name section must be filled for each metadata in excel file to generate CSV file\n"
     else:    
         print "CSV file %s has been generated\n" % link_file

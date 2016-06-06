@@ -42,13 +42,15 @@ def addMultipleElement(parent, xpath, tag):
     # tag name and prefix
     if len(tagsplit) == 2:
         prefix, tag_name = tagsplit
-        el_list = parent.findall("{" + namespaces[prefix] + "}" + tag_name[:-3])
-        new_element = parent.makeelement("{" + namespaces[prefix] + "}" + tag_name[:-3])
+        tag_name = tag_name.split("[")[0]
+        el_list = parent.findall("{" + namespaces[prefix] + "}" + tag_name)
+        new_element = parent.makeelement("{" + namespaces[prefix] + "}" + tag_name)
     # no prefix
     else:
         tag_name = str(tag)
-        el_list = parent.findall(tag_name[:-3])
-        new_element = parent.makeelement(tag_name[:-3])
+        tag_name = tag_name.split("[")[0]
+        el_list = parent.findall(tag_name.split("[")[0])
+        new_element = parent.makeelement(tag_name)
     # A similar tag already exists in tree
     if el_list:
         el_list[-1].addnext(new_element)
@@ -56,7 +58,9 @@ def addMultipleElement(parent, xpath, tag):
     else:
         parent.append(new_element)
     new_element_index = len(el_list) + 1
-    xpath = xpath[:-2] + str(new_element_index) + "]"
+    xpath_list = xpath.split('/')
+    xpath_list[-1] = xpath_list[-1].split("[")[0] + "[" + str(new_element_index) + "]"
+    xpath = "/".join(xpath_list)
     return xpath
 
 # Add attribute for generic metadata
