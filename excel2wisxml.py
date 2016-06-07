@@ -58,11 +58,28 @@ def addMultiValueDCPC(tree, xpath, value, name):
 ##### end of add OpenWIS DCPC tags
 
 # Add resource format information in GFNC section
-def addResourceFormatGFNC(tree, name, version, spec, mime):
-    type_tag_list = ['gmx:fileType', 'gmx:MimeFileType']
-    common_format_tag_list = ['gmx:fileFormat', 'gmd:md_format']
-    format_name_tag_list = ['gmd:name', 'gco:CharacterString']
-    format_version_tag_list = ['gmd:version', 'gco:CharacterString']
+def addResourceFormatGFNC(tree, name, version, mime, nb_filename):
+    # check number of format and compare to number of filename
+    nb_format = len(name)
+    if nb_filename > nb_format:
+        sys.exit("ERROR in Resource Format section : There must be either no value or at least as many Resource Format as filenames specified")
+    xpath_dataFile = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile'
+    for f in range(0,nb_filename):
+        xpath_nb = "[%s]" % (f+1) 
+        xpath_common = xpath_dataFile + xpath_nb + '/gmx:MX_DataFile/'
+        xpath_mime = xpath_common + 'gmx:fileType/gmx:MimeFileType'
+        addMetadataElement(tree, xpath_mime, mime[f])
+        addMetadataElement(tree, xpath_mime, mime[f], 'type')
+        xpath_format = xpath_common + 'gmx:fileFormat/gmd:MD_Format/'
+        xpath_format_name = xpath_format + 'gmd:name/gco:CharacterString'
+        xpath_format_version = xpath_format + 'gmd:version/gco:CharacterString'
+        addMetadataElement(tree, xpath_format_name, name[f])
+        addMetadataElement(tree, xpath_format_version, version[f])
+        # Remove attribute nilReason for fileFormat and fileType
+        element = tree.xpath(xpath_common + 'gmx:fileFormat', namespaces=namespaces)[0]
+        del element.attrib["{" + namespaces['gco'] + "}" + 'nilReason']
+        element = tree.xpath(xpath_common + 'gmx:fileType', namespaces=namespaces)[0]
+        del element.attrib["{" + namespaces['gco'] + "}" + 'nilReason']
 
 # Add GFNC file information
 def addGFNC(tree, title, xpath, value):
@@ -75,12 +92,10 @@ def addGFNC(tree, title, xpath, value):
     common_format_tag_list = ['gmx:fileFormat']
     type_tag_list = ['gmx:fileType']
     description_tag_list = ['gmx:fileDescription', 'gco:CharacterString']
-
     parent_xpath = xpath
     # Add has tag
     xpath_has = parent_xpath + '/gmd:has'
     has_tag_list = ['gmd:has']
-
     # parse filename
     # number of spaces around the colon can vary
     # "filename1" , "filename2"
@@ -99,8 +114,6 @@ def addGFNC(tree, title, xpath, value):
         # order is important (the last one added is the first one in XML)
         base_xpath = xpath + "/" + "/".join(base_tag_list)
         format_parent = addNewElementAndValue(tree, common_format_tag_list, 'inapplicable', base_xpath, "{" + namespaces['gco'] + "}" + 'nilReason', isAttVal=False)
-        #addNewElementAndValue(tree, format_version_tag_list, '', format_parent)
-        #addNewElementAndValue(tree, format_name_tag_list, '', format_parent)
         addNewElementAndValue(tree, type_tag_list, 'inapplicable', base_xpath, "{" + namespaces['gco'] + "}" + 'nilReason', isAttVal=False)
         addNewElementAndValue(tree, description_tag_list, title, base_xpath)
         addNewElementAndValue(tree, name_tag_list, filename, base_xpath)
@@ -460,6 +473,7 @@ if MFopenwis:
 #######################
 # Add specific metadata
 #######################
+nb_filename = 0
 # Iteration on MD Fields rows (one row = one metadata)
 for row in range(fields_row_start, md_fields.nrows):
     tree = copy.deepcopy(common_tree)
@@ -519,6 +533,8 @@ for row in range(fields_row_start, md_fields.nrows):
             # Resource Format
             elif xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat[]/gmd:MD_Format/gmd:name/gco:CharacterString':
                 name_list, version_list, spec_list, mime_list = addResourceFormat(tree, xpath, field_value, urn)
+                if nb_filename:
+                    addResourceFormatGFNC(tree, name_list, version_list, mime_list,nb_filename)
             elif xpath == '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile[]/gmx:MX_DataFile/gmx:fileName/gmx:FileName':
                 # GFNC
                 nb_filename = addGFNC(tree, title, xpath, field_value)
