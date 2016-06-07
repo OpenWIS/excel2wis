@@ -32,7 +32,7 @@ import re
 from excel2wisxmlutils import *
 
 VERSION="1.7"
-EXCEL_FIRST_COMPATIBLE_VERSION="2.4"
+EXCEL_FIRST_COMPATIBLE_VERSION="2.5"
 
 
 #########################
