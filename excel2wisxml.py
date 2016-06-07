@@ -100,7 +100,7 @@ def addGFNC(tree, title, xpath, value):
     # number of spaces around the colon can vary
     # "filename1" , "filename2"
     online_list = re.split("[\"\xbb][\xa0 ]*,[\xa0 ]*[\"\xab]", value)
-    for onliner in online_list:
+    for onliner in reversed(online_list):
         try:
             couple = re.search("[\"\xab]?([^\"\xbb]*)", onliner.strip())
             filename = couple.group(1).strip()
@@ -473,9 +473,11 @@ if MFopenwis:
 #######################
 # Add specific metadata
 #######################
-nb_filename = 0
 # Iteration on MD Fields rows (one row = one metadata)
 for row in range(fields_row_start, md_fields.nrows):
+    # number of filenames specified (if not null
+    # resource format information is added)
+    nb_filename = 0
     tree = copy.deepcopy(common_tree)
     # Lists for WARN messages
     empty_xpath = []
