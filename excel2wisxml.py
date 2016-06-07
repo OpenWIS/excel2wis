@@ -31,8 +31,8 @@ import codecs
 import re
 from excel2wisxmlutils import *
 
-VERSION="1.6"
-EXCEL_FIRST_COMPATIBLE_VERSION="2.3"
+VERSION="1.7"
+EXCEL_FIRST_COMPATIBLE_VERSION="2.4"
 
 
 #########################
@@ -56,6 +56,57 @@ def addMultiValueDCPC(tree, xpath, value, name):
     addMetadataElement(tree, xpath_name, name)
 
 ##### end of add OpenWIS DCPC tags
+
+# Add resource format information in GFNC section
+def addResourceFormatGFNC(tree, name, version, spec, mime):
+    type_tag_list = ['gmx:fileType', 'gmx:MimeFileType']
+    common_format_tag_list = ['gmx:fileFormat', 'gmd:md_format']
+    format_name_tag_list = ['gmd:name', 'gco:CharacterString']
+    format_version_tag_list = ['gmd:version', 'gco:CharacterString']
+
+# Add GFNC file information
+def addGFNC(tree, title, xpath, value):
+    # Find multivalued tag xpath and list of afterwards tag to add for each occurrence
+    url_tag_list, xpath = findMultiTagInXpath(tree, xpath)
+    # Common tags to add once for each resource locator
+    base_tag_list = url_tag_list[:-2]
+    # tag to add for name
+    name_tag_list = ['gmx:fileName', 'gmx:FileName']
+    common_format_tag_list = ['gmx:fileFormat']
+    type_tag_list = ['gmx:fileType']
+    description_tag_list = ['gmx:fileDescription', 'gco:CharacterString']
+
+    parent_xpath = xpath
+    # Add has tag
+    xpath_has = parent_xpath + '/gmd:has'
+    has_tag_list = ['gmd:has']
+
+    # parse filename
+    # number of spaces around the colon can vary
+    # "filename1" , "filename2"
+    online_list = re.split("[\"\xbb][\xa0 ]*,[\xa0 ]*[\"\xab]", value)
+    for onliner in online_list:
+        try:
+            couple = re.search("[\"\xab]?([^\"\xbb]*)", onliner.strip())
+            filename = couple.group(1).strip()
+        except AttributeError:
+            sys.exit("%s Free link cell value is inconsistent with expected template" % urn)
+        parent_xpath = xpath 
+        # Add new elements (generic online resources added before and must not be erazed)
+        # Add common tags (and no value)
+        addNewElementAndValue(tree, base_tag_list, '', parent_xpath)
+        # Add name (optionnal), protocol and url
+        # order is important (the last one added is the first one in XML)
+        base_xpath = xpath + "/" + "/".join(base_tag_list)
+        format_parent = addNewElementAndValue(tree, common_format_tag_list, 'inapplicable', base_xpath, "{" + namespaces['gco'] + "}" + 'nilReason', isAttVal=False)
+        #addNewElementAndValue(tree, format_version_tag_list, '', format_parent)
+        #addNewElementAndValue(tree, format_name_tag_list, '', format_parent)
+        addNewElementAndValue(tree, type_tag_list, 'inapplicable', base_xpath, "{" + namespaces['gco'] + "}" + 'nilReason', isAttVal=False)
+        addNewElementAndValue(tree, description_tag_list, title, base_xpath)
+        addNewElementAndValue(tree, name_tag_list, filename, base_xpath)
+    addNewElementAndValue(tree, has_tag_list, 'inapplicable', xpath,"{" + namespaces['gco'] + "}" + 'nilReason', isAttVal=False) 
+    nb_filename = len(online_list)
+    return nb_filename
 
 # Add link for resource locator
 # and associated protocol and name (3 elements for each link)
@@ -443,7 +494,6 @@ for row in range(fields_row_start, md_fields.nrows):
             empty_xpath.append(id)
             continue
 
-
         try:
             if xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString':
                 # Keep title for GFNC
@@ -461,11 +511,6 @@ for row in range(fields_row_start, md_fields.nrows):
             elif xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints[2]/gco:CharacterString':
                 # Value GTSPriority in Excel file does not validate
                 field_value = 'GTSPriority' + field_value[9]
-            elif xpath == '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile/gmx:MX_DataFile/gmx:fileName/gmx:FileName':
-                # GFNC
-                addGFNC(tree, title, xpath, field_value)
-                if MFopenwis:
-                    gfnc = field_value
 
             # Cells with specific processing (cell value does not exactly match to XPATH tag value)
             # Link
@@ -473,8 +518,12 @@ for row in range(fields_row_start, md_fields.nrows):
                 addLink(tree, xpath, field_value, urn)
             # Resource Format
             elif xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat[]/gmd:MD_Format/gmd:name/gco:CharacterString':
-                addResourceFormat(tree, xpath, field_value, urn)
-
+                name_list, version_list, spec_list, mime_list = addResourceFormat(tree, xpath, field_value, urn)
+            elif xpath == '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/gmx:dataFile[]/gmx:MX_DataFile/gmx:fileName/gmx:FileName':
+                # GFNC
+                nb_filename = addGFNC(tree, title, xpath, field_value)
+                if MFopenwis:
+                    gfnc = field_value
             # Add tags or attribute
             # Add several identical tags
             elif multivalue == 'Yes':

@@ -189,7 +189,7 @@ def findMultiTagInXpath(tree, xpath):
     return multi_tag_list, xpath
 
 # Create a new element and set its value (even if an element with the same xpath already exists)
-def addNewElementAndValue(tree, tag_list, value, parent_xpath):
+def addNewElementAndValue(tree, tag_list, value, parent_xpath, attribute='No', isAttVal=True):
     for tag in tag_list:
         parent = tree.xpath(parent_xpath, namespaces=namespaces)[0]
         prefix, tag_name = str(tag).split(':')
@@ -197,7 +197,11 @@ def addNewElementAndValue(tree, tag_list, value, parent_xpath):
         parent.insert(0, new_element)
         parent_xpath += "/" + tag
         if tag == tag_list[-1] and value:
-            new_element.text = value.strip()
+           if isAttVal:
+           # add the same value for attribute and tag value (like codelist)
+               new_element.text = value.strip()
+           if attribute != 'No':
+                new_element.attrib[attribute] = value
     return parent_xpath
 
 # Add several times the same tag (values comma separated)
@@ -231,10 +235,12 @@ def addKeywordType(tree, xpath, type, code_list):
     addMetadataElement(tree, xpath, code_list, 'codeList')
 
 # Add resource format name
-# and associated link, version
+# and associated link, version and mimeType
 # Multiple format can be specified separated by ;
-# name, version, specification are comma separated
+# name, version, specification, mimeType are comma separated
 def addResourceFormat(tree, xpath, value, urn):
+    # initialisation of lists containing format information
+    name_list = [] ; version_list = [] ; spec_list = [] ; mime_list = []
     # Find multivalued tag xpath and list of afterwards tag to add for each occurrence
     name_tag_list, xpath = findMultiTagInXpath(tree, xpath)
     # Common tags to add once for each format
@@ -252,7 +258,9 @@ def addResourceFormat(tree, xpath, value, urn):
             name = val[0].strip()
             version = val[1].strip()
             specification = val[2].strip()
+            mime = val[3].strip()
         except IndexError:
+            print val
             sys.exit("%s Resource Format cell value is inconsistent with expected template" % urn)
         parent_xpath = xpath
         # Add common tags (and no value)
@@ -264,21 +272,8 @@ def addResourceFormat(tree, xpath, value, urn):
             addNewElementAndValue(tree, specification_tag_list, specification, base_xpath)
         addNewElementAndValue(tree, version_tag_list, version, base_xpath)
         addNewElementAndValue(tree, name_tag_list, name, base_xpath)
-
-# Add GFNC file information
-def addGFNC(tree, title, xpath, value):
-    base = '/gmd:MD_Metadata/gmd:describes/gmx:MX_DataSet/'
-    xpath_has = base + 'gmd:has'
-    base = base + 'gmx:dataFile/gmx:MX_DataFile/'
-    xpath_fileDescription = base + 'gmx:fileDescription/gco:CharacterString'
-    xpath_fileType = base + 'gmx:fileType/gmx:MimeFileType'
-    base = base + 'gmx:fileFormat/gmd:MD_Format/'
-    xpath_fileFormat_name = base + 'gmd:name/gco:CharacterString'
-    xpath_fileFormat_version = base + 'gmd:version/gco:CharacterString'
-    addMetadataElement(tree, xpath_has, 'inapplicable', "{" + namespaces['gco'] + "}" + 'nilReason') 
-    addMetadataElement(tree, xpath, value) 
-    addMetadataElement(tree, xpath_fileDescription, title) 
-    addMetadataElement(tree, xpath_fileType, 'application/octet-stream') 
-    addMetadataElement(tree, xpath_fileType, 'application/octet-stream', 'type') 
-    addMetadataElement(tree, xpath_fileFormat_name, 'BUFR') 
-    addMetadataElement(tree, xpath_fileFormat_version, 'IV') 
+        name_list.append(name)
+        version_list.append(version)
+        spec_list.append(specification)
+        mime_list.append(mime)
+        return name_list, version_list, spec_list, mime_list
