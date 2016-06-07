@@ -276,4 +276,4 @@ def addResourceFormat(tree, xpath, value, urn):
         version_list.append(version)
         spec_list.append(specification)
         mime_list.append(mime)
-        return name_list, version_list, spec_list, mime_list
+    return name_list, version_list, spec_list, mime_list
