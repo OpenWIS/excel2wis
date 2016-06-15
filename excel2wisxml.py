@@ -31,7 +31,7 @@ import codecs
 import re
 from excel2wisxmlutils import *
 
-VERSION="1.7"
+VERSION="1.8"
 EXCEL_FIRST_COMPATIBLE_VERSION="2.5"
 
 
@@ -475,6 +475,7 @@ if MFopenwis:
 #######################
 # Iteration on MD Fields rows (one row = one metadata)
 for row in range(fields_row_start, md_fields.nrows):
+    refTime = ""
     # number of filenames specified (if not null
     # resource format information is added)
     nb_filename = 0
@@ -514,6 +515,9 @@ for row in range(fields_row_start, md_fields.nrows):
             if xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString':
                 # Keep title for GFNC
                 title = field_value
+            elif xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[6]/gmd:MD_Keywords/gmd:keyword[]/gco:CharacterString':
+                # Keep reference time for CSV file (option)
+                refTime = field_value
             elif xpath == '/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString':
                 uid = field_value
                 # add tag values which are concatenation of MD generic and MD Fields elements
@@ -598,7 +602,7 @@ for row in range(fields_row_start, md_fields.nrows):
     if MFopenwis:
         if gfnc:
             with codecs.open(link_file, 'a', 'utf-8') as f:
-                f.write("\n\"" + urn + "\" ; \"" + gfnc + "\"")
+                f.write("\n\"" + urn + "\" ; \"" + gfnc + "\" ; \"" + refTime + "\"")
         else:
             option_error = True
             
