@@ -55,7 +55,7 @@ addition of online resource protocol _WWW:LINK-1.0-http--link_
 
 ### DCPC Metadata
 
-Metadata are identified as DCPC metadata when one of _OpenWIS only:_ tag is filled with a value. For such metadata some additionnal elements are added during specific metadata processing.
+Metadata are identified as DCPC metadata when one of _OpenWIS only:_ tag is filled with a value. For such metadata some additionnal elements (request and subscribe URL) are added during specific metadata processing.
 
 ## 2. Non generic metadata (_MD Fields_ and _Help_ sheets)
 
@@ -97,11 +97,8 @@ Some elements need a specific processing :
 Value is replaced by _"GTSPriorityN"_ with _N_ the 9th character of _MD Field_ cell value
 
 - **File name** [identified with its xpath]  
-GFNC file name and associated information are added :
+One or several GFNC file name(s) and associated information are added :
     - file description (dynamic value : Resource title)
-    - file type (static value)
-    - file format name (static value)
-    - file format version (static value)
 
 - **Free links** [identified with its xpath]  
 Several links can be added. 3 tags are added for each link :
@@ -110,10 +107,12 @@ Several links can be added. 3 tags are added for each link :
     - URL (dynamic value)
 
 - **Resource Format** [identified with its xpath]  
-Several resource formats can be added. 3 tags are added for each resource format (dynamic values) :
+Several resource formats can be added. 4 tags are added for each resource format (dynamic values) :
     - name
     - version
     - specification (optional)
+    - mime type  
+If file names are specified, format name, version and mime type information is also added in the GFNC section for each file name.
 
 - **Tag or group of tags added several times** [Mutlivalue set to Yes]  
 Add a group of tags as many times as the number of comma-separated values. First multivalued tag to add is suffixed by _"[]"_.

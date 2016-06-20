@@ -511,6 +511,7 @@ for row in range(fields_row_start, md_fields.nrows):
             continue
 
         try:
+            # Change value or keep it in memory
             if xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString':
                 # Keep title for GFNC
                 title = field_value
@@ -528,8 +529,8 @@ for row in range(fields_row_start, md_fields.nrows):
                 # Value GTSPriority in Excel file does not validate
                 field_value = 'GTSPriority' + field_value[9]
 
-            # Cells with specific processing (cell value does not exactly match to XPATH tag value)
-            # Link
+            # Specific processing (cell value is not added exactly at XPATH location)
+            # Free links
             if xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL':
                 addLink(tree, xpath, field_value, urn)
             # Resource Format
@@ -550,11 +551,13 @@ for row in range(fields_row_start, md_fields.nrows):
             elif att_val_exception:
                 # Attribute read in MD_Fields sheet
                 xpath = addMetadataElement(tree, xpath, field_value, att_name)
-            # Element read in MD_Fields sheet
+
+            # Regular processing (cell value is added at the XPATH specified in Help sheet)
             else:
                 xpath = addMetadataElement(tree, xpath, field_value)
             
-            # Add attribute in addition to element
+            # Add elements in addition to one just added
+            # Add attribute
             if att_name != 'No' and not att_val_exception:
                 addAttribute(tree, xpath, att_name, att_val, att_location)
 
