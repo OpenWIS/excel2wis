@@ -30,6 +30,8 @@ import argparse
 import codecs
 import re
 from excel2wisxmlutils import *
+import os.path
+
 
 VERSION="1.8"
 EXCEL_FIRST_COMPATIBLE_VERSION="2.5"
@@ -225,6 +227,11 @@ args = parser.parse_args()
 excel_filename = args.filename[0]
 MFopenwis = args.MFopenwis
 
+# Excel file location
+excel_path = os.path.dirname(excel_filename)
+# Excel file name
+excel_name = os.path.basename(excel_filename)
+
 ###
 # Print license information
 ###
@@ -255,7 +262,6 @@ md_fields = workbook.sheet_by_name('MD Fields')
 help = workbook.sheet_by_name('Help')
 md_gene = workbook.sheet_by_name('MD generic')
 thesaurus = workbook.sheet_by_name('MD Thesaurus')
-
 
 ##################################
 # Excel file shape configuration #
@@ -591,9 +597,8 @@ for row in range(fields_row_start, md_fields.nrows):
     # Write an XML file for each metadata (row in MD Fields)
     metadata_row = row + 1
     string_xml = etree.tostring(tree, pretty_print=True, encoding='utf-8')
-    # filename = "metadata_row" + str(metadata_row) + ".xml"
     date = time.strftime("%Y%m%d%H%M%S")
-    filename = "MD_" + uid + "_" + date + ".xml"
+    filename = os.path.join(excel_path, "MD_" + uid + "_" + date + ".xml")
     with open(filename, "wb") as fo:
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         fo.write('<!-- Metadata generated with Metadata-guide-record.xls version %s and excel2wisxml.py version %s -->\n' % (excel_version,VERSION))
