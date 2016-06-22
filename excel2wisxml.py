@@ -30,8 +30,10 @@ import argparse
 import codecs
 import re
 from excel2wisxmlutils import *
+import os.path
 
-VERSION="1.7"
+
+VERSION="1.8"
 EXCEL_FIRST_COMPATIBLE_VERSION="2.5"
 
 
@@ -225,6 +227,11 @@ args = parser.parse_args()
 excel_filename = args.filename[0]
 MFopenwis = args.MFopenwis
 
+# Excel file location
+excel_path = os.path.dirname(excel_filename)
+# Excel file name
+excel_name = os.path.basename(excel_filename)
+
 ###
 # Print license information
 ###
@@ -255,7 +262,6 @@ md_fields = workbook.sheet_by_name('MD Fields')
 help = workbook.sheet_by_name('Help')
 md_gene = workbook.sheet_by_name('MD generic')
 thesaurus = workbook.sheet_by_name('MD Thesaurus')
-
 
 ##################################
 # Excel file shape configuration #
@@ -475,6 +481,7 @@ if MFopenwis:
 #######################
 # Iteration on MD Fields rows (one row = one metadata)
 for row in range(fields_row_start, md_fields.nrows):
+    refTime = ""
     # number of filenames specified (if not null
     # resource format information is added)
     nb_filename = 0
@@ -515,6 +522,9 @@ for row in range(fields_row_start, md_fields.nrows):
             if xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString':
                 # Keep title for GFNC
                 title = field_value
+            elif xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[6]/gmd:MD_Keywords/gmd:keyword[]/gco:CharacterString':
+                # Keep reference time for CSV file (option)
+                refTime = field_value
             elif xpath == '/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString':
                 uid = field_value
                 # add tag values which are concatenation of MD generic and MD Fields elements
@@ -590,9 +600,8 @@ for row in range(fields_row_start, md_fields.nrows):
     # Write an XML file for each metadata (row in MD Fields)
     metadata_row = row + 1
     string_xml = etree.tostring(tree, pretty_print=True, encoding='utf-8')
-    # filename = "metadata_row" + str(metadata_row) + ".xml"
     date = time.strftime("%Y%m%d%H%M%S")
-    filename = "MD_" + uid + "_" + date + ".xml"
+    filename = os.path.join(excel_path, "MD_" + uid + "_" + date + ".xml")
     with open(filename, "wb") as fo:
         fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         fo.write('<!-- Metadata generated with Metadata-guide-record.xls version %s and excel2wisxml.py version %s -->\n' % (excel_version,VERSION))
@@ -601,7 +610,7 @@ for row in range(fields_row_start, md_fields.nrows):
     if MFopenwis:
         if gfnc:
             with codecs.open(link_file, 'a', 'utf-8') as f:
-                f.write("\n\"" + urn + "\" ; \"" + gfnc + "\"")
+                f.write("\n\"" + urn + "\" ; \"" + gfnc + "\" ; \"" + refTime + "\"")
         else:
             option_error = True
             
