@@ -481,6 +481,7 @@ if MFopenwis:
 #######################
 # Iteration on MD Fields rows (one row = one metadata)
 for row in range(fields_row_start, md_fields.nrows):
+    emptyDescriptiveKeywords = []
     refTime = ""
     # number of filenames specified (if not null
     # resource format information is added)
@@ -498,12 +499,15 @@ for row in range(fields_row_start, md_fields.nrows):
             continue
         # An optional empty field is not added
         mandatory = unicode(field_mandatory_list[col].value).strip()
+        xpath = unicode(help.cell_value(col+delta, xpath_col)).strip()
         if mandatory == 'Optional':
             if not md_fields.cell_value(row, col): 
-                # print "> empty optional field %s ignored" % id 
+                if 'descriptiveKeywords' in xpath:
+                    xpath = xpath.split("/gmd:MD_Keywords")[0]
+                    emptyDescriptiveKeywords.append(xpath)
+                    # list of xpath of empty descriptiveKeywords
                 continue    
         field_value = unicode(md_fields.cell_value(row, col)).strip()
-        xpath = unicode(help.cell_value(col+delta, xpath_col)).strip()
         att_name = unicode(help.cell_value(col+delta, att_name_col)).strip()
         att_location = unicode(help.cell_value(col+delta, att_loc_col)).strip()
         help_thesaurus = unicode(help.cell_value(col+delta, thesaurus_col)).strip()
@@ -596,6 +600,22 @@ for row in range(fields_row_start, md_fields.nrows):
             continue
         except etree.XPathEvalError:  # [] in xpath
             error.append(id)
+            
+    # Remove empty descriptiveKeywords
+    if emptyDescriptiveKeywords:
+        # Sort xpath according to descriptiveKeywords index
+        # top down to remove the highest index first
+        # (otherwise xpath index changes before its deletion)
+        index_emptyDK = [int(re.search("gmd:descriptiveKeywords\[([1-9]*)\]", dk).group(1)) for dk in emptyDescriptiveKeywords]
+        index_emptyDK = sorted(index_emptyDK, reverse=True)
+        emptyDescriptiveKeywords = [dk[:-2]+str(i)+"]" for dk,i in zip(emptyDescriptiveKeywords,index_emptyDK)]
+
+    for xpath in emptyDescriptiveKeywords:
+        try:
+            element = tree.xpath(xpath, namespaces=namespaces)[0]
+            element.getparent().remove(element) 
+        except:
+            pass
 
     # Write an XML file for each metadata (row in MD Fields)
     metadata_row = row + 1
