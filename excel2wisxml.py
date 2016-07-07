@@ -33,8 +33,8 @@ from excel2wisxmlutils import *
 import os.path
 
 
-VERSION="1.8"
-EXCEL_FIRST_COMPATIBLE_VERSION="2.5"
+VERSION="1.9"
+EXCEL_FIRST_COMPATIBLE_VERSION="2.6"
 
 
 #########################
@@ -217,6 +217,16 @@ def concateValue(tree, value, generic_dict):
     # Two linked tags are mandatory, cf. template (paragraph4)
     return urn
 
+# Add elements for translations
+def addTranslation(tree, xpath, translation_value, secondLanguage):
+    # add translation attribute in parent element
+    translation_location = xpath.split('/')[-2]
+    addAttribute(tree, xpath, 'xsi:type', 'gmd:PT_FreeText_PropertyType', translation_location)
+    # add translation element as a sibling
+    translation_xpath = '/'.join(xpath.split('/')[:-1]) + "/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"
+    addMetadataElement(tree, translation_xpath, translation_value)
+    addMetadataElement(tree, translation_xpath, '#locale-'+secondLanguage, 'locale')
+
 ###
 # Script help configuration
 ###
@@ -262,6 +272,9 @@ md_fields = workbook.sheet_by_name('MD Fields')
 help = workbook.sheet_by_name('Help')
 md_gene = workbook.sheet_by_name('MD generic')
 thesaurus = workbook.sheet_by_name('MD Thesaurus')
+# Get translation sheets
+md_fields_translation = workbook.sheet_by_name('Translation MD Fields')
+md_gene_translation = workbook.sheet_by_name('Translation MD generic')
 
 ##################################
 # Excel file shape configuration #
@@ -351,6 +364,13 @@ help_id_list = help.col(section_col)
 # Get mandatory list for MD Fields
 field_mandatory_list = md_fields.row(fields_row_mandatory)
 
+# Put translations in a dictionary for MD generic
+translation_gene = {}
+for row in range(md_gene_row_start, md_gene_translation.nrows):
+    tag = unicode(md_gene_translation.cell_value(row, md_gene_tag_col)).strip()
+    value = unicode(md_gene_translation.cell_value(row, md_gene_value_col)).strip()
+    translation_gene[tag] = value
+
 ### End of excel file shape configuration
 
 ###
@@ -410,6 +430,7 @@ option_error = False
 empty_xpath_gene = []
 error_gene = []
 DCPC = False
+translation = False
 ###
 # Create a dictionary for md_gene element
 # used in specific metadata
@@ -448,6 +469,11 @@ for row in range(md_gene_row_start, md_gene.nrows):
     # identify DCPC use case
         if tag.startswith('OpenWIS only') and value:
             DCPC = True
+    # identify translation use case
+    # and save second language
+        if tag.startswith('Second Language') and value:
+            translation = True
+            secondLanguage = value
         addMetadataElement(common_tree, xpath, value)
         if tag.startswith('Resource locator') and tag.endswith('url'):
             xpath_base = "/".join(xpath.split('/')[:-2])
@@ -458,6 +484,10 @@ for row in range(md_gene_row_start, md_gene.nrows):
         # Add attribute(s)
         if attName:
             addAttribute(common_tree, xpath, attName, attValue, attLocation)
+        # Add translations
+        if translation and tag in translation_gene:
+            addTranslation(common_tree, xpath, translation_gene[tag], secondLanguage)
+
     except ValueError:
         error_gene.append(row+1)
         continue
@@ -491,12 +521,16 @@ for row in range(fields_row_start, md_fields.nrows):
     empty_xpath = []
     error = []
     gfnc = ""
+    
+    # Put translations in a dictionary for MD Fields current row
+    translation_fields = {}
+    for col in range(fields_col_start, md_fields_translation.ncols):
+        id = unicode(md_fields_translation.cell_value(fields_row_section, col)).strip()
+        value = unicode(md_fields_translation.cell_value(row, col)).strip()
+        translation_fields[id] = value
+
     for col in range(fields_col_start, md_fields.ncols):
         id = unicode(field_id_list[col].value).strip()  # element ID
-        # TODO : translation
-        if id.endswith('b'):
-            # print "> translation %s ignored" % id
-            continue
         # An optional empty field is not added
         mandatory = unicode(field_mandatory_list[col].value).strip()
         xpath = unicode(help.cell_value(col+delta, xpath_col)).strip()
@@ -592,6 +626,12 @@ for row in range(fields_row_start, md_fields.nrows):
             # Add thesaurus link, date and version
             if help_thesaurus:
                 addThesaurus(tree, xpath, help_thesaurus, thesaurus)
+
+            # Add translations
+            if translation and id in translation_fields:
+                if multivalue == 'Yes':
+                    sys.exit("Multivalue is not supported for translation (section %s)" % id)
+                addTranslation(tree, xpath, translation_fields[id], secondLanguage)
 
         #except Exception as e:
         #    print id, e
