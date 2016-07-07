@@ -630,7 +630,11 @@ for row in range(fields_row_start, md_fields.nrows):
     if MFopenwis:
         if gfnc:
             with codecs.open(link_file, 'a', 'utf-8') as f:
-                f.write("\n\"" + urn + "\" ; \"" + gfnc + "\" ; \"" + refTime + "\"")
+                # Reformating refTime
+                refTimelist = refTime.split(",")
+                refTime00list = [ref+'00' for ref in refTimelist]
+                refTime00 = ",".join(refTime00list)
+                f.write("\n\"" + urn + "\" ; \"" + gfnc + "\" ; \"" + refTime00 + "\"")
         else:
             option_error = True
             
