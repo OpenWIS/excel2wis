@@ -55,6 +55,7 @@
 <!--. paragraph19.2 -->								
 	<gmd:metadataStandardVersion/>
 <!--. end paragraph19.2 -->		
+    <gmd:locale/>
 <!--. paragraph9.2 -->								
 	<gmd:referenceSystemInfo/>
 <!--. end paragraph9.2 -->								

@@ -36,7 +36,6 @@ import os.path
 VERSION="1.9"
 EXCEL_FIRST_COMPATIBLE_VERSION="2.6"
 
-
 #########################
 # Add OpenWIS DCPC tags #
 #########################
@@ -227,6 +226,37 @@ def addTranslation(tree, xpath, translation_value, secondLanguage):
     addMetadataElement(tree, translation_xpath, translation_value)
     addMetadataElement(tree, translation_xpath, '#locale-'+secondLanguage, 'locale')
 
+# Add elements for multiValue translations
+def addMultiValueTranslation(tree, xpath, translation_value, secondLanguage):
+    element = tree.xpath(xpath, namespaces=namespaces)
+    for i, val in enumerate(translation_value.split(",")):
+        el = element[i]
+        # add translation attribute in parent element
+        parent = el.getparent()
+        parent.attrib["{" + namespaces["xsi"] + "}type"] = "gmd:PT_FreeText_PropertyType"
+        # add translation element as a sibling
+        sibling = etree.Element("{" + namespaces["gmd"] + "}PT_FreeText")
+        el.addnext(sibling)
+        sibling = el.getnext()
+        textGroup = etree.Element("{" + namespaces["gmd"] + "}textGroup")
+        sibling.insert(0, textGroup)
+        localised = etree.Element("{" + namespaces["gmd"] + "}LocalisedCharacterString")
+        localised.text = val.strip()
+        localised.attrib["locale"] = "#locale-" + secondLanguage
+        textGroup.insert(0, localised)
+
+#    translation_xpath = '/'.join(xpath.split('/')[:-1]) + "/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"
+#    addMetadataElement(tree, translation_xpath, '#locale-'+secondLanguage, 'locale')
+
+def addLocaleInfo(tree, xpath, secondLanguage):
+    xpath_base = "/".join(xpath.split("/")[:-2])
+    xpath_encoding = xpath_base + "/gmd:characterEncoding/gmd:MD_CharacterSetCode" 
+    addMetadataElement(tree, xpath_base, "locale-"+secondLanguage, "id")
+    addMetadataElement(tree, xpath_encoding, "utf-8")
+    addMetadataElement(tree, xpath_encoding, "resources/Codelist/gmxcodelists.xml#MD_CharacterSetCode", "codeList")
+    addMetadataElement(tree, xpath_encoding, "utf-8", 'codeListValue')
+
+
 ###
 # Script help configuration
 ###
@@ -273,8 +303,8 @@ help = workbook.sheet_by_name('Help')
 md_gene = workbook.sheet_by_name('MD generic')
 thesaurus = workbook.sheet_by_name('MD Thesaurus')
 # Get translation sheets
-md_fields_translation = workbook.sheet_by_name('Translation MD Fields')
-md_gene_translation = workbook.sheet_by_name('Translation MD generic')
+md_fields_translation = workbook.sheet_by_name('MD Fields Translate')
+#md_gene_translation = workbook.sheet_by_name('Translation MD generic')
 
 ##################################
 # Excel file shape configuration #
@@ -365,11 +395,11 @@ help_id_list = help.col(section_col)
 field_mandatory_list = md_fields.row(fields_row_mandatory)
 
 # Put translations in a dictionary for MD generic
-translation_gene = {}
-for row in range(md_gene_row_start, md_gene_translation.nrows):
-    tag = unicode(md_gene_translation.cell_value(row, md_gene_tag_col)).strip()
-    value = unicode(md_gene_translation.cell_value(row, md_gene_value_col)).strip()
-    translation_gene[tag] = value
+#translation_gene = {}
+#for row in range(md_gene_row_start, md_gene_translation.nrows):
+#    tag = unicode(md_gene_translation.cell_value(row, md_gene_tag_col)).strip()
+#    value = unicode(md_gene_translation.cell_value(row, md_gene_value_col)).strip()
+#    translation_gene[tag] = value
 
 ### End of excel file shape configuration
 
@@ -469,12 +499,14 @@ for row in range(md_gene_row_start, md_gene.nrows):
     # identify DCPC use case
         if tag.startswith('OpenWIS only') and value:
             DCPC = True
+        addMetadataElement(common_tree, xpath, value)
     # identify translation use case
-    # and save second language
+    # save second language
+    # and add elements
         if tag.startswith('Second Language') and value:
             translation = True
             secondLanguage = value
-        addMetadataElement(common_tree, xpath, value)
+            addLocaleInfo(common_tree, xpath, secondLanguage)
         if tag.startswith('Resource locator') and tag.endswith('url'):
             xpath_base = "/".join(xpath.split('/')[:-2])
             addOnlineResourceProtocol(common_tree, xpath_base)
@@ -485,8 +517,8 @@ for row in range(md_gene_row_start, md_gene.nrows):
         if attName:
             addAttribute(common_tree, xpath, attName, attValue, attLocation)
         # Add translations
-        if translation and tag in translation_gene:
-            addTranslation(common_tree, xpath, translation_gene[tag], secondLanguage)
+#        if translation and tag in translation_gene:
+#            addTranslation(common_tree, xpath, translation_gene[tag], secondLanguage)
 
     except ValueError:
         error_gene.append(row+1)
@@ -526,8 +558,10 @@ for row in range(fields_row_start, md_fields.nrows):
     translation_fields = {}
     for col in range(fields_col_start, md_fields_translation.ncols):
         id = unicode(md_fields_translation.cell_value(fields_row_section, col)).strip()
-        value = unicode(md_fields_translation.cell_value(row, col)).strip()
-        translation_fields[id] = value
+        if id.startswith('lg:'):
+            id = id[3:]
+            value = unicode(md_fields_translation.cell_value(row, col)).strip()
+            translation_fields[id] = value
 
     for col in range(fields_col_start, md_fields.ncols):
         id = unicode(field_id_list[col].value).strip()  # element ID
@@ -630,8 +664,10 @@ for row in range(fields_row_start, md_fields.nrows):
             # Add translations
             if translation and id in translation_fields:
                 if multivalue == 'Yes':
-                    sys.exit("Multivalue is not supported for translation (section %s)" % id)
-                addTranslation(tree, xpath, translation_fields[id], secondLanguage)
+                    print "Multivalue"
+                    addMultiValueTranslation(tree, xpath, translation_fields[id], secondLanguage)
+                else:
+                    addTranslation(tree, xpath, translation_fields[id], secondLanguage)
 
         #except Exception as e:
         #    print id, e
