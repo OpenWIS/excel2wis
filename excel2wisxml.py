@@ -304,7 +304,6 @@ md_gene = workbook.sheet_by_name('MD generic')
 thesaurus = workbook.sheet_by_name('MD Thesaurus')
 # Get translation sheets
 md_fields_translation = workbook.sheet_by_name('MD Fields Translate')
-#md_gene_translation = workbook.sheet_by_name('Translation MD generic')
 
 ##################################
 # Excel file shape configuration #
@@ -357,6 +356,8 @@ for i, head in enumerate(md_gene_header):
         md_gene_tag_col = i
     elif head == 'value':
         md_gene_value_col = i
+    elif head == 'value translation (optional)':
+        md_gene_translation_value_col = i
     elif head == 'xpath':
         md_gene_xpath_col = i
     elif head == 'codelist':
@@ -393,13 +394,6 @@ help_id_list = help.col(section_col)
 
 # Get mandatory list for MD Fields
 field_mandatory_list = md_fields.row(fields_row_mandatory)
-
-# Put translations in a dictionary for MD generic
-#translation_gene = {}
-#for row in range(md_gene_row_start, md_gene_translation.nrows):
-#    tag = unicode(md_gene_translation.cell_value(row, md_gene_tag_col)).strip()
-#    value = unicode(md_gene_translation.cell_value(row, md_gene_value_col)).strip()
-#    translation_gene[tag] = value
 
 ### End of excel file shape configuration
 
@@ -469,6 +463,7 @@ generic_dict = {}
 for row in range(md_gene_row_start, md_gene.nrows):
     tag = unicode(md_gene.cell_value(row, md_gene_tag_col)).strip()
     value = unicode(md_gene.cell_value(row, md_gene_value_col)).strip()
+    translation_value = unicode(md_gene.cell_value(row, md_gene_translation_value_col)).strip()
     # Default datetime is utc timestamp
     if tag == 'Metadata date' and value == '':
         value = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -517,8 +512,8 @@ for row in range(md_gene_row_start, md_gene.nrows):
         if attName:
             addAttribute(common_tree, xpath, attName, attValue, attLocation)
         # Add translations
-#        if translation and tag in translation_gene:
-#            addTranslation(common_tree, xpath, translation_gene[tag], secondLanguage)
+        if translation and translation_value:
+            addTranslation(common_tree, xpath, translation_value, secondLanguage)
 
     except ValueError:
         error_gene.append(row+1)
@@ -664,7 +659,6 @@ for row in range(fields_row_start, md_fields.nrows):
             # Add translations
             if translation and id in translation_fields:
                 if multivalue == 'Yes':
-                    print "Multivalue"
                     addMultiValueTranslation(tree, xpath, translation_fields[id], secondLanguage)
                 else:
                     addTranslation(tree, xpath, translation_fields[id], secondLanguage)
