@@ -245,9 +245,6 @@ def addMultiValueTranslation(tree, xpath, translation_value, secondLanguage):
         localised.attrib["locale"] = "#locale-" + secondLanguage
         textGroup.insert(0, localised)
 
-#    translation_xpath = '/'.join(xpath.split('/')[:-1]) + "/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"
-#    addMetadataElement(tree, translation_xpath, '#locale-'+secondLanguage, 'locale')
-
 def addLocaleInfo(tree, xpath, secondLanguage):
     xpath_base = "/".join(xpath.split("/")[:-2])
     xpath_encoding = xpath_base + "/gmd:characterEncoding/gmd:MD_CharacterSetCode" 
@@ -679,7 +676,6 @@ for row in range(fields_row_start, md_fields.nrows):
         index_emptyDK = [int(re.search("gmd:descriptiveKeywords\[([1-9]*)\]", dk).group(1)) for dk in emptyDescriptiveKeywords]
         index_emptyDK = sorted(index_emptyDK, reverse=True)
         emptyDescriptiveKeywords = [dk[:-2]+str(i)+"]" for dk,i in zip(emptyDescriptiveKeywords,index_emptyDK)]
-
     for xpath in emptyDescriptiveKeywords:
         try:
             element = tree.xpath(xpath, namespaces=namespaces)[0]

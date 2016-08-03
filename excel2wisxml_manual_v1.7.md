@@ -57,6 +57,10 @@ addition of online resource protocol _WWW:LINK-1.0-http--link_
 
 Metadata are identified as DCPC metadata when one of _OpenWIS only:_ tag is filled with a value. For such metadata some additionnal elements (request and subscribe URL) are added during specific metadata processing.
 
+### Translations
+
+A metadata is identified as translated when _Second Language_ is filled with a value. For such metadata some further elements are added (translation language, value and encoding).
+
 ## 2. Non generic metadata (_MD Fields_ and _Help_ sheets)
 
 An XML metadata file is generated for each row of _MD Field_ sheet.
@@ -120,6 +124,13 @@ Add a group of tags as many times as the number of comma-separated values. First
 - **Attribute addition exception**  
 [Attribute Value set to MD_Fields]
 The value read in _MD Fields_ is added as an attribute value at xpath location and not as a tag value.
+
+### Translations
+
+When a metadata is identified as translated some further elements are added (translation language and value) for each element translated in _MD Fields Translate_ sheet. For multivalue tags, these further elements are added for each occurence.
+
+# Empty descriptiveKeywords tags removal
+There are several descriptive keywords tags in the template. But not all of them are mandatory. Empty descriptiveKeywords are removed top down.
 
 # Warn messages
 Warn message can be displayed for each metadata in case where :
