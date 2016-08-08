@@ -369,7 +369,7 @@ try:
         # Check (non INSPIRE) mandatory fields
         # TODO INSPIRE : check mandatory fields for INSPIRE
         mandatory = unicode(field_mandatory_list[i].value).strip()
-        if mandatory == 'Mandatory' and field_id not in ['8.1', '8.2']:
+        if mandatory == 'Mandatory':
             for row in range(fields_row_start, md_fields.nrows):
                 # mandatory field is not empty
                 if not md_fields.cell_value(row, i): 
