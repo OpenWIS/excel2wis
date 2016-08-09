@@ -587,7 +587,7 @@ for row in range(fields_row_start, md_fields.nrows):
             if xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString':
                 # Keep title for GFNC
                 title = field_value
-            elif xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[6]/gmd:MD_Keywords/gmd:keyword[]/gco:CharacterString':
+            elif xpath == '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[5]/gmd:MD_Keywords/gmd:keyword[]/gco:CharacterString':
                 # Keep reference time for CSV file (option)
                 refTime = field_value
             elif xpath == '/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString':
