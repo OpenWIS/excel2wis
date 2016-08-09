@@ -410,7 +410,7 @@ try:
         # Check (non INSPIRE) mandatory fields
         # TODO INSPIRE : check mandatory fields for INSPIRE
         mandatory = unicode(field_mandatory_list[i].value).strip()
-        if mandatory == 'Mandatory' and field_id not in ['8.1', '8.2']:
+        if mandatory == 'Mandatory':
             for row in range(fields_row_start, md_fields.nrows):
                 # mandatory field is not empty
                 if not md_fields.cell_value(row, i): 
@@ -461,9 +461,6 @@ for row in range(md_gene_row_start, md_gene.nrows):
     tag = unicode(md_gene.cell_value(row, md_gene_tag_col)).strip()
     value = unicode(md_gene.cell_value(row, md_gene_value_col)).strip()
     translation_value = unicode(md_gene.cell_value(row, md_gene_translation_value_col)).strip()
-    # Default datetime is utc timestamp
-    if tag == 'Metadata date' and value == '':
-        value = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     xpath = unicode(md_gene.cell_value(row, md_gene_xpath_col)).strip()
     code_list = unicode(md_gene.cell_value(row, md_gene_codelist_col)).strip()
     attLocation = unicode(md_gene.cell_value(row, md_gene_attLocation_col)).strip()
@@ -471,9 +468,13 @@ for row in range(md_gene_row_start, md_gene.nrows):
     attValue = unicode(md_gene.cell_value(row, md_gene_attValue_col)).strip()
     tag_dict = {'value': value, 'xpath': xpath, 'codelist': code_list}
     generic_dict[tag] = tag_dict
-    if not value: 
+    if not md_gene.cell_type(row, md_gene_value_col):
+        # Default datetime is utc timestamp
+        if tag == 'Metadata date':
+            value = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+        else:
         #print "> empty MD generic field row : %s ignored" % str(int(row)+1) 
-        continue    
+            continue    
     # empty Xpath
     if not xpath:
         # Get excel version
@@ -561,12 +562,12 @@ for row in range(fields_row_start, md_fields.nrows):
         mandatory = unicode(field_mandatory_list[col].value).strip()
         xpath = unicode(help.cell_value(col+delta, xpath_col)).strip()
         if mandatory == 'Optional':
-            if not md_fields.cell_value(row, col): 
+            if not md_fields.cell_type(row, col):
                 if 'descriptiveKeywords' in xpath:
                     xpath = xpath.split("/gmd:MD_Keywords")[0]
                     emptyDescriptiveKeywords.append(xpath)
                     # list of xpath of empty descriptiveKeywords
-                continue    
+                continue
         field_value = unicode(md_fields.cell_value(row, col)).strip()
         att_name = unicode(help.cell_value(col+delta, att_name_col)).strip()
         att_location = unicode(help.cell_value(col+delta, att_loc_col)).strip()
@@ -696,11 +697,7 @@ for row in range(fields_row_start, md_fields.nrows):
     if MFopenwis:
         if gfnc:
             with codecs.open(link_file, 'a', 'utf-8') as f:
-                # Reformating refTime
-                refTimelist = refTime.split(",")
-                refTime00list = [ref+'00' for ref in refTimelist]
-                refTime00 = ",".join(refTime00list)
-                f.write("\n\"" + urn + "\" ; \"" + gfnc + "\" ; \"" + refTime00 + "\"")
+                f.write("\n\"" + urn + "\" ; \"" + gfnc + "\" ; \"" + refTime + "\"")
         else:
             option_error = True
             
