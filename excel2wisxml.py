@@ -34,7 +34,7 @@ import os.path
 
 
 VERSION="1.8"
-EXCEL_FIRST_COMPATIBLE_VERSION="2.5"
+EXCEL_FIRST_COMPATIBLE_VERSION="2.6"
 
 
 #########################
