@@ -132,24 +132,6 @@
 				</gmd:MD_Keywords>
 			</gmd:descriptiveKeywords>
 <!--. end paragraph2.1-->
-<!--. paragraphe2.5 3/APPLICATION DOMAIN -->
-			<gmd:descriptiveKeywords>
-				<gmd:MD_Keywords>
-					<gmd:keyword/>
-					<gmd:thesaurusName>
-						<gmd:CI_Citation>
-                            <gmd:title/>
-							<gmd:date>
-								<gmd:CI_Date>
-                                    <gmd:date/>
-                                    <gmd:dateType/>
-								</gmd:CI_Date>
-							</gmd:date>
-						</gmd:CI_Citation>
-					</gmd:thesaurusName>
-				</gmd:MD_Keywords>
-			</gmd:descriptiveKeywords>
-<!--. end paragraph2.5-->	
 <!--. paragraph6.1 4/DISTRIBUTION POLICY-->
 			<gmd:descriptiveKeywords>
 				<gmd:MD_Keywords>
