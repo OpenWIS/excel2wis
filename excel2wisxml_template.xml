@@ -154,40 +154,10 @@
 			</gmd:descriptiveKeywords>
 <!--. end paragraph6.1 -->	
 <!--. paragraphe8.1 5/PLACE-->			
-			<gmd:descriptiveKeywords>
-				<gmd:MD_Keywords>
-					<gmd:keyword/>
-					<gmd:thesaurusName>
-						<gmd:CI_Citation>
-                            <gmd:title/>
-							<gmd:date>
-								<gmd:CI_Date>
-                                    <gmd:date/>
-                                    <gmd:dateType/>
-								</gmd:CI_Date>
-							</gmd:date>
-						</gmd:CI_Citation>
-					</gmd:thesaurusName>
-				</gmd:MD_Keywords>
-			</gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords/>
 <!--. end paragraph8.1 -->
 <!--. paragraph8.3 6/TIME-->
-			<gmd:descriptiveKeywords>
-				<gmd:MD_Keywords>
-                    <gmd:keyword/>
-					<gmd:thesaurusName>
-						<gmd:CI_Citation>
-                            <gmd:title/>
-                            <gmd:date>
-								<gmd:CI_Date>
-                                    <gmd:date/>
-                                    <gmd:dateType/>
-								</gmd:CI_Date>
-							</gmd:date>
-						</gmd:CI_Citation>
-					</gmd:thesaurusName>
-				</gmd:MD_Keywords>
-			</gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords/>
 <!--. end paragraph8.3 -->			
 <!--. end paragraph8 -->	
 <!--. MLparagraph6.4 -->
