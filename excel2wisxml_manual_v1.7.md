@@ -78,7 +78,7 @@ For each row :
 Regular case is to add the metadata tag value at the location specified by the xpath.
 
 Other elements can be added according to which _Help_ cells are filled :
-- codeList and codeListValue attributes ;
+- codeList and codeListValue attributes (added at the location specified by the xpath, except for Keywords)
 - other comma-separated attributes (added at the location specified in _Attribute Location_ or at xpath location if _Attribute Location_ is empty) ;
 - thesaurus name, date, dateType and codeList attributes (information available in _MD Thesaurus_ sheet) ;
 - type tag with its associated value and codelist attributes (_KeywordType_ and _DateType_ for instance).
