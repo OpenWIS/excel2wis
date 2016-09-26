@@ -31,7 +31,8 @@ namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd',
               'xlink': 'http://www.w3.org/1999/xlink',
               'gml': 'http://www.opengis.net/gml/3.2',
               'gts': 'http://www.isotc211.org/2005/gts',
-              'gmx': 'http://www.isotc211.org/2005/gmx'}
+              'gmx': 'http://www.isotc211.org/2005/gmx',
+              'srv': 'http://www.isotc211.org/2005/srv'}
 
 
 # Add an occurrence of an ordered tag missing from the template
@@ -140,9 +141,8 @@ def addMissingTags(tree, xpath, tag):
                 sub_element = etree.SubElement(parent, tag_name)
     return sub_element, xpath
 
-# Add a single tag or attribute
-# if the element already exists, its value is replaced
-def addMetadataElement(tree, xpath, value, attribute='No', prefix='No'):
+# Add tags but no value
+def addMetadataTag(tree, xpath):
     element = tree.xpath(xpath, namespaces=namespaces)
     # Xpath found in the template
     if len(element) != 0:
@@ -154,6 +154,12 @@ def addMetadataElement(tree, xpath, value, attribute='No', prefix='No'):
         # Rebuild of xpath to add missing tag
         for i, tag in enumerate(xpath_list):
             el, xpath = addMissingTags(tree, xpath, tag)
+    return el, xpath
+
+# Add a single tag or attribute
+# if the element already exists, its value is replaced
+def addMetadataElement(tree, xpath, value, attribute='No', prefix='No'):
+    el, xpath = addMetadataTag(tree, xpath)
     # Insert tag or attribute value
     if attribute == 'No':
         el.text = value
