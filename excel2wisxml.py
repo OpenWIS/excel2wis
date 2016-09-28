@@ -33,8 +33,8 @@ from excel2wisxmlutils import *
 import os.path
 
 
-VERSION="1.9"
-EXCEL_FIRST_COMPATIBLE_VERSION="2.6"
+VERSION="2.0"
+EXCEL_FIRST_COMPATIBLE_VERSION="3.0"
 
 #########################
 # Add OpenWIS DCPC tags #
