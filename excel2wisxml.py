@@ -513,17 +513,14 @@ for row in range(md_gene_row_start, md_gene.nrows):
         if translation and translation_value:
             addTranslation(common_tree, xpath, translation_value, secondLanguage)
 
-    except ValueError:
-        error_gene.append(row+1)
-        continue
+    except:
+        sys.exit("MD generic tag %s\n\terror in xpath %s" % (tag, xpath))
+
 
 # Write WARN messages for MD generic
-if empty_xpath_gene or error_gene:
+if empty_xpath_gene:
     print "\n--- WARN -------- MD generic ---"
-    if empty_xpath_gene:
-        print "elements on row(s) %s have no XPATH" % ", ".join([str(x) for x in empty_xpath_gene])
-    if error_gene:
-        print "elements on row(s) %s cannot be created, please check their xpath expression" % ", ".join([str(x) for x in error_gene])
+    print "elements on row(s) %s have no XPATH" % ", ".join([str(x) for x in empty_xpath_gene])
     print "--------------------------------\n"
     
 # Print version number in CSV file
@@ -544,7 +541,6 @@ for row in range(fields_row_start, md_fields.nrows):
     tree = copy.deepcopy(common_tree)
     # Lists for WARN messages
     empty_xpath = []
-    error = []
     gfnc = ""
     
     # Put translations in a dictionary for MD Fields current row
@@ -663,11 +659,8 @@ for row in range(fields_row_start, md_fields.nrows):
 
         #except Exception as e:
         #    print id, e
-        except ValueError:
-            error.append(id)
-            continue
-        except etree.XPathEvalError:  # [] in xpath
-            error.append(id)
+        except:
+            sys.exit("MD Fields section %s\n\terror in xpath %s" % (id, xpath))
             
     # Remove empty descriptiveKeywords
     if emptyDescriptiveKeywords:
@@ -705,13 +698,10 @@ for row in range(fields_row_start, md_fields.nrows):
     print "\n##### File %s has been generated" % filename
 
     # Write WARN messages for MD Fields - Help for each row
-    if empty_xpath or error:
+    if empty_xpath:
         print "--- WARN -------- Fields row", metadata_row, "- Help ---"
-        if empty_xpath:
-            # not empty (optional) elements in MD Fields with no xpath linked in Help
-            print "elements %s have no XPATH" % ", ".join(empty_xpath)
-        if error:
-            print "elements %s cannot be created, please check their xpath expression" % ", ".join(error)
+        # not empty (optional) elements in MD Fields with no xpath linked in Help
+        print "elements %s have no XPATH" % ", ".join(empty_xpath)
     print "-----------------------------------------\n"
     
 if MFopenwis:
