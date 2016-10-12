@@ -33,7 +33,7 @@ from excel2wisxmlutils import *
 import os.path
 
 
-VERSION="2.0"
+VERSION="2.1"
 EXCEL_FIRST_COMPATIBLE_VERSION="3.0"
 
 #########################
@@ -407,8 +407,7 @@ try:
                     "ERROR : Paragraphs number in MD Fields sheet : "
                     + "%s doesn't match paragraphs" % field_id
                     + "number in Help sheet : %s" % help_id)
-        # Check (non INSPIRE) mandatory fields
-        # TODO INSPIRE : check mandatory fields for INSPIRE
+        # Check mandatory fields
         mandatory = unicode(field_mandatory_list[i].value).strip()
         if mandatory == 'Mandatory':
             for row in range(fields_row_start, md_fields.nrows):
