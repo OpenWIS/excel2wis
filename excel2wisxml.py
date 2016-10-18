@@ -544,12 +544,13 @@ for row in range(fields_row_start, md_fields.nrows):
     
     # Put translations in a dictionary for MD Fields current row
     translation_fields = {}
-    for col in range(fields_col_start, md_fields_translation.ncols):
-        id = unicode(md_fields_translation.cell_value(fields_row_section, col)).strip()
-        if id.startswith('lg:'):
-            id = id[3:]
-            value = unicode(md_fields_translation.cell_value(row, col)).strip()
-            translation_fields[id] = value
+    if translation:
+        for col in range(fields_col_start, md_fields_translation.ncols):
+            id = unicode(md_fields_translation.cell_value(fields_row_section, col)).strip()
+            if id.startswith('lg:'):
+                id = id[3:]
+                value = unicode(md_fields_translation.cell_value(row, col)).strip()
+                translation_fields[id] = value
 
     for col in range(fields_col_start, md_fields.ncols):
         id = unicode(field_id_list[col].value).strip()  # element ID
