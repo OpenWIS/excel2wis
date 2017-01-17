@@ -96,6 +96,16 @@
 					<gmd:role/>
 				</gmd:CI_ResponsibleParty>
 			</gmd:pointOfContact>
+			<gmd:resourceMaintenance>
+				<gmd:MD_MaintenanceInformation>
+					<gmd:maintenanceAndUpdateFrequency>
+						<gmd:MD_MaintenanceFrequencyCode/>
+					</gmd:maintenanceAndUpdateFrequency>
+					<gmd:userDefinedMaintenanceFrequency>
+						<gts:TM_PeriodDuration/>
+					</gmd:userDefinedMaintenanceFrequency>	
+				</gmd:MD_MaintenanceInformation>
+			</gmd:resourceMaintenance>				
 <!--. end paragraph14.2 -->
 <!--. paragraphe9.1 1/INSPIRE THEME -->
 			<gmd:descriptiveKeywords>
