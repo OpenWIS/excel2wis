@@ -122,6 +122,21 @@ def addGFNC(tree, title, xpath, value):
     nb_filename = len(online_list)
     return nb_filename
 
+# Add Temporal Extent Indeterminate Position
+# in the attribute indeterminatePosition
+# If the keyword "before" or "after" is identified
+# the time position following it is added as a value
+def addTemporalExtentIndeterminatePosition(tree, xpath, field_value):
+    if field_value.startswith("before") or field_value.startswith("after"):
+        temporalExtent = field_value.split(" ")
+        if len(temporalExtent) != 2:
+            sys.exit("Temporal extent value 'before' or 'after' cannot be set alone. Please indicate one temporal position following.")
+        else:
+            addMetadataElement(tree, xpath, temporalExtent[0], "indeterminatePosition")
+            addMetadataElement(tree, xpath, temporalExtent[1])
+    else:
+        addMetadataElement(tree, xpath, field_value, "indeterminatePosition")
+
 # Add link for resource locator
 # and associated protocol and name (3 elements for each link)
 # protocol is static, name and link are dynamic
@@ -511,10 +526,12 @@ for row in range(md_gene_row_start, md_gene.nrows):
         # Add translations
         if translation and translation_value:
             addTranslation(common_tree, xpath, translation_value, secondLanguage)
-
+    except SystemExit as e:
+    # sys.exit() generates a SystemExit exception
+        print "ERROR section", id, e
+        sys.exit()
     except:
         sys.exit("MD generic tag %s\n\terror in xpath %s" % (tag, xpath))
-
 
 # Write WARN messages for MD generic
 if empty_xpath_gene:
@@ -565,12 +582,13 @@ for row in range(fields_row_start, md_fields.nrows):
                     # list of xpath of empty descriptiveKeywords
                 continue
         field_value = unicode(md_fields.cell_value(row, col)).strip()
+        field_value_lower = field_value.lower()
         att_name = unicode(help.cell_value(col+delta, att_name_col)).strip()
         att_location = unicode(help.cell_value(col+delta, att_loc_col)).strip()
         help_thesaurus = unicode(help.cell_value(col+delta, thesaurus_col)).strip()
         multivalue = unicode(help.cell_value(col+delta, multivalue_col)).strip()
         code_list = unicode(help.cell_value(col+delta, codelist_col)).strip()
-        type = unicode(help.cell_value(col+delta, type_col)).strip()
+        element_type = unicode(help.cell_value(col+delta, type_col)).strip()
         att_val = unicode(help.cell_value(col+delta, att_val_col)).strip()
         att_val_exception = att_val.startswith('MD_Fields')
         # empty Xpath
@@ -602,7 +620,13 @@ for row in range(fields_row_start, md_fields.nrows):
 
             # Specific processing (cell value is not added exactly at XPATH location)
             # Free links
-            if xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL':
+            # Temporal Extent
+            temporal_extent_xpath = ['/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:beginPosition', '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:endPosition']
+            temporal_extent_attribut = ["now", "unknown", "after", "before"]
+            if xpath in temporal_extent_xpath and (field_value_lower in temporal_extent_attribut or "before" in field_value_lower or "after" in field_value_lower):
+                # Put the value in attribute indeterminatePosition
+                addTemporalExtentIndeterminatePosition(tree, xpath, field_value_lower)
+            elif xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL':
                 addLink(tree, xpath, field_value, urn)
             # Resource Format
             elif xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat[]/gmd:MD_Format/gmd:name/gco:CharacterString':
@@ -633,14 +657,14 @@ for row in range(fields_row_start, md_fields.nrows):
                 addAttribute(tree, xpath, att_name, att_val, att_location)
 
             # special case of Date (two fields must be filled : date and dateType)
-            if type.startswith('Date:'):
+            if element_type.startswith('Date:'):
                 # add creation, publication or revision in dateType (paragraph 10.2.2)
                 # the code_list is linked to the dateType
-                addDateType(tree, xpath, type, code_list)
+                addDateType(tree, xpath, element_type, code_list)
             # normal case : addition of two attributes
-            elif type.startswith('Keyword:'):
+            elif element_type.startswith('Keyword:'):
                 # add KeywordType
-                addKeywordType(tree, xpath, type, code_list)
+                addKeywordType(tree, xpath, element_type, code_list)
             # Add codelist
             elif code_list:
                 addMetadataElement(tree, xpath, field_value, 'codeListValue')
@@ -659,6 +683,10 @@ for row in range(fields_row_start, md_fields.nrows):
 
         #except Exception as e:
         #    print id, e
+        except SystemExit as e:
+        # sys.exit() generates a SystemExit exception
+            print "ERROR row", row+1, "section", id, e
+            sys.exit()
         except:
             sys.exit("MD Fields section %s\n\terror in xpath %s" % (id, xpath))
             
