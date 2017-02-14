@@ -33,7 +33,7 @@ from excel2wisxmlutils import *
 import os.path
 
 
-VERSION="2.22"
+VERSION="2.3"
 EXCEL_FIRST_COMPATIBLE_VERSION="3.3"
 
 #########################
@@ -129,10 +129,8 @@ def addGFNC(tree, title, xpath, value):
 def addTemporalExtentIndeterminatePosition(tree, xpath, field_value):
     if field_value.startswith("before") or field_value.startswith("after"):
         temporalExtent = field_value.split(" ")
-        if len(temporalExtent) != 2:
-            sys.exit("Temporal extent value 'before' or 'after' cannot be set alone. Please indicate one temporal position following.")
-        else:
-            addMetadataElement(tree, xpath, temporalExtent[0], "indeterminatePosition")
+        addMetadataElement(tree, xpath, temporalExtent[0], "indeterminatePosition")
+        if len(temporalExtent) > 1:
             addMetadataElement(tree, xpath, temporalExtent[1])
     else:
         addMetadataElement(tree, xpath, field_value, "indeterminatePosition")
