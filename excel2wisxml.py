@@ -613,13 +613,13 @@ for row in range(fields_row_start, md_fields.nrows):
                 field_value = 'GTSPriority' + field_value[9]
 
             # Specific processing (cell value is not added exactly at XPATH location)
-            # Free links
             # Temporal Extent
             temporal_extent_xpath = ['/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:beginPosition', '/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:endPosition']
             temporal_extent_attribut = ["now", "unknown", "after", "before"]
             if xpath in temporal_extent_xpath and (field_value_lower in temporal_extent_attribut or "before" in field_value_lower or "after" in field_value_lower):
                 # Put the value in attribute indeterminatePosition
                 addTemporalExtentIndeterminatePosition(tree, xpath, field_value_lower)
+            # Free links
             elif xpath == '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL':
                 addLink(tree, xpath, field_value, urn)
             # Resource Format
@@ -650,9 +650,9 @@ for row in range(fields_row_start, md_fields.nrows):
             if att_name != 'No' and not att_val_exception:
                 addAttribute(tree, xpath, att_name, att_val, att_location)
 
-            # special case of Date (two fields must be filled : date and dateType)
+            # special case of Date
             if element_type.startswith('Date:'):
-                # add creation, publication or revision in dateType (paragraph 10.2.2)
+                # add creation, publication or revision in dateType tag (paragraph 10.2.2)
                 # the code_list is linked to the dateType
                 addDateType(tree, xpath, element_type, code_list)
             # normal case : addition of two attributes
