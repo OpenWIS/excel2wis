@@ -646,7 +646,7 @@ def excel2wisxml(excel_filename, MFopenwis=False):
                 if att_name != 'No' and not att_val_exception:
                     addAttribute(tree, xpath, att_name, att_val, att_location)
 
-                # special case of Date (two fields must be filled : date and dateType)
+                # special case of Date
                 if element_type.startswith('Date:'):
                     # add creation, publication or revision in dateType (paragraph 10.2.2)
                     # the code_list is linked to the dateType
