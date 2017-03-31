@@ -1,7 +1,5 @@
 # Versioning
 
-This manuel refers to script version 1.6
-
 The script version and excel file compatible version are referenced at the beginning of the script.
 
 Excel file version is referenced in MD generic sheet. During generic metadata processing, the script checks if versions match. Otherwise it stops.
@@ -45,7 +43,7 @@ An element is added only when its value is not null.
 
 ## 1. Generic metadata (_MD generic_ sheet)
 
-Each row of _MD generic_ sheet stands for a metadata element. The element's value is added at the location specified by the xpath. A codelist and several attributes can also be added.
+Each row of _MD generic_ sheet stands for a metadata element. The element's value is added at the location specified by the xpath. A codelist, attributes and a translation can also be added.
 
 If there is a field value but no associated xpath, a warn message is displayed, except for **ExcelVersion** element. This element is not added in the metadata file. It is used to check if the excel file version is compatible with the script version. If not, the script stops. 
 
@@ -103,6 +101,9 @@ Value is replaced by _"GTSPriorityN"_ with _N_ the 9th character of _MD Field_ c
 - **File name** [identified with its xpath]  
 One or several GFNC file name(s) and associated information are added :
     - file description (dynamic value : Resource title)
+    
+- **Temporal Extent** [identified with its xpath]
+For indeterminate temporal extent value, the value is not added as a tag value but as an attribute value. If the value is "before" or "after" a potential additionnal time element can be added as the tag value.
 
 - **Free links** [identified with its xpath]  
 Several links can be added. 3 tags are added for each link :
@@ -118,11 +119,10 @@ Several resource formats can be added. 4 tags are added for each resource format
     - mime type  
 If file names are specified, format name, version and mime type information is also added in the GFNC section for each file name.
 
-- **Tag or group of tags added several times** [Mutlivalue set to Yes]  
+- **Tag or group of tags added several times** [Multivalue set to Yes]  
 Add a group of tags as many times as the number of comma-separated values. First multivalued tag to add is suffixed by _"[]"_.
 
-- **Attribute addition exception**  
-[Attribute Value set to MD_Fields]
+- **Attribute addition exception** [Attribute Value set to MD_Fields]
 The value read in _MD Fields_ is added as an attribute value at xpath location and not as a tag value.
 
 ### Translations
