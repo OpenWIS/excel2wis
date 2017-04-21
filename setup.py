@@ -7,6 +7,9 @@ setup(
     version='3.3',
     include_package_data = True,
     packages=["excel2wisxml"],
+    install_requires=[
+        'xlrd',
+    ],
     zip_safe = False,
     entry_points={
         'console_scripts': [
