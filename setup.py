@@ -9,6 +9,8 @@ setup(
     packages=["excel2wisxml"],
     install_requires=[
         'xlrd',
+        'lxml',
+        'argparse',
     ],
     zip_safe = False,
     entry_points={
