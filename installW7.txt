@@ -29,4 +29,6 @@ https://pypi.python.org/packages/85/35/7b5f9935ac1a45e67ff9ffa0508864cd015f1d044
 
 8/ Install it 
 
+9/Update your path set PATH=%PATH%;C:\development\apps\Python27\;C:\development\apps\Python27\Scripts
+
 Then you play with excel2wis
