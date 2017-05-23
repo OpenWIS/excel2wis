@@ -504,7 +504,7 @@ def excel2wisxml(excel_filename, MFopenwis=False):
         # identify translation use case
         # save second language
         # and add elements
-            if tag.startswith('Second Language') and value:
+            if tag.startswith('Metadata second language') and value:
                 translation = True
                 secondLanguage = value
                 addLocaleInfo(common_tree, xpath, secondLanguage)
