@@ -4,7 +4,7 @@ from setuptools import find_packages
 
 setup(
     name='excel2wisxml',
-    version='3.3',
+    version='1.0.0',
     include_package_data = True,
     packages=["excel2wisxml"],
     install_requires=[
