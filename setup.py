@@ -4,11 +4,13 @@ from setuptools import find_packages
 
 setup(
     name='excel2wisxml',
-    version='3.3',
+    version='3.4.3',
     include_package_data = True,
     packages=["excel2wisxml"],
     install_requires=[
         'xlrd',
+        'lxml',
+        'argparse',
     ],
     zip_safe = False,
     entry_points={

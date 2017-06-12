@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 3, 10.2.2, 2, 8.2, 8.3, 8.4, 13.1, 13.2.3, 10.1, 4 -->								
+<gmd:MD_Metadata xsi:schemaLocation="http://www.isotc211.org/2005/gmd
+    http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd 
+    http://www.isotc211.org/2005/gmx
+    http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd" 
+				xmlns:gmd="http://www.isotc211.org/2005/gmd" 
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+				xmlns:xlink="http://www.w3.org/1999/xlink" 
+				xmlns:gml="http://www.opengis.net/gml/3.2" 
+				xmlns:gts="http://www.isotc211.org/2005/gts" 
+				xmlns:gmx="http://www.isotc211.org/2005/gmx" 
+				xmlns:gfc="http://www.isotc211.org/2005/gfc" 
+				xmlns:gco="http://www.isotc211.org/2005/gco">
+				
+<!--. paragraph15.2 =15.1-->								
+	<gmd:fileIdentifier/>
+<!--. end paragraph15.2  =15.1-->								
+<!--.paragraph18 -->								
+	<gmd:language/>
+<!--. end paragraph18 -->								
+	<gmd:characterSet>
+		<gmd:MD_CharacterSetCode codeListValue="utf8" codeList="MD_CharacterSetCode">utf8</gmd:MD_CharacterSetCode>
+	</gmd:characterSet>
+<!--. paragraph3 -->								
+	<gmd:hierarchyLevel/>
+<!--. end paragraph3 -->								
+<!--. paragraph16.1.1 -->								
+	<gmd:contact>
+		<gmd:CI_ResponsibleParty>
+			<gmd:individualName/>
+<!--. end paragraph16.1.1 -->
+<!--. paragraph16.1.2 -->								
+			<gmd:organisationName/>
+<!--. end paragraph16.1.2 -->
+<!--. paragraph16.1.3 -->									
+    		<gmd:contactInfo>
+                <gmd:CI_Contact>
+                    <gmd:phone/>
+                    <gmd:address/>
+                </gmd:CI_Contact>
+            </gmd:contactInfo>
+<!--. end paragraph16.1.3 -->								
+<!--. paragraph16.2 -->								
+			<gmd:role/>
+		</gmd:CI_ResponsibleParty>
+	</gmd:contact>
+<!--. end paragraph16.2 -->								
+<!--. paragraph17 -->								
+	<gmd:dateStamp/>
+<!--. end paragraph17 -->								
+<!--. paragraph19.1 -->								
+	<gmd:metadataStandardName/>
+<!--. end paragraph19.1 -->								
+<!--. paragraph19.2 -->								
+	<gmd:metadataStandardVersion/>
+<!--. end paragraph19.2 -->		
+    <gmd:locale/>
+<!--. paragraph9.2 -->								
+	<gmd:referenceSystemInfo/>
+<!--. end paragraph9.2 -->								
+	<gmd:identificationInfo>
+		<gmd:MD_DataIdentification>
+			<gmd:citation>
+				<gmd:CI_Citation>
+<!--. MLparagraph1 -->
+					<gmd:title/>
+<!--. end paragraph1 -->	
+<!--. paragraph10.2.1 and 10.2.2/5.2,5.3,5.4 -->	
+                    <gmd:date/>
+<!--. end paragraph10.2.2 -->	
+<!--.paragraph5 -->
+					<gmd:identifier/>
+<!--. end paragraph5 -->
+				</gmd:CI_Citation>
+			</gmd:citation>
+			
+<!--. MLparagraph2 -->								
+			<gmd:abstract/>
+<!--. end paragraph2 -->	
+<!--. paragraph14.1.1 -->	
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName/>
+					<gmd:organisationName/>
+<!--. end paragraph14.1.1 -->	
+<!--. paragraph14.1.2 -->	
+					<gmd:contactInfo>
+                        <gmd:CI_Contact>
+                            <gmd:phone/>
+                            <gmd:address/>
+                        </gmd:CI_Contact>
+                    </gmd:contactInfo>
+<!--. end paragraph14.1.2 -->	
+<!--. paragraph14.2 -->	
+					<gmd:role/>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:resourceMaintenance>
+				<gmd:MD_MaintenanceInformation>
+                    <gmd:maintenanceAndUpdateFrequency/>
+                    <gmd:userDefinedMaintenanceFrequency/>
+				</gmd:MD_MaintenanceInformation>
+			</gmd:resourceMaintenance>				
+<!--. end paragraph14.2 -->
+<!--. paragraphe9.1 1/INSPIRE THEME -->
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+					<gmd:keyword/>
+					<gmd:thesaurusName>
+						<gmd:CI_Citation>
+                            <gmd:title/>
+							<gmd:date>
+								<gmd:CI_Date>
+                                    <gmd:date/>
+                                    <gmd:dateType/>
+								</gmd:CI_Date>
+							</gmd:date>
+						</gmd:CI_Citation>
+					</gmd:thesaurusName>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+<!--. end paragraph9.1-->
+<!--. paragraphe2.1 2/CLASSIFICATION THEME -->
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+					<gmd:keyword/>
+                    <gmd:type/>
+					<gmd:thesaurusName>
+						<gmd:CI_Citation>
+                            <gmd:title/>
+							<gmd:date>
+								<gmd:CI_Date>
+                                    <gmd:date/>
+                                    <gmd:dateType/>
+								</gmd:CI_Date>
+							</gmd:date>
+						</gmd:CI_Citation>
+					</gmd:thesaurusName>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+<!--. end paragraph2.1-->
+<!--. paragraph6.1 4/DISTRIBUTION POLICY-->
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+                    <gmd:keyword/>
+                    <gmd:type/>
+					<gmd:thesaurusName>
+						<gmd:CI_Citation>
+                            <gmd:title/>
+                            <gmd:date>
+								<gmd:CI_Date>
+                                    <gmd:date/>
+                                    <gmd:dateType/>
+								</gmd:CI_Date>
+							</gmd:date>
+						</gmd:CI_Citation>
+					</gmd:thesaurusName>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+<!--. end paragraph6.1 -->	
+<!--. paragraphe8.1 5/PLACE-->			
+            <gmd:descriptiveKeywords/>
+<!--. end paragraph8.1 -->
+<!--. paragraph8.3 6/TIME-->
+            <gmd:descriptiveKeywords/>
+<!--. end paragraph8.3 -->			
+<!--. end paragraph8 -->	
+<!--. MLparagraph6.4 -->
+<!--. end paragraph6.4 -->			
+<!--. MLparagraph6.5 -->			
+			<gmd:resourceConstraints>
+				<gmd:MD_LegalConstraints >
+					<gmd:useLimitation/>
+					<gmd:accessConstraints/>
+					<gmd:useConstraints/>
+					<gmd:otherConstraints/>
+					<gmd:otherConstraints/>
+					<gmd:otherConstraints/>
+				</gmd:MD_LegalConstraints>
+			</gmd:resourceConstraints>	
+<!--. paragraph11.2 -->
+<!--.end  paragraphe11.2 -->
+<!--. SPATIAL RESOLUTION-->		
+			<gmd:spatialResolution>
+				<gmd:MD_Resolution>
+					<gmd:distance/>
+				</gmd:MD_Resolution>
+			</gmd:spatialResolution>									
+<!--.paragraph6 -->					
+			<gmd:language/>
+<!--. end paragraphe6 -->					
+<!--.paragraph7 -->					
+			<gmd:topicCategory/>
+<!--. end paragraphe7 -->
+            <gmd:environmentDescription/>			
+<!--. paragraph9.1 -->					
+			<gmd:extent>
+				<gmd:EX_Extent>
+					<gmd:geographicElement>
+						<gmd:EX_GeographicBoundingBox>
+							<gmd:westBoundLongitude/>
+							<gmd:eastBoundLongitude/>
+							<gmd:southBoundLatitude/>
+							<gmd:northBoundLatitude/>
+						</gmd:EX_GeographicBoundingBox>
+					</gmd:geographicElement>
+<!--. end paragraph9.1 -->		
+<!--. paragraph10.1 -->		
+                    <gmd:temporalElement>
+                        <gmd:EX_TemporalExtent>
+                            <gmd:extent>
+                                <gml:TimePeriod gml:id="boundingTemporalExtentPeriod">
+                                    <gml:beginPosition/>
+                                    <gml:endPosition/>
+                                </gml:TimePeriod>
+                            </gmd:extent>
+                        </gmd:EX_TemporalExtent>
+                    </gmd:temporalElement>
+				</gmd:EX_Extent>
+			</gmd:extent>
+<!--. end paragraph10.1 -->		
+		</gmd:MD_DataIdentification>	
+	</gmd:identificationInfo>
+
+<!--. paragraph4 -->								
+	<gmd:distributionInfo>
+		<gmd:MD_Distribution>
+<!--.end  paragraph4.3 -->
+            <gmd:distributor>
+                <gmd:MD_Distributor>
+                    <gmd:distributorContact>
+                        <gmd:CI_ResponsibleParty>
+							<gmd:individualName/>
+                            <gmd:organisationName/>
+            				<gmd:contactInfo>
+                                <gmd:CI_Contact>
+                                <gmd:phone/>
+                                <gmd:address/>
+                                </gmd:CI_Contact>
+                            </gmd:contactInfo>
+                            <gmd:role/>
+                        </gmd:CI_ResponsibleParty>
+                    </gmd:distributorContact>
+                </gmd:MD_Distributor>
+            </gmd:distributor>
+<!--. paragraph4 -->								
+			<gmd:transferOptions>
+				<gmd:MD_DigitalTransferOptions>
+					<gmd:onLine>
+						<gmd:CI_OnlineResource>
+							<gmd:linkage>
+								<gmd:URL/>
+							</gmd:linkage>
+							<gmd:protocol>
+								<gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
+							</gmd:protocol>
+                            <gmd:name>
+                                <gco:CharacterString>Permanent link</gco:CharacterString>
+                            </gmd:name>
+						</gmd:CI_OnlineResource>
+					</gmd:onLine>
+				</gmd:MD_DigitalTransferOptions>
+			</gmd:transferOptions>
+		</gmd:MD_Distribution>
+	</gmd:distributionInfo>
+<!--.end  paragraph4 -->
+  <gmd:dataQualityInfo>
+    <gmd:DQ_DataQuality>
+      <gmd:scope/>
+      <gmd:report>
+        <gmd:DQ_DomainConsistency>
+          <gmd:result>
+            <gmd:DQ_ConformanceResult>
+              <gmd:specification>
+                <gmd:CI_Citation>
+                  <gmd:title/>
+                  <gmd:date>
+                    <gmd:CI_Date>
+                        <gmd:date/>
+						<gmd:dateType><gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode></gmd:dateType>
+                    </gmd:CI_Date>
+                  </gmd:date>
+                </gmd:CI_Citation>
+              </gmd:specification>
+              <gmd:explanation/>
+              <gmd:pass/>
+            </gmd:DQ_ConformanceResult>
+          </gmd:result>
+        </gmd:DQ_DomainConsistency>
+      </gmd:report>
+      <gmd:lineage/>
+    </gmd:DQ_DataQuality>
+  </gmd:dataQualityInfo>
+</gmd:MD_Metadata>
