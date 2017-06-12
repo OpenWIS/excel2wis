@@ -268,7 +268,7 @@ def excel2wisxml(excel_filename, MFopenwis=False):
 
     base_path = os.path.dirname(__file__)
 
-    VERSION="2.6"
+    SCRIPT_VERSION="3"
     EXCEL_FIRST_COMPATIBLE_VERSION="3.3"
 
 # Excel file location
@@ -536,7 +536,7 @@ def excel2wisxml(excel_filename, MFopenwis=False):
 # Print version number in CSV file
     if MFopenwis:
         with codecs.open(link_file, 'a', 'utf-8') as f:
-            f.write("EXCEL_VERSION=%s SCRIPT_VERSION=%s" % (excel_version,VERSION))
+            f.write("EXCEL_VERSION=%s SCRIPT_VERSION=%s" % (excel_version,SCRIPT_VERSION))
 
 #######################
 # Add specific metadata
@@ -702,7 +702,7 @@ def excel2wisxml(excel_filename, MFopenwis=False):
         filename = os.path.join(excel_path, "MD_" + uid + "_" + date + ".xml")
         with open(filename, "wb") as fo:
             fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-            fo.write('<!-- Metadata generated with Metadata-guide-record.xls version %s and excel2wisxml.py version %s -->\n' % (excel_version,VERSION))
+            fo.write('<!-- Metadata generated with Metadata-guide-record.xls version %s and excel2wisxml.py version %s -->\n' % (excel_version,SCRIPT_VERSION))
             fo.write(string_xml)
 
         if MFopenwis:
