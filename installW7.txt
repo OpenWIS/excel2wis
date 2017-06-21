@@ -1,0 +1,34 @@
+------------------------------------------------------
+How to install Python on Windows7 without admin right
+------------------------------------------------------
+
+1/ Download Python 2.7 :
+https://www.python.org/ftp/python/2.7.12/python-2.7.12.amd64.msi
+
+2/ Open mdos prompt and launch command (replace C:\development\apps\Python27 by directory where you want to install Python:
+prompt> msiexec /a python-2.7.12.amd64.msi /qb TARGETDIR=C:\development\apps\Python27
+
+3/ Launch regedit :
+Add a new key : HKEY_CURRENT_USER\Software\Python\PythonCore\2.7\InstallPath
+For the value put the path where Python has been installed example :
+C:\development\apps\Python27
+
+4/ Download pip :
+https://bootstrap.pypa.io/get-pip.py
+
+5/Then, run it from the command prompt:
+
+prompt> C:\development\apps\Python27\python.exe get-pip.py
+
+6/ Install xlrd and argparse from command prompt :
+prompt> C:\development\apps\Python27\Scripts\pip.exe install xlrd
+prompt> C:\development\apps\Python27\Scripts\pip.exe install argparse
+
+7/ Download lxml :
+https://pypi.python.org/packages/85/35/7b5f9935ac1a45e67ff9ffa0508864cd015f1d044cb28caf821144643632/lxml-3.3.3.win-amd64-py2.7.exe#md5=1d9576cc04f6bf67967205585e8de979
+
+8/ Install it 
+
+9/Update your path set PATH=%PATH%;C:\development\apps\Python27\;C:\development\apps\Python27\Scripts
+
+Then you play with excel2wis
