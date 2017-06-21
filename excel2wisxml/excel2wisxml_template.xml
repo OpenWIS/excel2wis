@@ -98,12 +98,8 @@
 			</gmd:pointOfContact>
 			<gmd:resourceMaintenance>
 				<gmd:MD_MaintenanceInformation>
-					<gmd:maintenanceAndUpdateFrequency>
-						<gmd:MD_MaintenanceFrequencyCode/>
-					</gmd:maintenanceAndUpdateFrequency>
-					<gmd:userDefinedMaintenanceFrequency>
-						<gts:TM_PeriodDuration/>
-					</gmd:userDefinedMaintenanceFrequency>	
+                    <gmd:maintenanceAndUpdateFrequency/>
+                    <gmd:userDefinedMaintenanceFrequency/>
 				</gmd:MD_MaintenanceInformation>
 			</gmd:resourceMaintenance>				
 <!--. end paragraph14.2 -->
@@ -211,16 +207,16 @@
 					</gmd:geographicElement>
 <!--. end paragraph9.1 -->		
 <!--. paragraph10.1 -->		
-					<gmd:temporalElement>
-						<gmd:EX_TemporalExtent>
-							<gmd:extent>
-                                <gml:TimePeriod>
-									<gml:beginPosition/>
+                    <gmd:temporalElement>
+                        <gmd:EX_TemporalExtent>
+                            <gmd:extent>
+                                <gml:TimePeriod gml:id="boundingTemporalExtentPeriod">
+                                    <gml:beginPosition/>
                                     <gml:endPosition/>
-								</gml:TimePeriod>
-							</gmd:extent>
-						</gmd:EX_TemporalExtent>
-					</gmd:temporalElement>
+                                </gml:TimePeriod>
+                            </gmd:extent>
+                        </gmd:EX_TemporalExtent>
+                    </gmd:temporalElement>
 				</gmd:EX_Extent>
 			</gmd:extent>
 <!--. end paragraph10.1 -->		
