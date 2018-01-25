@@ -45,6 +45,8 @@ An element is added only when its value is not null.
 
 Each row of _MD generic_ sheet stands for a metadata element. The element's value is added at the location specified by the xpath. A codelist, attributes and a translation can also be added.
 
+If there is no metadata date value, the computer time stamp is added by default.    
+
 If there is a field value but no associated xpath, a warn message is displayed, except for **ExcelVersion** element. This element is not added in the metadata file. It is used to check if the excel file version is compatible with the script version. If not, the script stops. 
 
 For some elements - identified thanks to their tag name - some other tags are added :
