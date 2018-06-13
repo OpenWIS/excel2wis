@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # ---------------------------------------------------------------------
-# Convert an excel template document to set of XML metadata 
+# Convert an excel template document to set of XML metadata
 # compliant with WMO Core 1.3 profile
 # Copyright (C) 2016  METEO FRANCE <gisc_support@meteo.fr>
 #
@@ -45,7 +45,8 @@ def addMultipleElement(parent, xpath, tag):
         prefix, tag_name = tagsplit
         tag_name = tag_name.split("[")[0]
         el_list = parent.findall("{" + namespaces[prefix] + "}" + tag_name)
-        new_element = parent.makeelement("{" + namespaces[prefix] + "}" + tag_name)
+        new_element = parent.makeelement("{" + namespaces[prefix] + "}" +
+                                         tag_name)
     # no prefix
     else:
         tag_name = str(tag)
@@ -60,12 +61,14 @@ def addMultipleElement(parent, xpath, tag):
         parent.append(new_element)
     new_element_index = len(el_list) + 1
     xpath_list = xpath.split('/')
-    xpath_list[-1] = xpath_list[-1].split("[")[0] + "[" + str(new_element_index) + "]"
+    xpath_list[-1] = xpath_list[-1].split("[")[0] + "[" + \
+        str(new_element_index) + "]"
     xpath = "/".join(xpath_list)
     return xpath
 
+
 # Add attribute for generic metadata
-#def addAttribute(tree, xpath, name, value):
+# def addAttribute(tree, xpath, name, value):
 #    name = name.split(',')
 #    value = value.split(',')
 #    for i, attName in enumerate(name):
@@ -94,20 +97,22 @@ def addAttribute(tree, xpath, att_name, att_val, att_loc):
             attLoc = att_loc[i]
             attVal = att_val[i]
         except:
-            sys.exit("\nERROR There must be as many Attribute Location" \
-                   + "and Values as Attribute Names (comma separated even if null)")
+            sys.exit("\nERROR There must be as many Attribute Location" +
+                     "and Values as Attribute Names " +
+                     "(comma separated even if null)")
         # Attribute is added at xpath location unless Attribute Location col
         # is filled
         if attLoc:
             try:
                 xpath_list = xpath.split("/")[:]
                 loc = xpath_list.index(attLoc)
-                xpath_list = xpath_list[:loc+1]
+                xpath_list = xpath_list[:loc + 1]
                 xpath = "/".join(xpath_list)
             except ValueError:
                 print "WARNING : %s not found in XPATH" % attLoc
-                print "Attribute %s added at xpath location %s" % (attName, xpath)
-        element = tree.xpath(xpath, namespaces=namespaces)[0] 
+                print "Attribute %s added at xpath location %s" % (
+                    attName, xpath)
+        element = tree.xpath(xpath, namespaces=namespaces)[0]
         # is there a prefix
         tagsplit = str(attName).split(':')
         if len(tagsplit) == 2:
@@ -116,6 +121,7 @@ def addAttribute(tree, xpath, att_name, att_val, att_loc):
         else:
             att_name = str(attName)
             element.attrib[att_name] = attVal
+
 
 # Rebuild of XPATH to add missing tags
 def addMissingTags(tree, xpath, tag):
@@ -135,11 +141,13 @@ def addMissingTags(tree, xpath, tag):
             tagsplit = str(tag).split(':')
             if len(tagsplit) == 2:
                 prefix, tag_name = tagsplit
-                sub_element = etree.SubElement(parent, "{" + namespaces[prefix] + "}" + tag_name)
+                sub_element = etree.SubElement(
+                    parent, "{" + namespaces[prefix] + "}" + tag_name)
             else:
                 tag_name = str(tag)
                 sub_element = etree.SubElement(parent, tag_name)
     return sub_element, xpath
+
 
 # Add tags but no value
 def addMetadataTag(tree, xpath):
@@ -156,6 +164,7 @@ def addMetadataTag(tree, xpath):
             el, xpath = addMissingTags(tree, xpath, tag)
     return el, xpath
 
+
 # Add a single tag or attribute
 # if the element already exists, its value is replaced
 def addMetadataElement(tree, xpath, value, attribute='No', prefix='No'):
@@ -170,9 +179,11 @@ def addMetadataElement(tree, xpath, value, attribute='No', prefix='No'):
             el.attrib["{" + namespaces[prefix] + "}" + attribute] = value
     return xpath
 
+
 def addOnlineResourceProtocol(tree, xpath_base):
     xpath_protocol = xpath_base + '/gmd:protocol/gco:CharacterString'
     addMetadataElement(tree, xpath_protocol, 'WWW:LINK-1.0-http--link')
+
 
 # Find the multivalued element in xpath
 def findMultiTagInXpath(tree, xpath):
@@ -194,19 +205,23 @@ def findMultiTagInXpath(tree, xpath):
     multi_tag_list[0] = tag[:-2]
     return multi_tag_list, xpath
 
-# Create a new element and set its value (even if an element with the same xpath already exists)
-def addNewElementAndValue(tree, tag_list, value, parent_xpath, attribute='No', isAttVal=True):
+
+# Create a new element and set its value
+# (even if an element with the same xpath already exists)
+def addNewElementAndValue(tree, tag_list, value, parent_xpath,
+                          attribute='No', isAttVal=True):
     for tag in tag_list:
         parent = tree.xpath(parent_xpath, namespaces=namespaces)[0]
         prefix, tag_name = str(tag).split(':')
-        new_element = parent.makeelement("{" + namespaces[prefix] + "}" + tag_name)
+        new_element = parent.makeelement("{" + namespaces[prefix] + "}" +
+                                         tag_name)
         parent.insert(0, new_element)
         parent_xpath += "/" + tag
         if tag == tag_list[-1] and value:
-           if isAttVal:
-           # add the same value for attribute and tag value (like codelist)
-               new_element.text = value.strip()
-           if attribute != 'No':
+            if isAttVal:
+                # add same value for attribute and tag value (like codelist)
+                new_element.text = value.strip()
+            if attribute != 'No':
                 new_element.attrib[attribute] = value
     return parent_xpath
 
@@ -216,7 +231,8 @@ def addMultiValue(tree, xpath, multivalue):
     multi_tag_list, xpath = findMultiTagInXpath(tree, xpath)
     for val in reversed(multivalue.split(',')):
         parent_xpath = xpath
-        parent_xpath = addNewElementAndValue(tree, multi_tag_list, val, parent_xpath)
+        parent_xpath = addNewElementAndValue(tree, multi_tag_list,
+                                             val, parent_xpath)
     return parent_xpath
 
 # Add dateType value and the associated codelist
@@ -224,13 +240,14 @@ def addDateType(tree, xpath, type, code_list):
     # add the date type : creation, publication or revision
     # written after "Date:"
     value = type.split(':')[-1]
-    xpath_list = xpath.split("/")[:-2] + ['gmd:dateType', 'gmd:CI_DateTypeCode']
+    xpath_list = xpath.split("/")[:-2] + [
+        'gmd:dateType', 'gmd:CI_DateTypeCode']
     xpath = "/".join(xpath_list)
     addMetadataElement(tree, xpath, value)
     addMetadataElement(tree, xpath, value, 'codeListValue')
     addMetadataElement(tree, xpath, code_list, 'codeList')
 
-# Add KeywordType value and the associated codelist 
+# Add KeywordType value and the associated codelist
 def addKeywordType(tree, xpath, type, code_list):
     # add the Keyword type written after Keyword
     value = type.split(':')[-1]
@@ -247,7 +264,8 @@ def addKeywordType(tree, xpath, type, code_list):
 def addResourceFormat(tree, xpath, value, urn):
     # initialisation of lists containing format information
     name_list = [] ; version_list = [] ; spec_list = [] ; mime_list = []
-    # Find multivalued tag xpath and list of afterwards tag to add for each occurrence
+    # Find multivalued tag xpath and list of afterwards tag to add
+    # for each occurrence
     name_tag_list, xpath = findMultiTagInXpath(tree, xpath)
     # Common tags to add once for each format
     base_tag_list = name_tag_list[:-2]
@@ -267,7 +285,8 @@ def addResourceFormat(tree, xpath, value, urn):
             mime = val[3].strip()
         except IndexError:
             print val
-            sys.exit("%s Resource Format cell value is inconsistent with expected template" % urn)
+            sys.exit("%s Resource Format cell value is inconsistent" % urn +
+                     "with expected template")
         parent_xpath = xpath
         # Add common tags (and no value)
         addNewElementAndValue(tree, base_tag_list, '', parent_xpath)
@@ -275,7 +294,8 @@ def addResourceFormat(tree, xpath, value, urn):
         # order is important (the last one added is the first one in XML)
         base_xpath = xpath + "/" + "/".join(base_tag_list)
         if specification:
-            addNewElementAndValue(tree, specification_tag_list, specification, base_xpath)
+            addNewElementAndValue(tree, specification_tag_list,
+                                  specification, base_xpath)
         addNewElementAndValue(tree, version_tag_list, version, base_xpath)
         addNewElementAndValue(tree, name_tag_list, name, base_xpath)
         name_list.append(name)
