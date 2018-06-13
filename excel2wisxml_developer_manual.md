@@ -1,3 +1,11 @@
+# Python package
+
+Set python package version (A.B.C) in setup.py file from excel file version (A.B) and python script version (C) with the command and commit setup.py:
+> python version.py
+
+Create the python package in dist repository with the command:
+> python setup.py sdist
+
 # Versioning
 
 The script version and excel file compatible version are referenced at the beginning of the script.

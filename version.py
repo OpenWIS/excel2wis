@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Set library version (A.B.C)
+# from excel file version (A.B)
+# and python script version (C)
+
 import xlrd
 import argparse
 import re
@@ -8,7 +12,7 @@ import os
 
 
 # Read excel version
-workbook = xlrd.open_workbook('Metadata-guide-record.xls')
+workbook = xlrd.open_workbook('/templates/Metadata-guide-record.xls')
 md_gene = workbook.sheet_by_name('MD generic')
 # MD generic row start
 md_gene_row_start = 3

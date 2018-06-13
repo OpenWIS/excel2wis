@@ -1,1 +1,2 @@
-include excel2wisxml/excel2wisxml_template.xml
+include excel2wisxml/templates/excel2wisxml_template.xml
+include excel2wisxml/templates/Metadata-guide-record.xls

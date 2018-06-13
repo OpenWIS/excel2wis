@@ -446,7 +446,7 @@ def excel2wisxml(excel_filename, MFopenwis=False):
 # Read XML template
 ###
     parser = etree.XMLParser(remove_blank_text=True)
-    common_tree = etree.parse(base_path + "/excel2wisxml_template.xml", parser)
+    common_tree = etree.parse(base_path + "/templates/excel2wisxml_template.xml", parser)
 
 #######################
 # Add generic metadata 
@@ -744,3 +744,12 @@ def main():
     MFopenwis = args.MFopenwis
 # Call main function to create xml metadata file
     excel2wisxml(excel_filename, MFopenwis)
+
+def createExcel():
+    ###
+    # Copy excel template in the current directory
+    ###
+    base_path = os.path.dirname(__file__)
+    command = "cp %s/templates/Metadata-guide-record.xls ." % base_path 
+    os.system(command)
+

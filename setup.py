@@ -15,6 +15,7 @@ setup(
     zip_safe = False,
     entry_points={
         'console_scripts': [
-            'excel2wisxml = excel2wisxml.excel2wisxml:main']
+            'excel2wisxml = excel2wisxml.excel2wisxml:main',
+            'createExcel2wisxml = excel2wisxml.excel2wisxml:createExcel']
     }
 )
