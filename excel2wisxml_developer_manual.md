@@ -1,9 +1,9 @@
-# Python package
+# Python package generation
 
-Set python package version (A.B.C) in setup.py file from excel file version (A.B) and python script version (C) with the command and commit setup.py:
+Set python package version (A.B.C) in _setup.py_ file from excel file version (A.B) and python script version \(C\) and commit _setup.py_ with the command:
 > python version.py
 
-Create the python package in dist repository with the command:
+Create the python package in _dist_ repository with the command:
 > python setup.py sdist
 
 # Versioning
@@ -18,28 +18,28 @@ Imported module _excel2wisxmltils.py_ contains functions used by the script to a
 
 # Excel file shape configuration
 
-Shape of the excel file is set for the 4 sheets of the excel file :
+Shape of the excel file is set for the 4 sheets of the excel file:
 - delta linking _MD Fields_ columns to associated _Help_ rows
-- _MD Fields_ :
+- _MD Fields_:
     - column and row start
     - mandatory row
     - section row
-- _Help_ : associate columns with their header names
-- _MD generic_ :
+- _Help_: associate columns with their header names
+- _MD generic_:
     - row start
     - associate columns with their names
-- _MD Thesaurus_ :
+- _MD Thesaurus_:
     - column start
     - associate columns with their names
 
-Be careful always to keep row numbers, column numbers, header name values and delta linking Help rows to MD Fields columns consistent with excel file.
+Be careful always to keep row numbers, column numbers, header name values and delta linking _Help_ rows to _MD Fields_ columns consistent with excel file.
 
 The addition of a column in _MD Field_ or a row in _Help_ does not impact shape configuration.
 
 # Read and parse excel file with xlrd
-Get sheets and check excel file shape :
-- Do _MD Fields_ ID match with _Help_ ID ?
-- Are mandatory fields filled ?
+Get sheets and check excel file shape:
+- Do _MD Fields_ ID match with _Help_ ID?
+- Are mandatory fields filled?
 
 If an error is identified the script stops and an appropriate error message is displayed.
 
@@ -73,9 +73,9 @@ A metadata is identified as translated when _Second Language_ is filled with a v
 
 An XML metadata file is generated for each row of _MD Field_ sheet.
 
-For each row :
-- _MD Fields_ columns are parsed one by one to get the values ;
-- linked _Help_ rows are parsed to get :
+For each row:
+- _MD Fields_ columns are parsed one by one to get the values;
+- linked _Help_ rows are parsed to get:
     - xpath (location of metadata element in xml tree)
     - attribute name, value and location (attribute name is set to _No_ if there is no attribute to add)
     - thesaurus name
@@ -85,22 +85,22 @@ For each row :
 
 Regular case is to add the metadata tag value at the location specified by the xpath.
 
-Other elements can be added according to which _Help_ cells are filled :
+Other elements can be added according to which _Help_ cells are filled:
 - codeList and codeListValue attributes (added at the location specified by the xpath, except for Keywords)
-- other comma-separated attributes (added at the location specified in _Attribute Location_ or at xpath location if _Attribute Location_ is empty) ;
-- thesaurus name, date, dateType and codeList attributes (information available in _MD Thesaurus_ sheet) ;
+- other comma-separated attributes (added at the location specified in _Attribute Location_ or at xpath location if _Attribute Location_ is empty);
+- thesaurus name, date, dateType and codeList attributes (information available in _MD Thesaurus_ sheet);
 - type tag with its associated value and codelist attributes (_KeywordType_ and _DateType_ for instance).
 
-Some values are kept in memory such as :
-- URN ;
-- resource Title ;
+Some values are kept in memory such as:
+- URN;
+- resource Title;
 - file name pattern.
 
-Some elements need a specific processing :
+Some elements need a specific processing:
 
 - **URN** [identified with its xpath]  
     - _MD Field_ Unique identifier value is replaced by the URN - the concatenation of _MD generic_ UID and _MD Fields_ UID  
-    - 2 _MD generic_ tags are replaced by the concatenation of their value and the URN : 
+    - 2 _MD generic_ tags are replaced by the concatenation of their value and the URN: 
         - location (address) for on-line access
         - permanent link
     - If one of _MD generic_ field _OpenWIS only:_ is not null, two online resources are added (_Suscribe on DCPC_ and _Request on DCPC_)
@@ -109,20 +109,20 @@ Some elements need a specific processing :
 Value is replaced by _"GTSPriorityN"_ with _N_ the 9th character of _MD Field_ cell value
 
 - **File name** [identified with its xpath]  
-One or several GFNC file name(s) and associated information are added :
+One or several GFNC file name(s) and associated information are added:
     - file description (dynamic value : Resource title)
     
 - **Temporal Extent** [identified with its xpath]
 For indeterminate temporal extent value, the value is not added as a tag value but as an attribute value. If the value is "before" or "after" a potential additionnal time element can be added as the tag value.
 
 - **Free links** [identified with its xpath]  
-Several links can be added. 3 tags are added for each link :
+Several links can be added. 3 tags are added for each link:
     - name (optional, URL value if not specified)
     - protocol (static value)
     - URL (dynamic value)
 
 - **Resource Format** [identified with its xpath]  
-Several resource formats can be added. 4 tags are added for each resource format (dynamic values) :
+Several resource formats can be added. 4 tags are added for each resource format (dynamic values):
     - name
     - version
     - specification (optional)
