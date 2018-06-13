@@ -12,7 +12,7 @@ import os
 
 
 # Read excel version
-workbook = xlrd.open_workbook('/templates/Metadata-guide-record.xls')
+workbook = xlrd.open_workbook('excel2wisxml/templates/Metadata-guide-record.xls')
 md_gene = workbook.sheet_by_name('MD generic')
 # MD generic row start
 md_gene_row_start = 3
