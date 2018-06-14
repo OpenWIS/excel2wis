@@ -886,5 +886,6 @@ def createExcel():
     # Copy excel template in the current directory
     ###
     base_path = os.path.dirname(__file__)
-    command = "cp %s/templates/Metadata-guide-record.xls ." % base_path
+    date = time.strftime("%Y%m%d%H%M%S")
+    command = "cp %s/templates/Metadata-guide-record.xls ./Metadata-guide-record-%s.xls" % (base_path, date)
     os.system(command)
