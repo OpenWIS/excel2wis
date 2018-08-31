@@ -1,0 +1,5 @@
+MD_*.xml
+*.csv
+*.pyc
+dist/
+excel2wisxml.egg-info/
