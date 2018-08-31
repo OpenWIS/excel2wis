@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Set library version (A.B.C)
+# from excel file version (A.B)
+# and python script version (C)
+
 import xlrd
 import argparse
 import re
@@ -8,12 +12,13 @@ import os
 
 
 # Read excel version
-workbook = xlrd.open_workbook('Metadata-guide-record.xls')
+workbook = \
+    xlrd.open_workbook('excel2wisxml/templates/Metadata-guide-record.xls')
 md_gene = workbook.sheet_by_name('MD generic')
 # MD generic row start
 md_gene_row_start = 3
 # Associate columns and headers
-md_gene_header = md_gene.row(2) 
+md_gene_header = md_gene.row(2)
 for i, head in enumerate(md_gene_header):
     head = head.value.strip().lower()
     if head == 'tag':
@@ -51,5 +56,6 @@ with open("setup.py", 'w') as f:
     for line in setup_lines:
         f.write(line)
 
-commit_cmd = 'git add setup.py ; git commit setup.py -m "Version %s in setup.py"' % app_version
+commit_cmd = 'git add setup.py ;' + \
+    'git commit setup.py -m "Version %s in setup.py"' % app_version
 os.system(commit_cmd)
