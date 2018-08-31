@@ -1,28 +1,11 @@
-# excel2wisxml
+# excel2wisxml, an excel to WMO XML conversion tool
 
-## Version of pyhton
-The package has been tested with python 2.6.6
+excel2wisxml tool has been developed by Météo-France and allows the generation of large set of metadata WMO Core 1.3 profile issued from an excel document. The python package is under the free open source G
 
-## Installation
-### Configuration of python user
-In ~/.bashrc file add
-> PATH=$HOME/local/bin
-> export PATH
-> PYTHONUSERBASE=$HOME/local
-> export PYTHONUSERBASE
-### Installation of python package
-pip install excel2wisxml.tar.gz --user
+For any information, please contact: gisc_support@meteo.fr
 
-## Use
+Official documentation for excel2wis can be found in the [exce2wis github repository](https://github.com/OpenWIS/excel2wis):
 
-### Generate Metadata-guide-record.xls excel template in your current repertory
-createExcel2wisxml
+* [User Manual](https://github.com/OpenWIS/excel2wis/blob/master/Excel2wisxml_manual.pdf "excel2wisxml User Manual")
 
-### Generate the WMO Core 1.3 metadata from the excel document
-excel2wisxml Metadata-guide-record.xls
-The generation xml files will be stored in the same directory, with filename format:
-MD\_uniqueid\_YYYYMMDDHHMMSS.xml
-
-### Options
-[--MFopenwis]
-The script creates a CSV file containing metadata urn and data file name (a row for each metadata).
+* [Developer Manual](https://github.com/OpenWIS/excel2wis/blob/master/excel2wisxml_developer_manual.md "excel2wisxml Developer Manual")
