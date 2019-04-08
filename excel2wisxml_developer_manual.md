@@ -1,12 +1,22 @@
-# Python package generation
+# Installation from sources
+
+On a Linux station
+
+Python user configuration (if not already done)
+In ~/.bashrc file, add :
+
+> PATH=$HOME/local/bin
+> export PATH
+> PYTHONUSERBASE=$HOME/local
+> export PYTHONUSERBASE
+
+Clone git repository (https://github.com/OpenWIS/excel2wis/)
+Then run build.sh to install excel2wisxml.
+
+# Versioning
 
 Set python package version (A.B.C) in _setup.py_ file from excel file version (A.B) and python script version \(C\) and commit _setup.py_ with the command:
 > python version.py
-
-Create the python package in _dist_ repository with the command:
-> python setup.py sdist
-
-# Versioning
 
 The script version and excel file compatible version are referenced at the beginning of the script.
 
