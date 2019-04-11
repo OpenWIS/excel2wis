@@ -1,5 +1,5 @@
 #!/bin/bash
-pip uninstall excel2wisxml
+pip2 uninstall excel2wisxml
 rm dist/*
-python setup.py sdist
-pip install dist/excel2wisxml-*.tar.gz --user
+python2 setup.py sdist
+pip2 install dist/excel2wisxml-*.tar.gz --user
