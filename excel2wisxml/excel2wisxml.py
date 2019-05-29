@@ -29,7 +29,7 @@ import datetime
 import argparse
 import codecs
 import re
-from excel2wisxmlutils import *
+from .excel2wisxmlutils import *
 import os.path
 
 
@@ -37,8 +37,8 @@ import os.path
 # Add OpenWIS DCPC tags #
 #########################
 def addDCPClinkage(tree, urn, generic_dict):
-    print "DCPC metadata - adding linkage"
-    value_base = unicode(generic_dict['portal']['value']).strip() \
+    print("DCPC metadata - adding linkage")
+    value_base = str(generic_dict['portal']['value']).strip() \
         + '/openwis-user-portal/retrieve/'
     value = value_base + 'request/' + urn
     xpath = '/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/' + \
@@ -216,7 +216,7 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus, thesaurus_rows):
     thesaurus_version = thesaurus.row(thesaurus_rows["version"])
     # Looking in the thesaurus sheet to find the col
     for i, name in enumerate(thesaurus_name):
-        name_u = unicode(name.value).strip()
+        name_u = str(name.value).strip()
         if name_u == help_thesaurus:
             thes_i = i
     xpath_list = xpath.split('/')[:-2]
@@ -230,16 +230,16 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus, thesaurus_rows):
         #    help_thesaurus + ' [' + thesaurus_link[thes_i].value + ']')
         addMetadataElement(tree, xpath_th_name, help_thesaurus)
         # Date of revision
-        date = unicode(thesaurus_date[thes_i].value).strip()
+        date = str(thesaurus_date[thes_i].value).strip()
         if date:
             xpath_date = xpath_th + '/gmd:date/gmd:CI_Date/gmd:date/gco:Date'
             addMetadataElement(tree, xpath_date, date)
             xpath_datype = xpath_th + \
                 '/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode'
-            datype = unicode(thesaurus_datype[thes_i].value).strip()
+            datype = str(thesaurus_datype[thes_i].value).strip()
             addMetadataElement(tree, xpath_datype, datype)
             addMetadataElement(tree, xpath_datype, datype, 'codeListValue')
-            datype_codelist = unicode(
+            datype_codelist = str(
                 thesaurus_datype_codelist[thes_i].value).strip()
             addMetadataElement(tree, xpath_datype, datype_codelist, 'codeList')
     else:
@@ -249,16 +249,16 @@ def addThesaurus(tree, xpath, help_thesaurus, thesaurus, thesaurus_rows):
 # Add tags for which values are a concatenation that contains the urn
 def concateValue(tree, value, generic_dict):
     # Unique Identifier
-    urn = unicode(generic_dict['Unique identifier']['value']).strip() + value
+    urn = str(generic_dict['Unique identifier']['value']).strip() + value
     # Location for online access
-    value = unicode(generic_dict[
+    value = str(generic_dict[
         'location (address) for on-line access']['value']).strip() + urn
-    xpath = unicode(generic_dict[
+    xpath = str(generic_dict[
         'location (address) for on-line access']['xpath']).strip()
     addMetadataElement(tree, xpath, value)
     # URL permanent link
-    value = unicode(generic_dict['permanent link']['value']).strip() + urn
-    xpath = unicode(generic_dict['permanent link']['xpath']).strip()
+    value = str(generic_dict['permanent link']['value']).strip() + urn
+    xpath = str(generic_dict['permanent link']['xpath']).strip()
     addMetadataElement(tree, xpath, value)
     # Two linked tags are mandatory, cf. template (paragraph4)
     return urn
@@ -317,7 +317,7 @@ def excel2wisxml(excel_filename, MFopenwis=False):
 
     base_path = os.path.dirname(__file__)
 
-    SCRIPT_VERSION = "4"
+    SCRIPT_VERSION = "5"
     EXCEL_FIRST_COMPATIBLE_VERSION = "3.3"
 
 # Excel file location
@@ -328,12 +328,12 @@ def excel2wisxml(excel_filename, MFopenwis=False):
 ###
 # Print license information
 ###
-    print "--------------------------------------------------------------"
-    print "excel2wisxml  Copyright (C) 2016  METEO FRANCE"
-    print "This program comes with ABSOLUTELY NO WARRANTY."
-    print "This is free software, and you are welcome to redistribute it"
-    print "under certain conditions."
-    print "--------------------------------------------------------------"
+    print("--------------------------------------------------------------")
+    print("excel2wisxml  Copyright (C) 2016  METEO FRANCE")
+    print("This program comes with ABSOLUTELY NO WARRANTY.")
+    print("This is free software, and you are welcome to redistribute it")
+    print("under certain conditions.")
+    print("--------------------------------------------------------------")
 
 ###
 # Excel file opening
@@ -462,8 +462,8 @@ def excel2wisxml(excel_filename, MFopenwis=False):
 ###
     try:
         for i, id in enumerate(field_id_list):
-            field_id = unicode(id.value).strip()
-            help_id = unicode(help_id_list[i + delta].value).strip()
+            field_id = str(id.value).strip()
+            help_id = str(help_id_list[i + delta].value).strip()
             # Check if MD Fields ID and Help ID match
             if field_id != help_id:
                 raise Exception(
@@ -471,7 +471,7 @@ def excel2wisxml(excel_filename, MFopenwis=False):
                     "%s doesn't match paragraphs" % field_id +
                     "number in Help sheet : %s" % help_id)
             # Check mandatory fields
-            mandatory = unicode(field_mandatory_list[i].value).strip()
+            mandatory = str(field_mandatory_list[i].value).strip()
             if mandatory == 'Mandatory':
                 for row in range(fields_row_start, md_fields.nrows):
                     # mandatory field is not empty
@@ -524,17 +524,17 @@ def excel2wisxml(excel_filename, MFopenwis=False):
 ###
     generic_dict = {}
     for row in range(md_gene_row_start, md_gene.nrows):
-        tag = unicode(md_gene.cell_value(row, md_gene_tag_col)).strip()
-        value = unicode(md_gene.cell_value(row, md_gene_value_col)).strip()
-        translation_value = unicode(
+        tag = str(md_gene.cell_value(row, md_gene_tag_col)).strip()
+        value = str(md_gene.cell_value(row, md_gene_value_col)).strip()
+        translation_value = str(
             md_gene.cell_value(row, md_gene_translation_value_col)).strip()
-        xpath = unicode(md_gene.cell_value(row, md_gene_xpath_col)).strip()
-        code_list = unicode(
+        xpath = str(md_gene.cell_value(row, md_gene_xpath_col)).strip()
+        code_list = str(
             md_gene.cell_value(row, md_gene_codelist_col)).strip()
-        attLocation = unicode(
+        attLocation = str(
             md_gene.cell_value(row, md_gene_attLocation_col)).strip()
-        attName = unicode(md_gene.cell_value(row, md_gene_attName_col)).strip()
-        attValue = unicode(
+        attName = str(md_gene.cell_value(row, md_gene_attName_col)).strip()
+        attValue = str(
             md_gene.cell_value(row, md_gene_attValue_col)).strip()
         tag_dict = {'value': value, 'xpath': xpath, 'codelist': code_list}
         generic_dict[tag] = tag_dict
@@ -544,8 +544,8 @@ def excel2wisxml(excel_filename, MFopenwis=False):
                 value = datetime.datetime.utcnow().strftime(
                     "%Y-%m-%dT%H:%M:%SZ")
             else:
-                # print "> empty MD generic field row:
-                # %s ignored" % str(int(row)+1)
+                # print("> empty MD generic field row:
+                # {} ignored".format(str(int(row)+1)))
                 continue
         # empty Xpath
         if not xpath:
@@ -592,17 +592,17 @@ def excel2wisxml(excel_filename, MFopenwis=False):
                                translation_value, secondLanguage)
         except SystemExit as e:
             # sys.exit() generates a SystemExit exception
-            print "ERROR section", id, e
+            print("ERROR section", id, e)
             sys.exit()
         except:
             sys.exit("MD generic tag %s\n\terror in xpath %s" % (tag, xpath))
 
 # Write WARN messages for MD generic
     if empty_xpath_gene:
-        print "\n--- WARN -------- MD generic ---"
-        print "elements on row(s) %s have no XPATH" % ", ".join(
-            [str(x) for x in empty_xpath_gene])
-        print "--------------------------------\n"
+        print("\n--- WARN -------- MD generic ---")
+        print("elements on row(s) {} have no XPATH".format(", ".join(
+            [str(x) for x in empty_xpath_gene])))
+        print("--------------------------------\n")
 
 # Print version number in CSV file
     if MFopenwis:
@@ -628,19 +628,19 @@ def excel2wisxml(excel_filename, MFopenwis=False):
         translation_fields = {}
         if translation:
             for col in range(fields_col_start, md_fields_translation.ncols):
-                id = unicode(md_fields_translation.cell_value(
+                id = str(md_fields_translation.cell_value(
                     fields_row_section, col)).strip()
                 if id.startswith('lg:'):
                     id = id[3:]
-                    value = unicode(md_fields_translation.cell_value(
+                    value = str(md_fields_translation.cell_value(
                         row, col)).strip()
                     translation_fields[id] = value
 
         for col in range(fields_col_start, md_fields.ncols):
-            id = unicode(field_id_list[col].value).strip()  # element ID
+            id = str(field_id_list[col].value).strip()  # element ID
             # An optional empty field is not added
-            mandatory = unicode(field_mandatory_list[col].value).strip()
-            xpath = unicode(help.cell_value(col + delta, xpath_col)).strip()
+            mandatory = str(field_mandatory_list[col].value).strip()
+            xpath = str(help.cell_value(col + delta, xpath_col)).strip()
             if mandatory == 'Optional':
                 if not md_fields.cell_type(row, col):
                     if 'descriptiveKeywords' in xpath:
@@ -648,21 +648,21 @@ def excel2wisxml(excel_filename, MFopenwis=False):
                         emptyDescriptiveKeywords.append(xpath)
                         # list of xpath of empty descriptiveKeywords
                     continue
-            field_value = unicode(md_fields.cell_value(row, col)).strip()
+            field_value = str(md_fields.cell_value(row, col)).strip()
             field_value_lower = field_value.lower()
-            att_name = unicode(help.cell_value(col + delta,
+            att_name = str(help.cell_value(col + delta,
                                                att_name_col)).strip()
-            att_location = unicode(help.cell_value(col + delta,
+            att_location = str(help.cell_value(col + delta,
                                                    att_loc_col)).strip()
-            help_thesaurus = unicode(help.cell_value(col + delta,
+            help_thesaurus = str(help.cell_value(col + delta,
                                                      thesaurus_col)).strip()
-            multivalue = unicode(help.cell_value(col + delta,
+            multivalue = str(help.cell_value(col + delta,
                                                  multivalue_col)).strip()
-            code_list = unicode(help.cell_value(col + delta,
+            code_list = str(help.cell_value(col + delta,
                                                 codelist_col)).strip()
-            element_type = unicode(help.cell_value(col + delta,
+            element_type = str(help.cell_value(col + delta,
                                                    type_col)).strip()
-            att_val = unicode(help.cell_value(col + delta,
+            att_val = str(help.cell_value(col + delta,
                                               att_val_col)).strip()
             att_val_exception = att_val.startswith('MD_Fields')
             # empty Xpath
@@ -687,7 +687,7 @@ def excel2wisxml(excel_filename, MFopenwis=False):
                     field_value = urn
                     # DCPC
                     if DCPC:
-                        print "OpenWIS DCPC metadata"
+                        print("OpenWIS DCPC metadata")
                         addDCPClinkage(tree, urn, generic_dict)
                 elif (xpath == '/gmd:MD_Metadata/gmd:identificationInfo/' +
                         'gmd:MD_DataIdentification/gmd:resourceConstraints/' +
@@ -791,10 +791,10 @@ def excel2wisxml(excel_filename, MFopenwis=False):
                                        translation_fields[id], secondLanguage)
 
             #except Exception as e:
-            #    print id, e
+            #    print(id, e)
             except SystemExit as e:
                 # sys.exit() generates a SystemExit exception
-                print "ERROR row", row + 1, "section", id, e
+                print("ERROR row", row + 1, "section", id, e)
                 sys.exit()
             except:
                 sys.exit("MD Fields section %s\n\terror in xpath %s" %
@@ -825,38 +825,38 @@ def excel2wisxml(excel_filename, MFopenwis=False):
         date = time.strftime("%Y%m%d%H%M%S")
         filename = os.path.join(excel_path, "MD_" + uid + "_" + date + ".xml")
         with open(filename, "wb") as fo:
-            fo.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-            fo.write('<!-- Metadata generated with ' +
+            fo.write('<?xml version="1.0" encoding="UTF-8"?>\n'.encode('utf-8'))
+            fo.write(('<!-- Metadata generated with ' +
                      'Metadata-guide-record.xls version %s ' % excel_version +
-                     'and excel2wisxml.py version %s -->\n' % SCRIPT_VERSION)
+                     'and excel2wisxml.py version %s -->\n' % SCRIPT_VERSION).encode('utf-8'))
             fo.write(string_xml)
 
         if MFopenwis:
             if gfnc:
                 with codecs.open(link_file, 'a', 'utf-8') as f:
-                    f.write("\n\"" + urn + "\" ; \"" + gfnc + "\"")
+                    f.write(("\n\"" + urn + "\" ; \"" + gfnc + "\"").encode('utf-8'))
             else:
                 option_error = True
 
 
-        print "\n##### File %s has been generated" % filename
+        print("\n##### File {} has been generated".format(filename))
 
         # Write WARN messages for MD Fields - Help for each row
         if empty_xpath:
-            print "--- WARN -------- Fields row", metadata_row, "- Help ---"
+            print("--- WARN -------- Fields row", metadata_row, "- Help ---")
             # not empty (optional) elements in MD Fields
             # with no xpath linked in Help
-            print "elements %s have no XPATH" % ", ".join(empty_xpath)
-        print "-----------------------------------------\n"
+            print("elements {} have no XPATH".format(", ".join(empty_xpath)))
+        print("-----------------------------------------\n")
 
     if MFopenwis:
         if option_error:
-            print "WARNING --MFopenwis"
-            print "CSV file has not been generated"
-            print "MD Fields file name section must be filled" + \
-                "for each metadata in excel file to generate CSV file\n"
+            print("WARNING --MFopenwis")
+            print("CSV file has not been generated")
+            print("MD Fields file name section must be filled" + \
+                "for each metadata in excel file to generate CSV file\n")
         else:
-            print "CSV file %s has been generated\n" % link_file
+            print("CSV file {} has been generated\n".format(link_file))
 
 
 def main():
