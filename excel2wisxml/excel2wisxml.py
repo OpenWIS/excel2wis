@@ -499,6 +499,34 @@ def excel2wisxml(excel_filename, MFopenwis=False):
         else:
             sys.exit(e.args[0])
 
+    """Check translations are filled for Inspire metadata"""
+    if not MFopenwis:
+        try:
+            field_translation_id_list = md_fields_translation.row(
+                fields_row_section
+            )
+            for i, id in enumerate(field_translation_id_list):
+                field_translation_id = str(id.value).strip()
+                # Check mandatory fields
+                field_translation_mandatory_list = md_fields_translation.row(
+                    fields_row_mandatory
+                )
+                mandatory = str(field_translation_mandatory_list[i].value).strip()
+                if mandatory == 'Mandatory':
+                    for row in range(fields_row_start, md_fields.nrows):
+                        # mandatory field is not empty
+                        if not md_fields_translation.cell_value(row, i):# when a cell value is 0, it must not be seen as an
+                            # when a cell value is 0, it must not be seen as an
+                            # empty cell
+                            if md_fields_translation.cell_value(row, i) != 0:
+                                raise Exception(
+                                    'ERROR - MD Fields Translate sheet - ' +
+                                    'Mandatory field %s ' % field_translation_id +
+                                    'is empty on row %s' % str(row + 1)
+                                )
+
+        except Exception as e:
+            sys.exit(e.args[0])
 ###
 # Read XML template
 ###
@@ -543,6 +571,9 @@ def excel2wisxml(excel_filename, MFopenwis=False):
             if tag == 'Metadata date':
                 value = datetime.datetime.utcnow().strftime(
                     "%Y-%m-%dT%H:%M:%SZ")
+            # Second language mandatory for INSPIRE MD
+            elif tag == 'Metadata second language (optional)' and not MFopenwis:
+                sys.exit("Please fill 'Metadata second language' field in 'MD generic' sheet") 
             else:
                 # print("> empty MD generic field row:
                 # {} ignored".format(str(int(row)+1)))
