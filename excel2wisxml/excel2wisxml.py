@@ -317,8 +317,8 @@ def excel2wisxml(excel_filename, MFopenwis=False):
 
     base_path = os.path.dirname(__file__)
 
-    SCRIPT_VERSION = "5"
-    EXCEL_FIRST_COMPATIBLE_VERSION = "3.3"
+    SCRIPT_VERSION = "6"
+    EXCEL_FIRST_COMPATIBLE_VERSION = "3.5"
 
 # Excel file location
     excel_path = os.path.dirname(excel_filename)
