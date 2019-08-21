@@ -29,7 +29,7 @@ Imported module *excel2wisxmltils.py* contains functions used by the script to a
 
 # Excel file shape configuration
 
-Shape of the excel file is set for the 4 sheets of the excel file:
+Shape of the excel file is set for 4 sheets of the excel file:
 
 * delta linking *MD Fields* columns to associated *Help* rows
 
@@ -65,7 +65,8 @@ Get sheets and check excel file shape:
 
 * Do *MD Fields* ID match with *Help* ID?
 
-* Are mandatory fields filled?
+* Are mandatory fields filled?\
+  For Inspire Metadata (if *MFOpenwis* option is not set), *MD Fields Translate* sheet and *Metadata second language* value in *MD generic* must be filled.
 
 If an error is identified the script stops and an appropriate error message is displayed.
 
