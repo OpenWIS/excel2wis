@@ -865,7 +865,7 @@ def excel2wisxml(excel_filename, MFopenwis=False, MFinspire=False):
         if MFopenwis:
             if gfnc:
                 with codecs.open(link_file, 'a', 'utf-8') as f:
-                    f.write(("\n\"" + urn + "\" ; \"" + gfnc + "\"").encode('utf-8'))
+                    f.write(("\n\"" + urn + "\" ; \"" + gfnc + "\""))
             else:
                 option_error = True
 
