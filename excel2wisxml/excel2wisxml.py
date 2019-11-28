@@ -313,7 +313,7 @@ def addLocaleInfo(tree, xpath, secondLanguage):
 
 
 # Create metadata from excel file
-def excel2wisxml(excel_filename, MFopenwis=False):
+def excel2wisxml(excel_filename, MFopenwis=False, MFinspire=False):
 
     base_path = os.path.dirname(__file__)
 
@@ -500,7 +500,7 @@ def excel2wisxml(excel_filename, MFopenwis=False):
             sys.exit(e.args[0])
 
     """Check translations are filled for Inspire metadata"""
-    if not MFopenwis:
+    if MFinspire and not MFopenwis:
         try:
             field_translation_id_list = md_fields_translation.row(
                 fields_row_section
@@ -572,7 +572,7 @@ def excel2wisxml(excel_filename, MFopenwis=False):
                 value = datetime.datetime.utcnow().strftime(
                     "%Y-%m-%dT%H:%M:%SZ")
             # Second language mandatory for INSPIRE MD
-            elif tag == 'Metadata second language (optional)' and not MFopenwis:
+            elif tag == 'Metadata second language (optional)' and MFinspire and not MFopenwis:
                 sys.exit("Please fill 'Metadata second language' field in 'MD generic' sheet") 
             else:
                 # print("> empty MD generic field row:
@@ -905,11 +905,15 @@ def main():
         '--MFopenwis', action='store_true',
         help='option to generate a CSV file containing metadata URNs ' +
         'and associated data file name')
+    parser.add_argument(
+        '--inspire', action='store_true',
+        help='option to make translation mandatory')
     args = parser.parse_args()
     excel_filename = args.filename[0]
     MFopenwis = args.MFopenwis
+    MFinspire = args.inspire
 # Call main function to create xml metadata file
-    excel2wisxml(excel_filename, MFopenwis)
+    excel2wisxml(excel_filename, MFopenwis, MFinspire)
 
 
 def createExcel():

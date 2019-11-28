@@ -66,7 +66,7 @@ Get sheets and check excel file shape:
 * Do *MD Fields* ID match with *Help* ID?
 
 * Are mandatory fields filled?\
-  For Inspire Metadata (if *MFopenwis* option is not set), *MD Fields Translate* sheet and *Metadata second language* value in *MD generic* must be filled.
+  For Inspire Metadata (if *inspire* option is set and *MFopenwis* option is not set), *MD Fields Translate* sheet and *Metadata second language* value in *MD generic* must be filled.
 
 If an error is identified the script stops and an appropriate error message is displayed.
 
