@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='excel2wisxml',
-    version='3.5.4-1',
+    version='3.5.7',
     author_email="gisc_support@meteo.fr",
     description="Generation of WMO Core 1.3 profile metadata",
     long_description=long_description,
