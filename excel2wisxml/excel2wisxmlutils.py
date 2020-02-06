@@ -109,9 +109,9 @@ def addAttribute(tree, xpath, att_name, att_val, att_loc):
                 xpath_list = xpath_list[:loc + 1]
                 xpath = "/".join(xpath_list)
             except ValueError:
-                print "WARNING : %s not found in XPATH" % attLoc
-                print "Attribute %s added at xpath location %s" % (
-                    attName, xpath)
+                print("WARNING : {} not found in XPATH".format(attLoc))
+                print("Attribute {} added at xpath location {}".format(
+                    attName, xpath))
         element = tree.xpath(xpath, namespaces=namespaces)[0]
         # is there a prefix
         tagsplit = str(attName).split(':')
@@ -284,7 +284,7 @@ def addResourceFormat(tree, xpath, value, urn):
             specification = val[2].strip()
             mime = val[3].strip()
         except IndexError:
-            print val
+            print(val)
             sys.exit("%s Resource Format cell value is inconsistent" % urn +
                      "with expected template")
         parent_xpath = xpath

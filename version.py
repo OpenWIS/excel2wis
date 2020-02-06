@@ -26,8 +26,8 @@ for i, head in enumerate(md_gene_header):
     elif head == 'value':
         md_gene_value_col = i
 for row in range(md_gene_row_start, md_gene.nrows):
-    tag = unicode(md_gene.cell_value(row, md_gene_tag_col)).strip()
-    value = unicode(md_gene.cell_value(row, md_gene_value_col)).strip()
+    tag = str(md_gene.cell_value(row, md_gene_tag_col)).strip()
+    value = str(md_gene.cell_value(row, md_gene_value_col)).strip()
     if tag.startswith('ExcelVersion'):
         excelVersion = value
         break
@@ -43,7 +43,7 @@ with open("excel2wisxml/excel2wisxml.py") as f:
 
 # Create application version
 app_version = excelVersion + "." + scriptVersion
-print "Version %s" % app_version
+print("Version {}".format(app_version))
 
 with open("setup.py", 'r') as f:
     setup_lines = f.readlines()
